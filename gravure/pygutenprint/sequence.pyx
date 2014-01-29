@@ -82,75 +82,81 @@ cdef extern from *:
 
     PyObject *Py_None
 
+cdef extern from "stdlib.h":
+    void *malloc(size_t) nogil
+    void free(void *) nogil
+    void realloc(void *, size_t) nogil
+    void *memcpy(void *dest, void *src, size_t n) nogil
+
 cdef extern from "gutenprint/sequence.h":
     # extern stp_sequence_t *stp_sequence_create(void);
-    stp_sequence_t* stp_sequence_create()
+    stp_sequence_t* stp_sequence_create() nogil
 
     # extern void stp_sequence_destroy(stp_sequence_t *sequence);
-    void stp_sequence_destroy(stp_sequence_t* sequence)
+    void stp_sequence_destroy(stp_sequence_t* sequence) nogil
 
     # extern void stp_sequence_copy(stp_sequence_t *dest, const stp_sequence_t *source);
-    void stp_sequence_copy(stp_sequence_t* dest, stp_sequence_t* source)
+    void stp_sequence_copy(stp_sequence_t* dest, stp_sequence_t* source) nogil
 
     # extern stp_sequence_t *stp_sequence_create_copy(const stp_sequence_t *sequence);
-    stp_sequence_t* stp_sequence_create_copy(stp_sequence_t* sequence)
+    stp_sequence_t* stp_sequence_create_copy(stp_sequence_t* sequence) nogil
 
     # extern void stp_sequence_reverse(stp_sequence_t *dest, const stp_sequence_t *source);
-    void stp_sequence_reverse(stp_sequence_t* dest, stp_sequence_t* source)
+    void stp_sequence_reverse(stp_sequence_t* dest, stp_sequence_t* source) nogil
 
     # extern stp_sequence_t *stp_sequence_create_reverse(const stp_sequence_t *sequence);
-    stp_sequence_t* stp_sequence_create_reverse(stp_sequence_t* sequence)
+    stp_sequence_t* stp_sequence_create_reverse(stp_sequence_t* sequence) nogil
 
     # extern int stp_sequence_set_bounds(stp_sequence_t *sequence, double low, double high);
-    bint stp_sequence_set_bounds(stp_sequence_t* sequence, double low, double high)
+    bint stp_sequence_set_bounds(stp_sequence_t* sequence, double low, double high) nogil
 
     # extern void stp_sequence_get_bounds(const stp_sequence_t *sequence, double *low, double *high);
-    void stp_sequence_get_bounds(stp_sequence_t* sequence, double* low, double* high)
+    void stp_sequence_get_bounds(stp_sequence_t* sequence, double* low, double* high) nogil
 
     # extern void stp_sequence_get_range(const stp_sequence_t *sequence, double *low, double *high);
-    void stp_sequence_get_range(stp_sequence_t* sequence, double* low, double* high)
+    void stp_sequence_get_range(stp_sequence_t* sequence, double* low, double* high) nogil
 
     # extern int stp_sequence_set_size(stp_sequence_t *sequence, size_t size);
-    bint stp_sequence_set_size(stp_sequence_t* sequence, size_t size)
+    bint stp_sequence_set_size(stp_sequence_t* sequence, size_t size) nogil
 
     # extern size_t stp_sequence_get_size(const stp_sequence_t *sequence);
-    size_t stp_sequence_get_size(stp_sequence_t* sequence)
+    size_t stp_sequence_get_size(stp_sequence_t* sequence) nogil
 
     # extern int stp_sequence_set_data(stp_sequence_t *sequence, size_t count, const double *data);
-    bint stp_sequence_set_data(stp_sequence_t* sequence, size_t count, double* data)
+    bint stp_sequence_set_data(stp_sequence_t* sequence, size_t count, double* data) nogil
 
     # extern int stp_sequence_set_subrange(stp_sequence_t *sequence, size_t where, size_t size, const double *data);
 
 
     # extern void stp_sequence_get_data(const stp_sequence_t *sequence, size_t *size, const double **data);
-    void stp_sequence_get_data(stp_sequence_t* sequence, size_t* size, double** data)
+    void stp_sequence_get_data(const stp_sequence_t* sequence, size_t* size, const double** data) nogil
 
     # extern int stp_sequence_set_point(stp_sequence_t *sequence, size_t where, double data);
-    bint stp_sequence_set_point(stp_sequence_t* sequence, size_t where, double data)
+    bint stp_sequence_set_point(stp_sequence_t* sequence, size_t where, double data) nogil
 
     # extern int stp_sequence_get_point(const stp_sequence_t *sequence, size_t where, double *data);
-    bint stp_sequence_get_point(stp_sequence_t* sequence, size_t where, double* data)
+    bint stp_sequence_get_point(stp_sequence_t* sequence, size_t where, double* data) nogil
 
     # extern int stp_sequence_set_float_data(stp_sequence_t *sequence, size_t count, const float *data);
-    bint stp_sequence_set_float_data(stp_sequence_t* sequence, size_t count, float* data)
+    bint stp_sequence_set_float_data(stp_sequence_t* sequence, size_t count, float* data) nogil
 
     # extern int stp_sequence_set_long_data(stp_sequence_t *sequence, size_t count, const long *data);
-    bint stp_sequence_set_long_data(stp_sequence_t* sequence, size_t count, long* data)
+    bint stp_sequence_set_long_data(stp_sequence_t* sequence, size_t count, long* data) nogil
 
     # extern int stp_sequence_set_ulong_data(stp_sequence_t *sequence, size_t count, const unsigned long *data);
-    bint stp_sequence_set_ulong_data(stp_sequence_t* sequence, size_t count, unsigned long* data)
+    bint stp_sequence_set_ulong_data(stp_sequence_t* sequence, size_t count, unsigned long* data) nogil
 
     # extern int stp_sequence_set_int_data(stp_sequence_t *sequence, size_t count, const int *data);
-    bint stp_sequence_set_int_data(stp_sequence_t* sequence, size_t count, int* data)
+    bint stp_sequence_set_int_data(stp_sequence_t* sequence, size_t count, int* data) nogil
 
     # extern int stp_sequence_set_uint_data(stp_sequence_t *sequence, size_t count, const unsigned int *data);
-    bint stp_sequence_set_uint_data(stp_sequence_t* sequence, size_t count, unsigned int* data)
+    bint stp_sequence_set_uint_data(stp_sequence_t* sequence, size_t count, unsigned int* data) nogil
 
     # extern int stp_sequence_set_short_data(stp_sequence_t *sequence, size_t count, const short *data);
-    bint stp_sequence_set_short_data(stp_sequence_t* sequence, size_t count, short* data)
+    bint stp_sequence_set_short_data(stp_sequence_t* sequence, size_t count, short* data) nogil
 
     # extern int stp_sequence_set_ushort_data(stp_sequence_t *sequence, size_t count, const unsigned short *data);
-    bint stp_sequence_set_ushort_data(stp_sequence_t* sequence, size_t count, unsigned short* data)
+    bint stp_sequence_set_ushort_data(stp_sequence_t* sequence, size_t count, unsigned short* data) nogil
 
     # extern const float *stp_sequence_get_float_data(const stp_sequence_t *sequence, size_t *count);
 
@@ -243,6 +249,44 @@ cdef class SequenceIterator:
         return data
 
 
+cpdef test_data():
+    cdef stp_sequence_t* _sequence
+    cdef double* data_test
+    cdef double* data_test_b
+    cdef double [15] data_in
+    cdef int i
+    cdef bint retcode
+    cdef size_t ret_size
+
+    for i in range(15):
+        data_in[i] = i
+
+    _sequence = stp_sequence_create()
+    stp_sequence_set_size(_sequence, <size_t> 15)
+    stp_sequence_get_data(<const stp_sequence_t*> _sequence, &ret_size, <const double**> &data_test)
+    print_data(data_test, 15)
+
+    retcode = stp_sequence_set_data(_sequence, <size_t> 15, data_in)
+    if not retcode:
+        raise SystemError("in set_data")
+    stp_sequence_get_data(<const stp_sequence_t*> _sequence, &ret_size, <const double**> &data_test)
+    print_data(data_test, 15)
+
+    data_test[10] = <double> 99.00
+    print_data(data_test, 15)
+
+    stp_sequence_get_data(<const stp_sequence_t*> _sequence, &ret_size, <const double**> &data_test_b)
+    print_data(data_test_b, 15)
+
+
+cdef print_data(double* data, size_t size):
+    cdef int i
+    list_d = []
+    for i in range(size):
+        list_d.append(data[i])
+    print "data : " + list_d.__str__()
+
+
 #
 # Sequence :
 # Python extension type warping
@@ -318,7 +362,7 @@ cdef class Sequence:
         else:
             raise ValueError("The Sequence parameter is not valid")
 
-    cpdef object copy(Sequence self):
+    cpdef copy(Sequence self):
         """Return a copy of this Sequence.
 
         A new sequence will be created, and then the contents
@@ -399,7 +443,7 @@ cdef class Sequence:
         stp_sequence_destroy(self._sequence)
         self._sequence = seq_rev
 
-    cpdef object create_reverse(Sequence self):
+    cpdef create_reverse(Sequence self):
         """Return a reversed copy.
 
         A new Sequence will be returned with the reverse contents
@@ -432,7 +476,7 @@ cdef class Sequence:
             raise SequenceBoundsError('the lower bound is greater than the \
                   upper bound :\n\tmin: %f, max: %f' %(min, max))
 
-    cpdef object get_bounds(Sequence self):
+    cpdef get_bounds(Sequence self):
         """Get the lower and upper bounds.
 
         return: a tuple of floats bounds values, (min, max).
@@ -441,7 +485,7 @@ cdef class Sequence:
         stp_sequence_get_bounds(self._sequence, &cmin, &cmax)
         return min, max
 
-    cpdef object get_range(Sequence self):
+    cpdef get_range(Sequence self):
         """Get range of values stored in the sequence.
 
         Return: a tuple of floats values (min, max).
@@ -469,11 +513,11 @@ cdef class Sequence:
         return high
 
     #
-    # SEQUENCE INTERFACE : __getitem__(), __setitem__(), __delitem()__
+    # SEQUENCE INTERFACE : __getitem__(), __setitem__()
     #
     def __setitem__(Sequence self, object index, object value):
         if isinstance(index, slice):
-            obj = self.is_slice(value)
+            obj = is_slice(value)
             if obj:
                 self.set_slice(index, obj, True)
             else:
@@ -485,7 +529,7 @@ cdef class Sequence:
         else:
             raise TypeError("Cannot index with type '%s'" % type(index))
 
-    cdef set_slice(Sequence self, object index, object value, bint val_is_slice):
+    cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:
         cdef Py_ssize_t start, stop, size, i, v
         cdef cython.view.memoryview mv
         cdef Py_buffer pybuffer
@@ -499,7 +543,7 @@ cdef class Sequence:
         if stop < 0:
                 stop %= self.__len__()
         if stop <= start:
-            return
+            return 1
         size = stop - start
         v = 0
 
@@ -507,72 +551,45 @@ cdef class Sequence:
             mv = <cython.view.memoryview> value
             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
             if pybuffer.ndim != 1:
+                PyBuffer_Release(&pybuffer)
                 raise ValueError("Multidimentionnal array is not accepted.")
             if pybuffer.shape[0] >= size:
                 for i in xrange(start, stop):
-                    self.set_point(i, <double> mv[v])
+                    if not self.set_point(i, <double> mv[v]):
+                        PyBuffer_Release(&pybuffer)
                     v += 1
+                PyBuffer_Release(&pybuffer)
             else:
+                PyBuffer_Release(&pybuffer)
                 raise ValueError("The array provided is too short.")
         else:
             d_val = <double> value
             for i in xrange(start, stop):
                 self.set_point(i, d_val)
                 v += 1
-        #TODO: release pybuffer
 
-
-    cdef set_point(Sequence self, Py_ssize_t index, double value):
+    cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:
         """Set the data at a single point in a Sequence.
 
         param: index, position in Sequence (from zero).
         param: value, the datum to set.
         Raise: SequenceIndexError, SequenceBoundsError, SequenceNaNError.
         """
-        # 3 errors could occurs :
-        # index error, data not isFinite, data is out of bounds
         cdef bint retcode
         cdef double low, high
         cdef size_t last_index
 
-        retcode = stp_sequence_set_point(self._sequence, <size_t> index, value)
+        retcode = stp_sequence_set_point(self._sequence, index, value)
         if not retcode:
             last_index = stp_sequence_get_size(self._sequence) - 1
             stp_sequence_get_bounds(self._sequence, &low, &high)
             if (value < low or value > high):
-                raise SequenceBoundsError('Attempt to set value out of bounds (%f, %f)' %(low, high))
+                raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
             elif (index>last_index or last_index<0):
-                raise SequenceIndexError('[%d], Sequence index out of range' %index)
+                raise_index_error("[%d], Sequence index out of range", index)
             else:
-                raise SequenceNaNError('Sequence value is not a finite number')
-
-    cdef is_slice(Sequence self, obj):
-        cdef cython.view.memoryview mv
-        try:
-            flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
-            mv = cython.view.memoryview(obj, flags, False)
-            obj = mv
-        except TypeError:
-            return None
-        return obj
-
-
-
-
-#    def __getitem__(self, Py_ssize_t index): #TODO: index peut-il etre negatif?
-#        """self[index].
-#
-#        Get the data at a single point in a Sequence.
-#
-#        param: index, position in Sequence (from zero).
-#        Raise: SequenceIndexError.
-#        Return: a Python float value.
-#        """
-#        cdef double data
-#        bool_retcode = stp_sequence_get_point(self._sequence, <size_t> index, &data)
-#        if not bool_retcode:
-#            raise SequenceIndexError('[%d], Sequence index out of range' %index)
-#        return data
+                raise_nan_error("Sequence value is not a finite number")
+        return 1
 
     #TODO: negative index, slicing
     def __getitem__(self, index):
@@ -599,36 +616,6 @@ cdef class Sequence:
             raise SequenceTypeError('Sequence indices must be integers, not %s' %type(index).__name__)
 
 
-    def __delitem__(self, index):
-        """NotImplemented.
-        """
-        raise NotImplementedError('Sequence doesn\'t support removal of elements')
-
-
-    # General
-    def __comp__(x, y):
-        """3-way comparison.
-
-        Return: an integer value.
-        """
-        raise NotImplementedError
-
-
-
-
-    #===========================================================================
-    #
-    # Other Python methods
-    #
-    #===========================================================================
-
-
-
-
-
-
-
-
 #        """Get the data in a sequence as float data.
 #
 #        The pointer returned is owned by the curve, and is not guaranteed
@@ -644,71 +631,6 @@ cdef class Sequence:
 #        is stored in a pointer to float*.
 #
 
-    #TODO: Implementing get_float, get_long, get_int, etc..
-    #with method returning Python Array with had'oc type (or buffer)
-    def get_data(self, typecode=None):
-        """Get the data in a sequence.
-
-        @param sequence the sequence to get the data from.
-        @param size the number of elements in the sequence are stored in
-        the size_t pointed to.
-        @param data a pointer to the first element of a sequence of doubles
-        is stored in a pointer to double*.
-
-        @code
-        stp_sequence_t *sequence;
-        size_t size;
-        double *data;
-        stp_sequence_get_data(sequence, &size, &data);
-        @endcode
-        """
-        cdef double* data
-        cdef size_t size
-        pass
-        # here, gcc complain with '&data' is not a <const>,
-        # but it will not be a problem, isn't it?
-        #stp_sequence_get_data(self._sequence, &size, &data)
-        #return None
-
-
-
-    def set_data(self, arr not None):
-        """Set the data in a sequence.
-
-        Param: data a Python Built-in array
-        Raise: TypeError if None or an array with a
-        not supported typed is pass.
-
-        #TODO: make same behavior for double and other types
-        cdef :
-            int arr_typecode = arr.ob_descr.typecode
-            Py_ssize_t count = <Py_ssize_t> arr.length
-            bint bool_retcode
-
-        if (arr.typecode == 'd'):
-            bool_retcode = stp_sequence_set_data(self._sequence, <size_t> count, arr._d)
-        elif (arr.typecode == 'f'):
-            bool_retcode = stp_sequence_set_float_data(self._sequence, <size_t> count, arr._f)
-        elif (arr.typecode == 'l'):
-            bool_retcode = stp_sequence_set_long_data(self._sequence, <size_t> count, arr._l)
-        elif (arr.typecode == 'L'):
-            bool_retcode = stp_sequence_set_ulong_data(self._sequence, <size_t> count, arr._L)
-        elif (arr.typecode == 'i'):
-            bool_retcode = stp_sequence_set_int_data(self._sequence, <size_t> count, arr._i)
-        elif (arr.typecode == 'I'):
-            bool_retcode = stp_sequence_set_uint_data(self._sequence, <size_t> count, arr._I)
-        elif (arr.typecode == 'h'):
-            bool_retcode = stp_sequence_set_short_data(self._sequence, <size_t> count, arr._h)
-        elif (arr.typecode == 'H'):
-            bool_retcode = stp_sequence_set_ushort_data(self._sequence, <size_t> count, arr._H)
-        else :
-            bad_type = {'c':'char', 'b':'signed char', 'B':'unsigned car', 'u':'PY_UNICODE'}.get(arr.typecode)
-            raise TypeError('Wrong array type : Sequence should\'nt be set with %s data' %bad_type)
-
-        if not bool_retcode:
-            raise SystemError('ca merde')
-        """
-        pass
 
     def set_subrange(self, arr not None, Py_ssize_t index):
         """Set the data in a subrange of a sequence.
@@ -730,6 +652,197 @@ cdef class Sequence:
         """
         pass
 
+    #
+    # BUFFER INTERFACE [PEP 3118]
+    #
+    def __getbuffer__(Sequence self, Py_buffer *info, int flags):
+        cdef size_t ret_size
+        cdef double* data_buf
+        cdef Py_ssize_t [1] shape
+        cdef Py_ssize_t [1] strides
+
+        stp_sequence_get_data(<const stp_sequence_t*> self._sequence, &ret_size, <const double**> &data_buf)
+        shape[0] = self.__len__
+        strides[0] =  sizeof(double)
+
+        info.buf = <void*> data_buf
+        info.len = self.__len__() * sizeof(double)
+        info.readonly = 0
+        info.ndim = 1
+        info.format = b'@d'
+        info.shape = shape
+        info.strides = strides
+        info.suboffsets = NULL  # we are always direct memory buffer
+        info.itemsize = sizeof(double)
+        info.obj = self
+        info.internal = NULL
+
+        if flags & PyBUF_WRITABLE:
+            info.readonly = 0
+        else:
+            info.readonly = 1
+
+        if flags & PyBUF_SIMPLE:
+            # The format of data is assumed to be
+            # raw unsigned bytes, without any particular structure,
+            # interpreted as one dimentional array (strides=NULL)
+            # The buffer exposes a read-only memory area.
+            # Data is always contigous.
+            info.shape = NULL
+            info.strides = NULL
+            info.format = NULL  # mean 'B', unsigned byte
+            # The 'itemsize' field may be wrong
+            return
+
+        if not (flags & PyBUF_ND):
+                info.shape = NULL
+
+        if not (flags & PyBUF_STRIDES):
+                info.strides = NULL
+
+        cdef int bufmode = -1
+        if not (flags & bufmode):
+            raise BufferError("Can only create a buffer that is contiguous in memory.")
+
+        if not (flags & PyBUF_FORMAT):
+            info.format = NULL
+
+    property memview:
+        def __get__(self):
+            # Make this a property as 'self.data' may be set after instantiation
+            flags =  PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE
+            cdef cython.view.memoryview mv = cython.view.memoryview(self, flags, False)
+            return mv
+
+    def get_data(self):
+        """Get acces to the data buffer for this sequence.
+
+        Return: a Python memoryview.
+        """
+        return self.memview
+
+    def set_data(self, obj not None):
+        """Set the data in a sequence.
+
+        Param: a python array like implementing the buffer interface.
+        Raise: ValueError if None or with an array with a
+        not supported type.
+        """
+        cdef Py_buffer pybuffer
+        cdef char *c_type
+        cdef size_t sz, count
+        cdef bint err_code = 1
+
+        if PyObject_CheckBuffer(obj):
+            PyObject_GetBuffer(obj, &pybuffer, PyBUF_ND | PyBUF_FORMAT)
+            if pybuffer.ndim != 1:
+                PyBuffer_Release(&pybuffer)
+                raise ValueError("Multidimentionnal array is not accepted.")
+            if pybuffer.format:
+                if check_buffer_format(pybuffer.format, &c_type):
+                    sz = pybuffer.itemsize
+                    count = pybuffer.shape[0]
+                    if c_type[0] == 'u':
+                        if sz == sizeof(unsigned short):
+                            err_code = stp_sequence_set_ushort_data(self._sequence, \
+                            count, <unsigned short*> pybuffer.buf)
+                        if sz == sizeof(unsigned int):
+                            err_code = stp_sequence_set_uint_data(self._sequence, \
+                            count, <unsigned int*> pybuffer.buf)
+                        if sz == sizeof(unsigned long):
+                            err_code = stp_sequence_set_ulong_data(self._sequence, \
+                            count, <unsigned long*> pybuffer.buf)
+                    if c_type[0] == 'i':
+                        if sz == sizeof(short):
+                            err_code = stp_sequence_set_short_data(self._sequence, \
+                            count, <short*> pybuffer.buf)
+                        if sz == sizeof(int):
+                            err_code = stp_sequence_set_int_data(self._sequence, \
+                            count, <int*> pybuffer.buf)
+                        if sz == sizeof(long):
+                            err_code = stp_sequence_set_long_data(self._sequence, \
+                            count, <long*> pybuffer.buf)
+                    if c_type[0] == 'f':
+                        if sz == sizeof(float):
+                            err_code = stp_sequence_set_float_data(self._sequence, \
+                            count, <float*> pybuffer.buf)
+                        if sz == sizeof(double):
+                            err_code = stp_sequence_set_data(self._sequence, \
+                            count, <double*> pybuffer.buf)
+                else:
+                    err_code = 0
+            else:
+                err_code = 0
+
+        PyBuffer_Release(&pybuffer)
+        if not err_code:
+            raise ValueError("Invalid buffer format.")
 
 
+cdef bint check_buffer_format(bytes format, char** c_type):
+    cdef Py_ssize_t blen, i
+    cdef char *fmt_c
+    cdef char fmt
+    cdef bint digit
 
+    blen = len(format)
+    fmt_c = <char *> malloc(sizeof(Py_ssize_t) * (blen + 1))
+    if not fmt_c:
+        free(fmt_c)
+        return 0
+    fmt_c = format
+
+    with nogil:
+        fmt_c[blen] = 0
+
+        i = 0
+        if fmt_c[i] == '@' or fmt_c[i] == '=' or \
+           fmt_c[i] == '<' or fmt_c[i] == '>' or \
+           fmt_c[i] == '!' :
+            i += 1
+        fmt = 0
+        digit = 0
+        while i < blen:
+            if fmt_c[i] == '1':
+                if digit:
+                    break
+                else:
+                    i += 1
+                    digit = 1
+                    continue
+            if fmt_c[i] >= 48 and fmt_c[i] <= 39: #number 0-9
+                break
+            else:
+                fmt = fmt_c[i]
+
+        if fmt != 0 and i == blen-1: # no complex format code
+            if fmt == 'h' or fmt == 'i' or fmt == 'l' or fmt == 'q':
+                c_type[0] = 'i' # signed integer
+                return 1
+            if fmt == 'H' or fmt == 'I' or fmt == 'L' or fmt == 'Q':
+                c_type[0] = 'u' # unsigned interger
+                return 1
+            if fmt  == 'f' or fmt == 'd':
+                c_type[0] = 'f' # float
+                return 1
+        return 0
+
+cdef int raise_bound_error(char* message, double x, double y) except -1 with gil:
+    raise SequenceBoundsError(message.decode('ascii') % (x, y))
+
+cdef int raise_index_error(char* message, int a) except -1 with gil:
+            raise SequenceIndexError(message.decode('ascii') %a)
+
+cdef int raise_nan_error(char* message) except -1 with gil:
+            raise SequenceNaNError(message.decode('ascii'))
+
+
+cdef object is_slice(obj):
+    cdef cython.view.memoryview mv
+    try:
+        flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
+        mv = cython.view.memoryview(obj, flags, False)
+        obj = mv
+    except TypeError:
+        return None
+    return obj

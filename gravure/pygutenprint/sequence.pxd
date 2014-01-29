@@ -36,10 +36,9 @@ cdef class Sequence:
     cpdef object get_range(Sequence)
     cpdef double min(Sequence)
     cpdef double max(Sequence)
-    cdef set_point(Sequence, Py_ssize_t, double)
+    cdef bint set_point(Sequence, size_t, double)nogil except 0
 
-    cdef set_slice(Sequence, object, object, bint)
-    cdef is_slice(Sequence, object)
+    cdef int set_slice(Sequence, object, object, bint)except -1
 
 
 

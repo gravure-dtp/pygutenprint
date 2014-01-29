@@ -34,22 +34,12 @@ import cython
 #import pyximport; pyximport.install()
 import gravure.pygutenprint.sequence as stp
 
-
-#--------------------------------------------------------------------------------
-# Test fixtures                                                                 #
-#                                                                               #
-STP_SEQ = None
-def set_up():
-    STP_SEQ = stp.Sequence()
-    STP_SEQ.set_size(30)
-
-def tear_down():
-    STP_SEQ = None
-
 #--------------------------------------------------------------------------------
 # Object creation                                                               #
 #                                                                               #
-
+def test_new():
+    stp_seq = stp.Sequence()
+    assert_is_instance(stp_seq, stp.Sequence)
 
 #--------------------------------------------------------------------------------
 # Object deallocation                                                           #
@@ -60,18 +50,19 @@ def tear_down():
 # __len__()                                                                     #
 #                                                                               #
 def test_len():
-    STP_SEQ = stp.Sequence()
-    STP_SEQ.set_size(30)
-    eq_(len(STP_SEQ), 30)
-    STP_SEQ.set_size(44)
-    eq_(len(STP_SEQ), 44)
-    STP_SEQ = stp.Sequence()
-    eq_(len(STP_SEQ), 0)
+    stp_seq = stp.Sequence()
+    print(len(stp_seq))
+    stp_seq.set_size(30)
+    print(len(stp_seq))
+    eq_(len(stp_seq), 30)
+    stp_seq.set_size(44)
+    eq_(len(stp_seq), 44)
+    stp_seq = stp.Sequence()
+    eq_(len(stp_seq), 0)
 
 #--------------------------------------------------------------------------------
 # set_size()                                                                  #
 #                                                                               #
-@with_setup(set_up, tear_down)
 def test_set_size():
     assert_equal(STP_SEQ[3], 0)
     assert_equal(STP_SEQ[29], 0)
@@ -83,7 +74,6 @@ def test_set_size():
 # 3 errors could occurs : - index error
 #                       - data not isFinite
 #                       - data is out of bounds (default bounds are (0, 1.0))
-@with_setup(set_up, tear_down)
 def setitem_base_test():
     global STP_SEQ
     # return None when ok
@@ -92,14 +82,12 @@ def setitem_base_test():
 
 #ERRORS
 # basic index error on sequence
-@with_setup(set_up, tear_down)
 def setitem_IndexError_test():
     global STP_SEQ
     arg = [32, 1]
     assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
 
 # value set can't be out of bounds attribute
-@with_setup(set_up, tear_down)
 def setitem_BoundsError_test():
     global STP_SEQ
     arg = [5, 2.34]
@@ -110,7 +98,6 @@ def setitem_BoundsError_test():
     assert_raises(stp.SequenceBoundsError, STP_SEQ.__setitem__, *arg)
 
 # SequenceNaNError, value pass is no a finite number.
-@with_setup(set_up, tear_down)
 def setitem_NaNError_test():
     global STP_SEQ
     arg=[3, float('nan')]
@@ -118,14 +105,12 @@ def setitem_NaNError_test():
     arg=[3, float('inf')]
     assert_raises(stp.SequenceNaNError, STP_SEQ.__setitem__, *arg)
 
-@with_setup(set_up, tear_down)
 def setitem_TypeError_test():
     global STP_SEQ
     arg=[3.2, .33]
     assert_raises(TypeError, STP_SEQ.__setitem__, *arg)
 
 #SLICES
-@with_setup(set_up, tear_down)
 def setitem_slice_TypeError_test():
     global STP_SEQ
     arg=[slice(0,10), 0.8]
@@ -133,7 +118,6 @@ def setitem_slice_TypeError_test():
     arg=[slice(0,10), '1234567890']
     assert_raises(TypeError, STP_SEQ.__setitem__, *arg)
 
-@with_setup(set_up, tear_down)
 def setitem_slice_ExtendedError_test():
     global STP_SEQ
     li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
@@ -145,7 +129,6 @@ def setitem_slice_ExtendedError_test():
 # don't affect size.
 # The only case who verify this condition is for assignement:
 # seq[i:j] = t where j-i == len(t) and i+len(t) <= len(seq)
-@with_setup(set_up, tear_down)
 def setitem_slice_IndexError_test():
     global STP_SEQ
     li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
@@ -161,7 +144,6 @@ def setitem_slice_IndexError_test():
     arg=[slice(22,32), li]
     assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
 
-@with_setup(set_up, tear_down)
 def setitem_slice_test():
     global STP_SEQ
     li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
@@ -173,7 +155,6 @@ def setitem_slice_test():
     li[0] = -1
     assert_equal(STP_SEQ[3], .1)
 
-@with_setup(set_up, tear_down)
 def setitem_slice2_test():
     global STP_SEQ
     li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
@@ -223,7 +204,6 @@ def setitem_slice2_test():
 
 #OTHERS
 # integer should be converted to float
-@with_setup(set_up, tear_down)
 def setitem_type_cast_test():
     global STP_SEQ
     STP_SEQ[13] = 1
@@ -231,7 +211,6 @@ def setitem_type_cast_test():
     assert_true(isinstance(STP_SEQ[13], float))
 
 # python sequence type should accept negative index
-@with_setup(set_up, tear_down)
 def setitem_negative_index_test():
     global STP_SEQ
     STP_SEQ[-1]=.9
@@ -253,7 +232,6 @@ def setitem_negative_index_test():
 # when slicing should return deep copy
 # could raise TypeError, IndexError
 
-@with_setup(set_up, tear_down)
 def getitem_base_test():
     global STP_SEQ
     assert_equal(STP_SEQ[12], 0)
@@ -263,7 +241,6 @@ def getitem_base_test():
     a = .33
     assert_equal(STP_SEQ[12], .22)
 
-@with_setup(set_up, tear_down)
 def getitem_negative_index_test():
     global STP_SEQ
     STP_SEQ[29]=.9
@@ -278,7 +255,6 @@ def getitem_negative_index_test():
     assert_raises(IndexError, STP_SEQ.__getitem__, *arg)
 
 #ERRORS
-@with_setup(set_up, tear_down)
 def getitem_TypeError_test():
     global STP_SEQ
     arg=[2.2]
@@ -286,7 +262,6 @@ def getitem_TypeError_test():
     arg=[None]
     assert_raises(TypeError, STP_SEQ.__getitem__, *arg)
 
-@with_setup(set_up, tear_down)
 def getitem_IndexError_test():
     global STP_SEQ
     arg=[30]
@@ -295,7 +270,6 @@ def getitem_IndexError_test():
     assert_raises(IndexError, STP_SEQ.__getitem__, *arg)
 
 #SLICES
-@with_setup(set_up, tear_down)
 def getitem_slice1_test():
     global STP_SEQ
     for i in range(30):
@@ -311,7 +285,6 @@ def getitem_slice1_test():
     stp_c[0] = -1
     assert_not_equal(STP_SEQ[0], -1)
 
-@with_setup(set_up, tear_down)
 def getitem_slice2_test():
     global STP_SEQ
     for i in range(30):
@@ -367,7 +340,6 @@ def getitem_slice2_test():
         assert_equal(stp_c[i], STP_SEQ[i+8])
 
 
-@with_setup(set_up, tear_down)
 def getitem_extended_slice_test():
     global STP_SEQ
     arg=[slice(0,10,2)]
@@ -376,7 +348,6 @@ def getitem_extended_slice_test():
 #------------------------------------------------------------------------------
 # __delitem__()
 #
-@with_setup(set_up, tear_down)
 def delitem_test():
     global STP_SEQ
     arg=[2]
@@ -385,13 +356,11 @@ def delitem_test():
 #------------------------------------------------------------------------------
 # __iter__()
 #TODO: More tests, change data sequence while iteration
-@with_setup(set_up, tear_down)
 def iter_test():
     global STP_SEQ
     it = iter(STP_SEQ)
     assert_true(hasattr(it,'next'))
 
-@with_setup(set_up, tear_down)
 def next_test():
     global STP_SEQ
     li = range(30)
@@ -412,7 +381,6 @@ def next_test():
     assert_raises(StopIteration, it.next)
     assert_raises(StopIteration, it.next)
 
-@with_setup(set_up, tear_down)
 def reversed_test():
     global STP_SEQ
     it = reversed(STP_SEQ)
@@ -439,7 +407,6 @@ def reversed_test():
 
 #------------------------------------------------------------------------------
 # __contains__()
-@with_setup(set_up, tear_down)
 def contains_test():
     global STP_SEQ
     STP_SEQ[9] = .33
@@ -461,7 +428,6 @@ def contains_test():
 #
 
 # str() should return the same as repr()
-@with_setup(set_up, tear_down)
 def str_test():
     global  STP_SEQ
     li = range(30)
@@ -471,7 +437,6 @@ def str_test():
 
 #TODO: with eval(repr(sequence)), should recreate
 # a valid Sequence equal to sequence
-@with_setup(set_up, tear_down)
 def repr_test():
     global  STP_SEQ
     li = range(30)
@@ -486,10 +451,6 @@ def repr_test():
 #------------------------------------------------------------------------------
 # __comp__()
 #
-@raises(Exception)
-@with_setup(set_up, tear_down)
-def comp_test():
-    pass
 
 #-------------------------------------------------------------------------------
 # set_bounds()                                                                  #
@@ -499,13 +460,23 @@ def comp_test():
 #--------------------------------------------------------------------------------
 # Main                                                                          #
 #                                                                               #
-#from nose.plugins.testid import TestId
-#from nose.config import Config
+from nose.plugins.testid import TestId
+from nose.config import Config
+
+def test():
+    print ("hello")
+    try:
+        raise SystemError("bad")
+    except:
+        print ("goodbye")
+        raise
+
 
 if __name__ == '__main__':
     print("Test")
-    #test_len()
-    nose.run()
+    test()
+    #stp.test_data()
+    #nose.runmodule(name='__main__')
 
 
 
