@@ -463,13 +463,9 @@ def repr_test():
 from nose.plugins.testid import TestId
 from nose.config import Config
 
+from gravure.pygutenprint.sequence import __AuxBufferInterface
 def test():
-    print ("hello")
-    try:
-        raise SystemError("bad")
-    except:
-        print ("goodbye")
-        raise
+    help(stp)
 
 
 if __name__ == '__main__':
