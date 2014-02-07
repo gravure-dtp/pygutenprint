@@ -51,8 +51,9 @@ cdef class Sequence:
     cpdef object get_range(Sequence)
     cpdef double min(Sequence)
     cpdef double max(Sequence)
-    cdef bint set_point(Sequence, size_t, double)nogil except 0
 
+    cdef stp_sequence* get_sequence(Sequence self)nogil
+    cdef bint set_point(Sequence, size_t, double)nogil except 0
     cdef int set_slice(Sequence, object, object, bint)except -1
 
 

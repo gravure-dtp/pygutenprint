@@ -48,6 +48,13 @@ extensions = [
                           extra_objects = EXTRA_OBJECTS \
                           ), \
 
+                Extension('array', \
+                          [SRC_DIR + 'array.pyx'], \
+                         #libraries = LIBRARIES, \
+                          runtime_library_dirs=DYN_LIBRARY_DIRS, \
+                          extra_objects = EXTRA_OBJECTS \
+                          ), \
+
 #                Extension('curve', \
 #                          [SRC_DIR + 'curve.pyx'], \
 #                          include_dirs = INCLUDE_DIRS, \

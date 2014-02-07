@@ -20,9 +20,8 @@
 
 #cython: embedsignature=True
 
-"""Module pygutenprint.sequence.
+"""Module gravure.pygutenprint.sequence.
 
-Sequence functions.
 Curve code borrowed from GTK+, http://www.gtk.org/
 """
 
@@ -258,21 +257,25 @@ cdef class Sequence:
 
     #TODO: Accept like Python list iterable argument :
     # list, array (with its different ctype), numpy-array...
-    def __cinit__(Sequence self):
+    def __cinit__(Sequence self, *args, **kwargs):
         """Create a new Sequence.
 
         returns the newly created Sequence.
         The Sequence is empty.
         raise: MemmoryError.
         """
-        self._sequence = stp_sequence_create()
-        if not self._sequence:
-            raise MemoryError("Unable to create a new sequence.")
+        if self.__class__ == Sequence:
+            self._sequence = stp_sequence_create()
+            if not self._sequence:
+                raise MemoryError("Unable to create a new sequence.")
         self.aux_buffer = __AuxBufferInterface()
 
     def __dealloc__(Sequence self):
         if self._sequence is not NULL:
             stp_sequence_destroy(self._sequence)
+
+    cdef stp_sequence_t* get_sequence(Sequence self)nogil:
+        return self._sequence
 
     #
     # STRING REPRESENTATION

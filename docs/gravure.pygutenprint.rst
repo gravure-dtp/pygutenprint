@@ -4,6 +4,14 @@ gravure.pygutenprint package
 Submodules
 ----------
 
+gravure.pygutenprint.array module
+---------------------------------
+
+.. automodule:: gravure.pygutenprint.array
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 gravure.pygutenprint.curve module
 ---------------------------------
 
