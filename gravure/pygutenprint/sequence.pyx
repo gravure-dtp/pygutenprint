@@ -252,23 +252,29 @@ cdef class SequenceIterator:
 
 
 cdef class Sequence:
-    """The Sequence is a simple "vector of numbers" data structure.
+    """
+    The Sequence is a simple vector of numbers data structure.
+
+    :param data: an optional python array like object to initialize the Sequence.\
+    if None the return Sequence will be empty.
+    :param low: a number to set the low boundary.
+    :param high: a number to set the high boundary.
+    :returns: the newly created Sequence.
+    :raises: MemmoryError.
     """
 
-    #TODO: Accept like Python list iterable argument :
-    # list, array (with its different ctype), numpy-array...
-    def __cinit__(Sequence self, *args, **kwargs):
-        """Create a new Sequence.
-
-        returns the newly created Sequence.
-        The Sequence is empty.
-        raise: MemmoryError.
-        """
+    def __cinit__(Sequence self, data=None, low=None, high=None, *args, **kwargs):
         if self.__class__ == Sequence:
             self._sequence = stp_sequence_create()
             if not self._sequence:
                 raise MemoryError("Unable to create a new sequence.")
         self.aux_buffer = __AuxBufferInterface()
+
+    def __init__(Sequence self, data=None, low=None, high=None, *args, **kwargs):
+        if low and high:
+            self.set_bounds(low, high)
+        if data:
+            self.set_data(data)
 
     def __dealloc__(Sequence self):
         if self._sequence is not NULL:
@@ -287,7 +293,7 @@ cdef class Sequence:
 
         :returns: a string
         """
-        return self.__repr__()
+        return self.memview.__str__()
 
     #TODO: with eval(repr(sequence)), should recreate
     # a valid Sequence equal to sequence
@@ -330,7 +336,7 @@ cdef class Sequence:
 
         :returns: the new copy of the Sequence.
         """
-        cdef Sequence copy_sequence  # need to be typed to access '_sequence' c struct
+        cdef Sequence copy_sequence
         copy_sequence = Sequence()
         stp_sequence_copy(copy_sequence._sequence, self._sequence)
         return copy_sequence

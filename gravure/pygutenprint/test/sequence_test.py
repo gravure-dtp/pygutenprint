@@ -31,12 +31,11 @@ from nose.tools import *
 from nose.failure import *
 
 import cython
-#import pyximport; pyximport.install()
 import gravure.pygutenprint.sequence as stp
 
 #--------------------------------------------------------------------------------
-# Object creation                                                               #
-#                                                                               #
+# Object creation                                                                #
+#                                                                                           #
 def test_new():
     stp_seq = stp.Sequence()
     assert_is_instance(stp_seq, stp.Sequence)

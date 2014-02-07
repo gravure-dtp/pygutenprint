@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gravure.pygutenprint package &mdash; gravure 0.1 documentation</title>
+    <title>gravure.pygutenprint package &mdash; PyGutenprint 0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,7 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="gravure 0.1 documentation" href="index.html" />
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="top" title="PyGutenprint 0.1 documentation" href="index.html" />
     <link rel="up" title="gravure package" href="gravure.html" />
     <link rel="prev" title="gravure package" href="gravure.html" /> 
   </head>
@@ -40,7 +41,7 @@
         <li class="right" >
           <a href="gravure.html" title="gravure package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">gravure 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyGutenprint 0.1 documentation</a> &raquo;</li>
           <li><a href="gravure.html" accesskey="U">gravure package</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,7 +61,7 @@
 <p>Module gravure.pygutenprint.array.</p>
 <dl class="class">
 <dt id="gravure.pygutenprint.array.Array">
-<em class="property">class </em><tt class="descclassname">gravure.pygutenprint.array.</tt><tt class="descname">Array</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">Array</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gravure.pygutenprint.sequence.Sequence" title="gravure.pygutenprint.sequence.Sequence"><tt class="xref py py-class docutils literal"><span class="pre">gravure.pygutenprint.sequence.Sequence</span></tt></a></p>
 <p>The array is a simple &#8220;two-dimensional array of numbers&#8221;.</p>
 <p>Array &#8220;inherits&#8221; from Sequence object.</p>
@@ -76,9 +77,29 @@
 <p>Curve code borrowed from GTK+, <a class="reference external" href="http://www.gtk.org/">http://www.gtk.org/</a></p>
 <dl class="class">
 <dt id="gravure.pygutenprint.sequence.Sequence">
-<em class="property">class </em><tt class="descclassname">gravure.pygutenprint.sequence.</tt><tt class="descname">Sequence</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">Sequence</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>The Sequence is a simple &#8220;vector of numbers&#8221; data structure.</p>
+<p>Sequence(data=None, low=None, high=None, <a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+<p>The Sequence is a simple vector of numbers data structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> &#8211; an optional python array like object to initialize the Sequence.    if None the return Sequence will be empty.</li>
+<li><strong>low</strong> &#8211; a number to set the low boundary.</li>
+<li><strong>high</strong> &#8211; a number to set the high boundary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the newly created Sequence.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">MemmoryError.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.copy">
 <tt class="descname">copy</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.copy" title="Permalink to this definition">¶</a></dt>
@@ -229,25 +250,25 @@ bint bool_retcode</dd>
 
 <dl class="exception">
 <dt id="gravure.pygutenprint.sequence.SequenceBoundsError">
-<em class="property">exception </em><tt class="descclassname">gravure.pygutenprint.sequence.</tt><tt class="descname">SequenceBoundsError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceBoundsError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descname">SequenceBoundsError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceBoundsError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.Exception</span></tt></p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="gravure.pygutenprint.sequence.SequenceIndexError">
-<em class="property">exception </em><tt class="descclassname">gravure.pygutenprint.sequence.</tt><tt class="descname">SequenceIndexError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceIndexError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descname">SequenceIndexError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceIndexError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.IndexError</span></tt></p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="gravure.pygutenprint.sequence.SequenceNaNError">
-<em class="property">exception </em><tt class="descclassname">gravure.pygutenprint.sequence.</tt><tt class="descname">SequenceNaNError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceNaNError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descname">SequenceNaNError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceNaNError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.Exception</span></tt></p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="gravure.pygutenprint.sequence.SequenceTypeError">
-<em class="property">exception </em><tt class="descclassname">gravure.pygutenprint.sequence.</tt><tt class="descname">SequenceTypeError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceTypeError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descname">SequenceTypeError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceTypeError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.TypeError</span></tt></p>
 </dd></dl>
 
@@ -258,81 +279,81 @@ bint bool_retcode</dd>
 <p>Utility functions.</p>
 <dl class="function">
 <dt id="gravure.pygutenprint.util.abort">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">abort</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.abort" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">abort</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.abort" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! stp_abort</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.asprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">asprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.asprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">asprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.asprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! asprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.catprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">catprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.catprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">catprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.catprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! catprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.deprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">deprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.deprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">deprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.deprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! deprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.dprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">dprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.dprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">dprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.dprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! dprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.eprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">eprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.eprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">eprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.eprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! eprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.erprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">erprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.erprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">erprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.erprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! erprintf.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.erputc">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">erputc</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.erputc" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">erputc</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.erputc" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! erputc.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.flush_debug_messages">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">flush_debug_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.flush_debug_messages" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">flush_debug_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.flush_debug_messages" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! flush_debug_messages.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.get_debug_level">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">get_debug_level</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_debug_level" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_debug_level</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_debug_level" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! get_debug_level.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.get_release_version">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">get_release_version</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_release_version" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_release_version</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_release_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the library release version string (x.y).</p>
 <p>Returns: A Python string of the release name of the package.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.get_version">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">get_version</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_version" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_version</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.get_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the library version string (x.y.z).</p>
 <p>Returns: A Python string of the version name of the package.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.init">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.init" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise libgimpprint.</p>
 <p>This function must be called prior to any other use of the library.
 It is responsible for loading modules and XML data and initialising
@@ -348,73 +369,73 @@ internal data structures.</p>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.init_debug_messages">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">init_debug_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.init_debug_messages" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">init_debug_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.init_debug_messages" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! init_debug_messages.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.prune_inactive_options">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">prune_inactive_options</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.prune_inactive_options" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">prune_inactive_options</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.prune_inactive_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! Remove inactive and unclaimed options from the list.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.put16_be">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">put16_be</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put16_be" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">put16_be</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put16_be" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! put16_be.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.put16_le">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">put16_le</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put16_le" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">put16_le</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put16_le" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! put16_le.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.put32_be">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">put32_be</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put32_be" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">put32_be</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put32_be" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! put32_be.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.put32_le">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">put32_le</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put32_le" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">put32_le</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.put32_le" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! put32_le.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.putc">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">putc</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.putc" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">putc</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.putc" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! putc.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.putraw">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">putraw</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.putraw" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">putraw</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.putraw" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! putraw.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.puts">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">puts</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.puts" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">puts</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.puts" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! puts.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.read_and_compose_curves">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">read_and_compose_curves</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.read_and_compose_curves" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">read_and_compose_curves</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.read_and_compose_curves" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! read_and_compose_curves</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.send_command">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">send_command</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.send_command" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">send_command</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.send_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! send_command.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.set_output_codeset">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">set_output_codeset</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.set_output_codeset" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">set_output_codeset</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.set_output_codeset" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! Set the output encoding.</p>
 <p>This function sets the encoding that all
 strings translated by gettext are output in.
@@ -431,13 +452,13 @@ If NULL, the currently-selected codeset will be returned
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.zfwrite">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">zfwrite</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.zfwrite" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">zfwrite</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.zfwrite" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! zfwrite.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gravure.pygutenprint.util.zprintf">
-<tt class="descclassname">gravure.pygutenprint.util.</tt><tt class="descname">zprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.zprintf" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">zprintf</tt><big>(</big><big>)</big><a class="headerlink" href="#gravure.pygutenprint.util.zprintf" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT YET IMPLEMENTED ! zprintf.</p>
 </dd></dl>
 
@@ -447,7 +468,7 @@ If NULL, the currently-selected codeset will be returned
 <p>Package pygutenprint : a python warper of the libgutenprint API</p>
 <dl class="function">
 <dt id="gravure.pygutenprint.init">
-<tt class="descclassname">gravure.pygutenprint.</tt><tt class="descname">init</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gravure/pygutenprint.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gravure.pygutenprint.init" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">init</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gravure/pygutenprint.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gravure.pygutenprint.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise libgimpprint.</p>
 <p>This function prior exist in module pygutenprint.util. This a
 convenient short&#8217;s cut.</p>
@@ -519,12 +540,12 @@ internal data structures.</p>
         <li class="right" >
           <a href="gravure.html" title="gravure package"
              >previous</a> |</li>
-        <li><a href="index.html">gravure 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyGutenprint 0.1 documentation</a> &raquo;</li>
           <li><a href="gravure.html" >gravure package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, Author.
+        &copy; Copyright 2014, Atelier Obscur.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
     </div>
   </body>
