@@ -271,7 +271,7 @@ cdef class Sequence:
         self.aux_buffer = __AuxBufferInterface()
 
     def __init__(Sequence self, data=None, low=None, high=None, *args, **kwargs):
-        if low and high:
+        if low is not None and high is not None:
             self.set_bounds(low, high)
         if data:
             self.set_data(data)
@@ -293,7 +293,7 @@ cdef class Sequence:
 
         :returns: a string
         """
-        return self.memview.__str__()
+        return self.__repr__()
 
     #TODO: with eval(repr(sequence)), should recreate
     # a valid Sequence equal to sequence
@@ -305,12 +305,15 @@ cdef class Sequence:
         creating a new valid Sequence Object,
         with new_S == Sequence.
 
-        Return: a string
+        :returns: a string
         """
-        cdef size_t length
-        length = stp_sequence_get_size(self._sequence)
-
-        raise NotImplementedError
+        _str = "Sequence(data=["
+        if self.__len__():
+            for i in range(self.__len__() - 1):
+                _str += "%f, " %self[i]
+            _str += "%f" %self[-1]
+        _str += "], low=%f, high=%f)" %self.get_bounds()
+        return _str
 
     #
     # COPY METHODS
@@ -431,9 +434,9 @@ cdef class Sequence:
         The lower and upper bounds set the minimum and maximum values
         that a point in the sequence may hold.
 
-        param: the float min value for the lower bound.
-        param: the float max value for the upper bound.
-        raise: SequenceBoundsError if the lower bound is greater than
+        :param cmin: the float min value for the lower bound.
+        :param cmax: the float max value for the upper bound.
+        :raises: SequenceBoundsError if the lower bound is greater than
         the upper bound.
         """
         cdef bint retcode
@@ -449,7 +452,7 @@ cdef class Sequence:
         """
         cdef double cmin, cmax
         stp_sequence_get_bounds(self._sequence, &cmin, &cmax)
-        return min, max
+        return cmin, cmax
 
     cpdef get_range(Sequence self):
         """Get range of values stored in the sequence.
@@ -612,7 +615,7 @@ cdef class Sequence:
         cdef Py_ssize_t [1] strides
 
         stp_sequence_get_data(<const stp_sequence_t*> self._sequence, &ret_size, <const double**> &data_buf)
-        shape[0] = self.__len__
+        shape[0] = self.__len__()
         strides[0] =  sizeof(double)
 
         info.buf = <void*> data_buf
@@ -708,9 +711,11 @@ cdef class Sequence:
         cdef char *c_type
         cdef size_t sz, count
         cdef bint err_code = 1
+        cdef bint release_buff = 0
 
         if PyObject_CheckBuffer(obj):
             PyObject_GetBuffer(obj, &pybuffer, PyBUF_ND | PyBUF_FORMAT)
+            release_buff = 1
             if pybuffer.ndim != 1:
                 PyBuffer_Release(&pybuffer)
                 raise ValueError("Multidimentionnal array is not accepted.")
@@ -722,35 +727,46 @@ cdef class Sequence:
                         if sz == sizeof(unsigned short):
                             err_code = stp_sequence_set_ushort_data(self._sequence, \
                             count, <unsigned short*> pybuffer.buf)
-                        if sz == sizeof(unsigned int):
+                        elif sz == sizeof(unsigned int):
                             err_code = stp_sequence_set_uint_data(self._sequence, \
                             count, <unsigned int*> pybuffer.buf)
-                        if sz == sizeof(unsigned long):
+                        elif sz == sizeof(unsigned long):
                             err_code = stp_sequence_set_ulong_data(self._sequence, \
                             count, <unsigned long*> pybuffer.buf)
-                    if c_type[0] == 'i':
+                    elif c_type[0] == 'i':
                         if sz == sizeof(short):
+                            print("as short")
                             err_code = stp_sequence_set_short_data(self._sequence, \
                             count, <short*> pybuffer.buf)
-                        if sz == sizeof(int):
+                        elif sz == sizeof(int):
+                            print("as int")
                             err_code = stp_sequence_set_int_data(self._sequence, \
                             count, <int*> pybuffer.buf)
-                        if sz == sizeof(long):
+                        elif sz == sizeof(long):
+                            print("as long")
                             err_code = stp_sequence_set_long_data(self._sequence, \
                             count, <long*> pybuffer.buf)
-                    if c_type[0] == 'f':
+                    elif c_type[0] == 'f':
                         if sz == sizeof(float):
+                            print("as float")
                             err_code = stp_sequence_set_float_data(self._sequence, \
                             count, <float*> pybuffer.buf)
-                        if sz == sizeof(double):
+                        elif sz == sizeof(double):
+                            print("as double")
                             err_code = stp_sequence_set_data(self._sequence, \
                             count, <double*> pybuffer.buf)
+                    if err_code == 0:
+                        PyBuffer_Release(&pybuffer)
+                        raise SequenceBoundsError("Attempt to set value out of bounds ")
                 else:
                     err_code = 0
             else:
                 err_code = 0
+        else:
+            err_code = 0
 
-        PyBuffer_Release(&pybuffer)
+        if release_buff:
+            PyBuffer_Release(&pybuffer)
         if not err_code:
             raise ValueError("Invalid buffer format.")
 
@@ -770,7 +786,6 @@ cdef bint check_buffer_format(bytes format, char** c_type):
 
     with nogil:
         fmt_c[blen] = 0
-
         i = 0
         if fmt_c[i] == '@' or fmt_c[i] == '=' or \
            fmt_c[i] == '<' or fmt_c[i] == '>' or \
@@ -790,8 +805,10 @@ cdef bint check_buffer_format(bytes format, char** c_type):
                 break
             else:
                 fmt = fmt_c[i]
+                i += 1
+                break
 
-        if fmt != 0 and i == blen-1: # no complex format code
+        if fmt != 0 and i == blen: # no complex format code
             if fmt == 'h' or fmt == 'i' or fmt == 'l' or fmt == 'q':
                 c_type[0] = 'i' # signed integer
                 return 1
@@ -801,11 +818,10 @@ cdef bint check_buffer_format(bytes format, char** c_type):
             if fmt  == 'f' or fmt == 'd':
                 c_type[0] = 'f' # float
                 return 1
-        return 0
+    return 0
 
-
+@cython.final
 cdef class __AuxBufferInterface:
-
     def __init__(__AuxBufferInterface self):
         self.buffer = NULL
 
