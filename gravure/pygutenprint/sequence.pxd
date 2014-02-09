@@ -40,6 +40,7 @@ cdef class __AuxBufferInterface:
 cdef class Sequence:
     cdef stp_sequence_t* _sequence
     cdef __AuxBufferInterface aux_buffer
+    cdef int ndim
 
     cpdef copy_in(Sequence, Sequence)
     cpdef object copy(Sequence)

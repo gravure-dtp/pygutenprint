@@ -268,6 +268,7 @@ cdef class Sequence:
             self._sequence = stp_sequence_create()
             if not self._sequence:
                 raise MemoryError("Unable to create a new sequence.")
+            self.ndim = 1
         self.aux_buffer = __AuxBufferInterface()
 
     def __init__(Sequence self, data=None, low=None, high=None, *args, **kwargs):
@@ -295,8 +296,6 @@ cdef class Sequence:
         """
         return self.__repr__()
 
-    #TODO: with eval(repr(sequence)), should recreate
-    # a valid Sequence equal to sequence
     def __repr__(Sequence self):
         """Get the String representation of the Sequence.
 
@@ -324,7 +323,7 @@ cdef class Sequence:
         dest must be a valid Sequence previously instancied
         with dest = Sequence().
 
-        param: dest the destination Sequence.
+        :param dest: dest the destination Sequence.
         """
         if dest is not None:
             stp_sequence_copy(dest._sequence, self._sequence)
@@ -428,58 +427,58 @@ cdef class Sequence:
     #
     # BOUNDARY METHODS
     #
-    cpdef set_bounds(Sequence self, double cmin, double cmax):
+    cpdef set_bounds(Sequence self, double low, double high):
         """Set the lower and upper bounds.
 
         The lower and upper bounds set the minimum and maximum values
         that a point in the sequence may hold.
 
-        :param cmin: the float min value for the lower bound.
-        :param cmax: the float max value for the upper bound.
-        :raises: SequenceBoundsError if the lower bound is greater than
+        :param low: the float min value for the lower bound.
+        :param high: the float max value for the upper bound.
+        :raises: ValueError if the lower bound is greater than
         the upper bound.
         """
         cdef bint retcode
-        retcode = stp_sequence_set_bounds(self._sequence, cmin, cmax)
+        retcode = stp_sequence_set_bounds(self._sequence, low, high)
         if not retcode:
-            raise SequenceBoundsError('the lower bound is greater than the \
-                  upper bound :\n\tmin: %f, max: %f' %(min, max))
+            raise ValueError('the lower bound is greater than the \
+                  upper bound : %f, %f' %(low, high))
 
     cpdef get_bounds(Sequence self):
         """Get the lower and upper bounds.
 
         return: a tuple of floats bounds values, (min, max).
         """
-        cdef double cmin, cmax
-        stp_sequence_get_bounds(self._sequence, &cmin, &cmax)
-        return cmin, cmax
+        cdef double low, high
+        stp_sequence_get_bounds(self._sequence, &low, &high)
+        return low, high
 
     cpdef get_range(Sequence self):
         """Get range of values stored in the sequence.
 
         Return: a tuple of floats values (min, max).
         """
-        cdef double low, high
-        stp_sequence_get_range(self._sequence, &low, &high)
-        return low, high
+        cdef double cmin, cmax
+        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        return cmin, cmax
 
     cpdef double min(Sequence self):
         """Get the min value stored in the sequence.
 
         Return: float for the low bound.
         """
-        cdef double low, high
-        stp_sequence_get_range(self._sequence, &low, &high)
-        return low
+        cdef double cmin, cmax
+        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        return cmin
 
     cpdef double max(Sequence self):
         """Get the max value stored in the sequence.
 
         Return: float for the high bound.
         """
-        cdef double low, high
-        stp_sequence_get_range(self._sequence, &low, &high)
-        return high
+        cdef double cmin, cmax
+        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        return cmax
 
     #
     # SEQUENCE INTERFACE : __getitem__(), __setitem__()
@@ -493,24 +492,44 @@ cdef class Sequence:
                 self.set_slice(index, value, False)
         elif PyIndex_Check(index):
             if index < 0:
-                index %= self.__len__()
+                index += self.__len__()
+                if index < 0:
+                    raise IndexError("Index out of bounds.")
             self.set_point(index, value)
         else:
             raise TypeError("Cannot index with type '%s'" % type(index))
 
     cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:
-        cdef Py_ssize_t start, stop, size, i, v
+        cdef Py_ssize_t start, stop, size, i, v, _len
         cdef cython.view.memoryview mv
         cdef Py_buffer pybuffer
         cdef double d_val
 
-        (start, stop, step) = index.start, index.stop, index.step
-        if index.step != 1 or not None:
-                raise ValueError("step in slice is not implemented")
-        if start < 0:
-                start %= self.__len__()
-        if stop < 0:
-                stop %= self.__len__()
+        if index.step != 1 and index.step is not None:
+            raise ValueError("step in slice is not implemented")
+        _len = self.__len__( )
+        if index.start == None:
+            start = 0
+        elif index.start < 0:
+            start = index.start + _len
+            if start < 0:
+                start = 0
+        elif index.start > _len:
+            start = _len
+        else:
+            start = index.start
+
+        if index.stop == None:
+            stop = _len - 1
+        elif index.stop < 0:
+            stop = index.stop + _len
+            if stop < 0:
+                stop = 0
+        elif index.stop > _len:
+            stop = _len
+        else:
+            stop = index.stop
+
         if stop <= start:
             return 1
         size = stop - start
@@ -533,9 +552,8 @@ cdef class Sequence:
                 raise ValueError("The array provided is too short.")
         else:
             d_val = <double> value
-            for i in xrange(start, stop):
+            for i in xrange(start, stop + 1):
                 self.set_point(i, d_val)
-                v += 1
 
     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:
         """Set the data at a single point in a Sequence.

@@ -43,196 +43,175 @@ def test_new():
     stp_seq = stp.Sequence(low=0.2,  high=1.7)
     eq_(stp_seq.get_bounds(),  (0.2, 1.7))
 
-    print(stp_seq)
     a = array("l", range(15))
     stp_seq = stp.Sequence(a, low=0,  high=20)
-    print(stp_seq)
+    for i in range(15):
+        eq_(a[i], stp_seq[i])
+    eq_(15,  len(stp_seq))
+
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    for i in range(15):
+        eq_(a[i], stp_seq[i])
+    eq_(15,  len(stp_seq))
 
 
 #--------------------------------------------------------------------------------
-# Object deallocation                                                           #
-#                                                                               #
+# __len__()                                                                            #
+#                                                                                           #
+def test_len():
+    stp_seq = stp.Sequence()
+    stp_seq.set_size(30)
+    eq_(len(stp_seq), 30)
+    stp_seq.set_size(44)
+    eq_(len(stp_seq), 44)
+    stp_seq = stp.Sequence()
+    eq_(len(stp_seq), 0)
+
+#--------------------------------------------------------------------------------
+# set_size()                                                                           #
+#                                                                                            #
+def test_set_size():
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    stp_seq.set_size(30)
+    for i in range(30):
+        eq_(0, stp_seq[i])
+    eq_(30,  len(stp_seq))
+    eq_((-20, 20), stp_seq.get_bounds())
+
+#-------------------------------------------------------------------------------
+# set_bounds()                                                                   #
+#                                                                                         #
+def test_bounds():
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    eq_((-20, 20), stp_seq.get_bounds())
+    stp_seq.set_bounds(3, 10)
+    eq_((3, 10), stp_seq.get_bounds())
+    assert_raises(ValueError, stp_seq.set_bounds, 5,  2)
+    assert_raises(stp.SequenceBoundsError,  stp_seq.__setitem__, 4,  22)
+
+#-------------------------------------------------------------------------------
+# ranges                                                                             #
+#                                                                                         #
+def test_range():
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    eq_(stp_seq.get_range(),  (-15, -1))
+    eq_(stp_seq.min(),  -15)
+    eq_(stp_seq.max(),  -1)
+    stp_seq.set_size(10)
+    eq_(stp_seq.get_range(), (0, 0))
 
 
-##--------------------------------------------------------------------------------
-## __len__()                                                                     #
-##                                                                               #
-#def test_len():
-#    stp_seq = stp.Sequence()
-#    print(len(stp_seq))
-#    stp_seq.set_size(30)
-#    print(len(stp_seq))
-#    eq_(len(stp_seq), 30)
-#    stp_seq.set_size(44)
-#    eq_(len(stp_seq), 44)
-#    stp_seq = stp.Sequence()
-#    eq_(len(stp_seq), 0)
-#
-##--------------------------------------------------------------------------------
-## set_size()                                                                  #
-##                                                                               #
-#def test_set_size():
-#    assert_equal(STP_SEQ[3], 0)
-#    assert_equal(STP_SEQ[29], 0)
-#    assert_equal(len(STP_SEQ),30)
-#
-##--------------------------------------------------------------------------------
-## __setitem__()                                                                 #
-##                                                                               #
-## 3 errors could occurs : - index error
-##                       - data not isFinite
-##                       - data is out of bounds (default bounds are (0, 1.0))
-#def setitem_base_test():
-#    global STP_SEQ
-#    # return None when ok
-#    assert_equal(STP_SEQ.__setitem__(12,.34), None)
-#    assert_equal(STP_SEQ[12], .34)
-#
-##ERRORS
-## basic index error on sequence
-#def setitem_IndexError_test():
-#    global STP_SEQ
-#    arg = [32, 1]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-## value set can't be out of bounds attribute
-#def setitem_BoundsError_test():
-#    global STP_SEQ
-#    arg = [5, 2.34]
-#    assert_raises(stp.SequenceBoundsError, STP_SEQ.__setitem__, *arg)
-#    arg = [5, -3.54]
-#    assert_raises(stp.SequenceBoundsError, STP_SEQ.__setitem__, *arg)
-#    arg = [5, -1.0000000000000001]
-#    assert_raises(stp.SequenceBoundsError, STP_SEQ.__setitem__, *arg)
-#
-## SequenceNaNError, value pass is no a finite number.
-#def setitem_NaNError_test():
-#    global STP_SEQ
-#    arg=[3, float('nan')]
-#    assert_raises(stp.SequenceNaNError, STP_SEQ.__setitem__, *arg)
-#    arg=[3, float('inf')]
-#    assert_raises(stp.SequenceNaNError, STP_SEQ.__setitem__, *arg)
-#
-#def setitem_TypeError_test():
-#    global STP_SEQ
-#    arg=[3.2, .33]
-#    assert_raises(TypeError, STP_SEQ.__setitem__, *arg)
-#
-##SLICES
-#def setitem_slice_TypeError_test():
-#    global STP_SEQ
-#    arg=[slice(0,10), 0.8]
-#    assert_raises(TypeError, STP_SEQ.__setitem__, *arg)
-#    arg=[slice(0,10), '1234567890']
-#    assert_raises(TypeError, STP_SEQ.__setitem__, *arg)
-#
-#def setitem_slice_ExtendedError_test():
-#    global STP_SEQ
-#    li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
-#    arg=[slice(0,10,2), li]
-#    assert_raises(NotImplementedError, STP_SEQ.__setitem__, *arg)
-#
-## Sequence couldn't change its size without zero all its data !!
-## So we accept assignement by slice only with parameters that
-## don't affect size.
-## The only case who verify this condition is for assignement:
-## seq[i:j] = t where j-i == len(t) and i+len(t) <= len(seq)
-#def setitem_slice_IndexError_test():
-#    global STP_SEQ
-#    li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
-#    # j-i < len(li)
-#    arg=[slice(2,8), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#    # j-i > len(li)
-#    arg=[slice(2,16), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#    # i+len(li) > len(STP_SEQ)
-#    arg=[slice(22,32), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#def setitem_slice_test():
-#    global STP_SEQ
-#    li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
-#    # ok
-#    STP_SEQ[3:13] = li
-#    for i in li:
-#        assert_equal(li[i], STP_SEQ[3+i])
-#    # not a shallow copy
-#    li[0] = -1
-#    assert_equal(STP_SEQ[3], .1)
-#
-#def setitem_slice2_test():
-#    global STP_SEQ
-#    li = [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95]
-#
-#    # seq[i:j] = t where j-i == len(t) and i+len(t) <= len(seq)
-#    #                    j-i == 10     and i+10 <= 30
-#
-#    # j > len()
-#    STP_SEQ[20:66] = li
-#    assert_equal(STP_SEQ[20], .1)
-#
-#    # i > len() always an error
-#    arg=[slice(66,76), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#    # i = '' >> 0
-#    STP_SEQ[:10] = li
-#    assert_equal(STP_SEQ[0], .1)
-#
-#    # i = None >> 0
-#    STP_SEQ.set_size(30)
-#    STP_SEQ[:10] = li
-#    assert_equal(STP_SEQ[0], .1)
-#
-#    # j = '' >> len()
-#    STP_SEQ[20:] = li
-#    assert_equal(STP_SEQ[20], .1)
-#
-#    # j = None >> len()
-#    STP_SEQ.set_size(30)
-#    STP_SEQ[20:None] = li
-#    assert_equal(STP_SEQ[20], .1)
-#
-#    # i & j == None >> always raise exception
-#    arg=[slice(None,None), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#    # i >= j >> always raise exception
-#    arg=[slice(30, 20), li]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#    # negative index
-#    STP_SEQ[-22:-12] = li # >> [8:18]
-#    for i in li:
-#        assert_equal(li[i], STP_SEQ[i+8])
-#
-#
-##OTHERS
-## integer should be converted to float
-#def setitem_type_cast_test():
-#    global STP_SEQ
-#    STP_SEQ[13] = 1
-#    assert_equal(STP_SEQ[13], 1.00000000)
-#    assert_true(isinstance(STP_SEQ[13], float))
-#
-## python sequence type should accept negative index
-#def setitem_negative_index_test():
-#    global STP_SEQ
-#    STP_SEQ[-1]=.9
-#    STP_SEQ[-2]=.8
-#    STP_SEQ[-29]=.2
-#    STP_SEQ[-30]=.1
-#    assert_equal(STP_SEQ[29], .9)
-#    assert_equal(STP_SEQ[28], .8)
-#    assert_equal(STP_SEQ[1], .2)
-#    assert_equal(STP_SEQ[0], .1)
-#    arg=[-31, .333333]
-#    assert_raises(IndexError, STP_SEQ.__setitem__, *arg)
-#
-#
+#--------------------------------------------------------------------------------
+# __setitem__()                                                                     #
+#                                                                                            #
+def setitem_base_test():
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    assert_equal(stp_seq.__setitem__(12,.34), None)
+    assert_equal(stp_seq[12], .34)
+    assert_equal(stp_seq.__setitem__(-2, 10), None)
+    assert_equal(stp_seq[13], 10)
+    #TODO: assert_equal(stp_seq[-2], 10)
+
+    #Errors
+    assert_raises(IndexError, stp_seq.__setitem__, 20, 4)
+    a = array("f", range(0, 10))
+    stp_seq = stp.Sequence(a, low=-2,  high=20)
+    arg = [5, -2.34]
+    assert_raises(stp.SequenceBoundsError, stp_seq.__setitem__, *arg)
+    arg = [5, -2.00000000000001]
+    assert_raises(stp.SequenceBoundsError, stp_seq.__setitem__, *arg)
+    arg=[3, float('nan')]
+    assert_raises(stp.SequenceNaNError, stp_seq.__setitem__, *arg)
+    arg=[3, float('inf')]
+    assert_raises(stp.SequenceBoundsError, stp_seq.__setitem__, *arg)
+    arg=[3.2, .33]
+    assert_raises(TypeError, stp_seq.__setitem__, *arg)
+
+#SLICES
+def setitem_slice_test():
+    stp_seq = stp.Sequence(low=-2,  high=20)
+    stp_seq.set_size(20)
+    stp_seq[0:-1] = 3.33
+    for i in range(20):
+        eq_(stp_seq[i], 3.33)
+    stp_seq[:] = 5.33
+    for i in range(20):
+        eq_(stp_seq[i], 5.33)
+    stp_seq[0:10] = 4.33
+    for i in range(10):
+        eq_(stp_seq[i], 4.33)
+
+def setitem_slice_test2():
+    stp_seq = stp.Sequence(low=-2,  high=20)
+    stp_seq.set_size(20)
+    a = array('d', [.1,.2,.3,.4,.5,.6,.7,.8,.9,.95])
+    stp_seq[3:13] = a
+    for i in range(3, 13):
+        assert_equal(a[i-3], stp_seq[i])
+
+    # seq[i:j] = t where j-i == len(t) and i+len(t) <= len(seq)
+    #                    j-i == 10     and i+10 <= 30
+
+    #FIXME:
+    # j > len()
+    stp_seq.set_size(20)
+    stp_seq[20:66] = a
+    assert_equal(stp_seq[19], 0)
+
+    # i = '' >> 0
+    stp_seq[:10] = a
+    assert_equal(stp_seq[0], .1)
+
+    # i = None >> 0
+    stp_seq.set_size(30)
+    stp_seq[:10] = a
+    assert_equal(stp_seq[0], .1)
+
+    # j = '' >> len()
+    stp_seq[20:] = a
+    assert_equal(stp_seq[20], .1)
+
+    # j = None >> len()
+    stp_seq.set_size(30)
+    stp_seq[20:None] = a
+    assert_equal(stp_seq[20], .1)
+
+    stp_seq.set_size(20)
+    arg=[slice(None,None), a]
+    assert_raises(ValueError, stp_seq.__setitem__, *arg)
+
+    stp_seq.set_size(10)
+    arg=[slice(None,None), a]
+
+    # negative index
+    stp_seq.set_size(20)
+    stp_seq[-22:-10] = a # >> [0:10]
+    v = 0
+    for i in a:
+        assert_equal(i, stp_seq[v])
+        v += 1
+
+
+# python sequence type should accept negative index
+def setitem_negative_index_test():
+    stp_seq = stp.Sequence()
+    stp_seq.set_size(30)
+    stp_seq[-1]=.9
+    stp_seq[-2]=.8
+    stp_seq[-29]=.2
+    stp_seq[-30]=.1
+    assert_equal(stp_seq[29], .9)
+    assert_equal(stp_seq[28], .8)
+    assert_equal(stp_seq[1], .2)
+    assert_equal(stp_seq[0], .1)
+    assert_raises(IndexError, stp_seq.__setitem__, -31,  .33333)
+
+
 ##------------------------------------------------------------------------------
 ## __getitem__()
 ##
@@ -353,14 +332,7 @@ def test_new():
 #    arg=[slice(0,10,2)]
 #    assert_raises(NotImplementedError, STP_SEQ.__getitem__, *arg)
 #
-##------------------------------------------------------------------------------
-## __delitem__()
-##
-#def delitem_test():
-#    global STP_SEQ
-#    arg=[2]
-#    assert_raises(NotImplementedError, STP_SEQ.__delitem__, *arg)
-#
+
 ##------------------------------------------------------------------------------
 ## __iter__()
 ##TODO: More tests, change data sequence while iteration
@@ -460,20 +432,18 @@ def test_new():
 # __comp__()
 #
 
-#-------------------------------------------------------------------------------
-# set_bounds()                                                                  #
-#                                                                               #
+
 
 
 #--------------------------------------------------------------------------------
-# Main                                                                          #
-#                                                                               #
+# Main                                                                                  #
+#                                                                                           #
 from nose.plugins.testid import TestId
 from nose.config import Config
 
 if __name__ == '__main__':
     test_new()
-    #nose.runmodule(name='__main__')
+    nose.runmodule(name='__main__')
 
 #----------------------------------------------------------------------------
 # BENCHMARK                                                                 #
