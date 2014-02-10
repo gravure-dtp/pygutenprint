@@ -32,6 +32,7 @@ cdef class __AuxBufferInterface:
     cdef Py_ssize_t itemsize
     cdef int ndim
     cdef Py_ssize_t [2] shape
+    cdef Py_ssize_t [2] strides
 
     cdef set_buffer(__AuxBufferInterface, bint, void*, \
                     Py_ssize_t, char*, Py_ssize_t, int, \
@@ -41,6 +42,8 @@ cdef class Sequence:
     cdef stp_sequence_t* _sequence
     cdef __AuxBufferInterface aux_buffer
     cdef int ndim
+    cdef Py_ssize_t [2] shape
+    cdef Py_ssize_t [2] strides
 
     cpdef copy_in(Sequence, Sequence)
     cpdef object copy(Sequence)

@@ -71,9 +71,9 @@
 <div class="section" id="gravure-pygutenprint-curve-module">
 <h2>gravure.pygutenprint.curve module<a class="headerlink" href="#gravure-pygutenprint-curve-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-gravure.pygutenprint.sequence">
-<span id="gravure-pygutenprint-sequence-module"></span><h2>gravure.pygutenprint.sequence module<a class="headerlink" href="#module-gravure.pygutenprint.sequence" title="Permalink to this headline">¶</a></h2>
-<p>Module gravure.pygutenprint.sequence.</p>
+<div class="section" id="gravure-pygutenprint-sequence-module">
+<h2>gravure.pygutenprint.sequence module<a class="headerlink" href="#gravure-pygutenprint-sequence-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-gravure.pygutenprint.sequence"></span><p>Module gravure.pygutenprint.sequence.</p>
 <p>Curve code borrowed from GTK+, <a class="reference external" href="http://www.gtk.org/">http://www.gtk.org/</a></p>
 <dl class="class">
 <dt id="gravure.pygutenprint.sequence.Sequence">
@@ -122,7 +122,14 @@ of self will be copied into it.</p>
 <dd><p>Copy this Sequence in dest.</p>
 <p>dest must be a valid Sequence previously instancied
 with dest = Sequence().</p>
-<p>param: dest the destination Sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dest</strong> &#8211; dest the destination Sequence.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -131,21 +138,42 @@ with dest = Sequence().</p>
 <dd><p>Return a reversed copy.</p>
 <p>A new Sequence will be returned with the reverse contents
 of self being copied into it.</p>
-<p>returns: the new copy of the Sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the new copy of the Sequence.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.get_bounds">
 <tt class="descname">get_bounds</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.get_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the lower and upper bounds.</p>
-<p>return: a tuple of floats bounds values, (min, max).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a tuple of floats bounds values, (min, max).</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.get_data">
 <tt class="descname">get_data</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get acces to the data buffer for this sequence.</p>
-<p>Return: a Python memoryview.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a Python memoryview.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -156,33 +184,70 @@ of self being copied into it.</p>
 to be valid beyond the next non-const curve call;
 If the bounds of the curve exceed the limits of the data type,
 None is returned.</p>
-<p>Return: a Python memoryview or None</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a read only Python memoryview or None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.get_range">
 <tt class="descname">get_range</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get range of values stored in the sequence.</p>
-<p>Return: a tuple of floats values (min, max).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a tuple of floats values (min, max).</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.max">
 <tt class="descname">max</tt><big>(</big><em>self</em><big>)</big> &rarr; double<a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.max" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the max value stored in the sequence.</p>
-<p>Return: float for the high bound.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a float for the high bound.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="gravure.pygutenprint.sequence.Sequence.memview">
 <tt class="descname">memview</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.memview" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Property memview.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a python memoryview to access data buffer of the Sequence.        Same as get_data().</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.min">
 <tt class="descname">min</tt><big>(</big><em>self</em><big>)</big> &rarr; double<a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.min" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the min value stored in the sequence.</p>
-<p>Return: float for the low bound.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a float for the low bound.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -197,23 +262,43 @@ in place function.</p>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.set_bounds">
-<tt class="descname">set_bounds</tt><big>(</big><em>self</em>, <em>double cmin</em>, <em>double cmax</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.set_bounds" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">set_bounds</tt><big>(</big><em>self</em>, <em>double low</em>, <em>double high</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.set_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the lower and upper bounds.</p>
 <p>The lower and upper bounds set the minimum and maximum values
 that a point in the sequence may hold.</p>
-<p>param: the float min value for the lower bound.
-param: the float max value for the upper bound.
-raise: SequenceBoundsError if the lower bound is greater than
-the upper bound.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>low</strong> &#8211; the float min value for the lower bound.</li>
+<li><strong>high</strong> &#8211; the float max value for the upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if the lower bound is greater than</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>the upper bound.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gravure.pygutenprint.sequence.Sequence.set_data">
-<tt class="descname">set_data</tt><big>(</big><em>self</em>, <em>obj</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.set_data" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">set_data</tt><big>(</big><em>self</em>, <em>data</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the data in a sequence.</p>
-<p>Param: a python object implementing the buffer interface.
-Raise: ValueError if None or with an array with a
-not supported type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; a python object implementing the buffer interface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">ValueError if None or with an array with a</td>
+</tr>
+</tbody>
+</table>
+<p>not supported type.</p>
 </dd></dl>
 
 <dl class="method">
@@ -223,27 +308,16 @@ not supported type.</p>
 <p>The size is the number of elements the sequence contains.
 Note! : that resizing will destroy all data contained
 in the sequence.</p>
-<p>param: size, the size to set the sequence to.
-raise: MemmoryError.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="gravure.pygutenprint.sequence.Sequence.set_subrange">
-<tt class="descname">set_subrange</tt><big>(</big><em>self</em>, <em>arr</em>, <em>Py_ssize_t index</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.sequence.Sequence.set_subrange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the data in a subrange of a sequence.</p>
-<p>&#64;param sequence the sequence to set.
-&#64;param where the starting element in the sequence (indexed from
-0).
-&#64;param size the number of elements in the data.
-&#64;param data a pointer to the first member of a sequence
-containing the data to set.</p>
-<p>&#64;returns 1 on success, 0 on failure.</p>
-<dl class="docutils">
-<dt>cdef :</dt>
-<dd>int arr_typecode = arr.ob_descr.typecode
-Py_ssize_t count = &lt;Py_ssize_t&gt; arr.length
-bint bool_retcode</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; the size to set the sequence to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">MemmoryError.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -255,21 +329,9 @@ bint bool_retcode</dd>
 </dd></dl>
 
 <dl class="exception">
-<dt id="gravure.pygutenprint.sequence.SequenceIndexError">
-<em class="property">exception </em><tt class="descname">SequenceIndexError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceIndexError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.IndexError</span></tt></p>
-</dd></dl>
-
-<dl class="exception">
 <dt id="gravure.pygutenprint.sequence.SequenceNaNError">
 <em class="property">exception </em><tt class="descname">SequenceNaNError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceNaNError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.Exception</span></tt></p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="gravure.pygutenprint.sequence.SequenceTypeError">
-<em class="property">exception </em><tt class="descname">SequenceTypeError</tt><a class="headerlink" href="#gravure.pygutenprint.sequence.SequenceTypeError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.TypeError</span></tt></p>
 </dd></dl>
 
 </div>
@@ -496,7 +558,7 @@ internal data structures.</p>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-gravure.pygutenprint.array">gravure.pygutenprint.array module</a></li>
 <li><a class="reference internal" href="#gravure-pygutenprint-curve-module">gravure.pygutenprint.curve module</a></li>
-<li><a class="reference internal" href="#module-gravure.pygutenprint.sequence">gravure.pygutenprint.sequence module</a></li>
+<li><a class="reference internal" href="#gravure-pygutenprint-sequence-module">gravure.pygutenprint.sequence module</a></li>
 <li><a class="reference internal" href="#module-gravure.pygutenprint.util">gravure.pygutenprint.util module</a></li>
 <li><a class="reference internal" href="#module-gravure.pygutenprint">Module contents</a></li>
 </ul>

@@ -187,14 +187,9 @@ cdef extern from "gutenprint/sequence.h":
 class SequenceBoundsError(Exception):
     pass
 
-class SequenceIndexError(IndexError):
-    pass
-
 class SequenceNaNError(Exception):
     pass
 
-class SequenceTypeError(TypeError):
-    pass
 
 #
 # The Sequence Iterator
@@ -349,7 +344,7 @@ cdef class Sequence:
     def __len__(Sequence self):
         """len(self).
 
-        Get the sequence size.
+        :returns: the sequence size.
         """
         return <Py_ssize_t> stp_sequence_get_size(self._sequence)
 
@@ -360,8 +355,8 @@ cdef class Sequence:
         Note! : that resizing will destroy all data contained
         in the sequence.
 
-        param: size, the size to set the sequence to.
-        raise: MemmoryError.
+        :param size: the size to set the sequence to.
+        :raises: MemmoryError.
         """
         cdef bint retcode
         retcode = stp_sequence_set_size(self._sequence, <size_t> size)
@@ -382,7 +377,7 @@ cdef class Sequence:
     def __contains__(Sequence self, double item):
         """Membership testing
 
-        Return: True or False.
+        :returns: True or False.
         """
         cdef :
             double data
@@ -417,7 +412,7 @@ cdef class Sequence:
         A new Sequence will be returned with the reverse contents
         of self being copied into it.
 
-        returns: the new copy of the Sequence.
+        :returns: the new copy of the Sequence.
         """
         cdef Sequence reverse_sequence
         reverse_sequence = Sequence()
@@ -447,7 +442,7 @@ cdef class Sequence:
     cpdef get_bounds(Sequence self):
         """Get the lower and upper bounds.
 
-        return: a tuple of floats bounds values, (min, max).
+        :returns: a tuple of floats bounds values, (min, max).
         """
         cdef double low, high
         stp_sequence_get_bounds(self._sequence, &low, &high)
@@ -456,7 +451,7 @@ cdef class Sequence:
     cpdef get_range(Sequence self):
         """Get range of values stored in the sequence.
 
-        Return: a tuple of floats values (min, max).
+        :returns: a tuple of floats values (min, max).
         """
         cdef double cmin, cmax
         stp_sequence_get_range(self._sequence, &cmin, &cmax)
@@ -465,7 +460,7 @@ cdef class Sequence:
     cpdef double min(Sequence self):
         """Get the min value stored in the sequence.
 
-        Return: float for the low bound.
+        :returns: a float for the low bound.
         """
         cdef double cmin, cmax
         stp_sequence_get_range(self._sequence, &cmin, &cmax)
@@ -474,7 +469,7 @@ cdef class Sequence:
     cpdef double max(Sequence self):
         """Get the max value stored in the sequence.
 
-        Return: float for the high bound.
+        :returns: a float for the high bound.
         """
         cdef double cmin, cmax
         stp_sequence_get_range(self._sequence, &cmin, &cmax)
@@ -558,9 +553,9 @@ cdef class Sequence:
     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:
         """Set the data at a single point in a Sequence.
 
-        param: index, position in Sequence (from zero).
-        param: value, the datum to set.
-        Raise: SequenceIndexError, SequenceBoundsError, SequenceNaNError.
+        :param index: position in Sequence (from zero).
+        :param value: the datum to set.
+        :raises: IndexError, SequenceBoundsError, SequenceNaNError.
         """
         cdef bint retcode
         cdef double low, high
@@ -578,50 +573,32 @@ cdef class Sequence:
                 raise_nan_error("Sequence value is not a finite number")
         return 1
 
-    #TODO: negative index, slicing
     def __getitem__(self, index):
         """self[index].
 
         Get the data at a single point in a Sequence.
 
-        Param: index, position in Sequence (from zero).
-        Raise: SequenceIndexError, SequenceTypeError.
-        Return: a Python float value or a new Sequence
-        copied from the slice values.
+        :param index: index, position in Sequence (from zero).
+        :raises: SequenceIndexError, TypeError.
+        :returns: a Python float value or a Python memoryview of the sliced Sequence.
         """
         cdef double data
         cdef Py_ssize_t py_index
+        cdef bint ret_code
 
         if (isinstance(index, slice)):
-            return "slice...", index
-        elif (isinstance(index, int)):
-            bool_retcode = stp_sequence_get_point(self._sequence, <size_t> index, &data)
-            if not bool_retcode:
-                raise SequenceIndexError('[%d], Sequence index out of range' %index)
+            return self.memview.__getitem__(index)
+        elif PyIndex_Check(index):
+            if index < 0:
+                index += self.__len__()
+                if index < 0:
+                    raise IndexError("Index out of bounds.")
+            ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
+            if not ret_code:
+                raise IndexError('[%d], Sequence index out of range' %index)
             return data
         else:
-            raise SequenceTypeError('Sequence indices must be integers, not %s' %type(index).__name__)
-
-
-    def set_subrange(self, arr not None, Py_ssize_t index):
-        """Set the data in a subrange of a sequence.
-
-        @param sequence the sequence to set.
-        @param where the starting element in the sequence (indexed from
-        0).
-        @param size the number of elements in the data.
-        @param data a pointer to the first member of a sequence
-        containing the data to set.
-
-        @returns 1 on success, 0 on failure.
-
-        cdef :
-            int arr_typecode = arr.ob_descr.typecode
-            Py_ssize_t count = <Py_ssize_t> arr.length
-            bint bool_retcode
-
-        """
-        pass
+            raise TypeError('Sequence indices must be integers, not %s' %type(index).__name__)
 
     #
     # BUFFER INTERFACE [PEP 3118]
@@ -629,20 +606,18 @@ cdef class Sequence:
     def __getbuffer__(Sequence self, Py_buffer *info, int flags):
         cdef size_t ret_size
         cdef double* data_buf
-        cdef Py_ssize_t [1] shape
-        cdef Py_ssize_t [1] strides
 
         stp_sequence_get_data(<const stp_sequence_t*> self._sequence, &ret_size, <const double**> &data_buf)
-        shape[0] = self.__len__()
-        strides[0] =  sizeof(double)
+        self.shape[0] = self.__len__()
+        self.strides[0] =  sizeof(double)
 
         info.buf = <void*> data_buf
         info.len = self.__len__() * sizeof(double)
         info.readonly = 0
         info.ndim = 1
-        info.format = b'@d'
-        info.shape = shape
-        info.strides = strides
+        info.format = b'd'
+        info.shape = self.shape
+        info.strides = self.strides
         info.suboffsets = NULL  # we are always direct memory buffer
         info.itemsize = sizeof(double)
         info.obj = self
@@ -679,6 +654,11 @@ cdef class Sequence:
             info.format = NULL
 
     property memview:
+        """Property memview.
+
+        :returns: a python memoryview to access data buffer of the Sequence.\
+        Same as get_data().
+        """
         def __get__(self):
             # Make this a property as 'self.data' may be set after instantiation
             flags =  PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE
@@ -688,7 +668,7 @@ cdef class Sequence:
     def get_data(self):
         """Get acces to the data buffer for this sequence.
 
-        Return: a Python memoryview.
+        :returns: a Python memoryview.
         """
         return self.memview
 
@@ -700,7 +680,7 @@ cdef class Sequence:
         If the bounds of the curve exceed the limits of the data type,
         None is returned.
 
-        Return: a Python memoryview or None
+        :returns: a read only Python memoryview or None
         """
         cdef size_t count
         cdef float *data
@@ -718,11 +698,11 @@ cdef class Sequence:
         return mv
 
 
-    def set_data(self, obj not None):
+    def set_data(self, data not None):
         """Set the data in a sequence.
 
-        Param: a python object implementing the buffer interface.
-        Raise: ValueError if None or with an array with a
+        :param data: a python object implementing the buffer interface.
+        :raises: ValueError if None or with an array with a
         not supported type.
         """
         cdef Py_buffer pybuffer
@@ -731,8 +711,8 @@ cdef class Sequence:
         cdef bint err_code = 1
         cdef bint release_buff = 0
 
-        if PyObject_CheckBuffer(obj):
-            PyObject_GetBuffer(obj, &pybuffer, PyBUF_ND | PyBUF_FORMAT)
+        if PyObject_CheckBuffer(data):
+            PyObject_GetBuffer(data, &pybuffer, PyBUF_ND | PyBUF_FORMAT)
             release_buff = 1
             if pybuffer.ndim != 1:
                 PyBuffer_Release(&pybuffer)
@@ -787,6 +767,20 @@ cdef class Sequence:
             PyBuffer_Release(&pybuffer)
         if not err_code:
             raise ValueError("Invalid buffer format.")
+
+    def __richcmp__(Sequence x, Sequence y, int comp):
+        if comp != 2: # __eq__
+            raise NotImplementedError()
+        if x is None or y is None:
+            return False
+        cdef int i
+        if len(x) == len(y):
+            for i in xrange(len(x)):
+                if x[i] != y[i]:
+                    return False
+            return True
+        else:
+            return False
 
 
 cdef bint check_buffer_format(bytes format, char** c_type):
@@ -857,9 +851,6 @@ cdef class __AuxBufferInterface:
             self.shape[i] = shape[i]
 
     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):
-        cdef Py_ssize_t [1] shape
-        cdef Py_ssize_t [1] strides
-
         if self.buffer == NULL:
             raise BufferError("")
         info.buf = self.buffer
@@ -904,7 +895,7 @@ cdef int raise_bound_error(char* message, double x, double y) except -1 with gil
     raise SequenceBoundsError(message.decode('ascii') % (x, y))
 
 cdef int raise_index_error(char* message, int a) except -1 with gil:
-            raise SequenceIndexError(message.decode('ascii') %a)
+            raise IndexError(message.decode('ascii') %a)
 
 cdef int raise_nan_error(char* message) except -1 with gil:
             raise SequenceNaNError(message.decode('ascii'))
