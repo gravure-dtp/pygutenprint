@@ -365,6 +365,30 @@ def getitem_slice2_test():
     stp_c = stp_seq[0:10:2]
     assert_equal(len(stp_c), 5)
 
+#
+# Buffer interface
+#
+def  test_buffer():
+    a = array("f", range(-15, 0))
+    stp_seq = stp.Sequence(a, low=-20,  high=20)
+    b = stp_seq.get_data()
+    eq_(len(stp_seq), len(b))
+    for i in range(15):
+        eq_(stp_seq[i], b[i])
+    stp_seq[4] = 9.999
+    for i in range(15):
+        eq_(stp_seq[i], b[i])
+    b = stp_seq[5:-1]
+    eq_(9, len(b))
+    seq = stp.Sequence(b, low=-20,  high=20)
+    eq_(9, len(seq))
+    for i in range(9):
+        eq_(stp_seq[i+5], seq[i])
+
+
+    fl = stp_seq.get_float_data()
+    eq_(len(fl), len(stp_seq))
+
 
 ##------------------------------------------------------------------------------
 ## __iter__()

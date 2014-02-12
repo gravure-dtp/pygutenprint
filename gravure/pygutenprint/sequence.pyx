@@ -264,7 +264,7 @@ cdef class Sequence:
             if not self._sequence:
                 raise MemoryError("Unable to create a new sequence.")
             self.ndim = 1
-        self.aux_buffer = __AuxBufferInterface()
+        self.aux_buffer = __AuxBufferInterface(self)
 
     def __init__(Sequence self, data=None, low=None, high=None, *args, **kwargs):
         if low is not None and high is not None:
@@ -688,15 +688,12 @@ cdef class Sequence:
 
         data = stp_sequence_get_float_data(self._sequence, &count)
         if data == NULL:
-            return None
+           return None
         shape[0] = count
-
-        self.aux_buffer.set_buffer(True, <void*> data, count, 'f', \
-                                   sizeof(float), 1, shape)
-
+        self.aux_buffer.set_buffer(True, <void*> data, count, b'f', \
+                                 sizeof(float), 1, shape)
         cdef cython.view.memoryview mv = cython.view.memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
         return mv
-
 
     def set_data(self, data not None):
         """Set the data in a sequence.
@@ -733,24 +730,19 @@ cdef class Sequence:
                             count, <unsigned long*> pybuffer.buf)
                     elif c_type[0] == 'i':
                         if sz == sizeof(short):
-                            print("as short")
                             err_code = stp_sequence_set_short_data(self._sequence, \
                             count, <short*> pybuffer.buf)
                         elif sz == sizeof(int):
-                            print("as int")
                             err_code = stp_sequence_set_int_data(self._sequence, \
                             count, <int*> pybuffer.buf)
                         elif sz == sizeof(long):
-                            print("as long")
                             err_code = stp_sequence_set_long_data(self._sequence, \
                             count, <long*> pybuffer.buf)
                     elif c_type[0] == 'f':
                         if sz == sizeof(float):
-                            print("as float")
                             err_code = stp_sequence_set_float_data(self._sequence, \
                             count, <float*> pybuffer.buf)
                         elif sz == sizeof(double):
-                            print("as double")
                             err_code = stp_sequence_set_data(self._sequence, \
                             count, <double*> pybuffer.buf)
                     if err_code == 0:
@@ -834,23 +826,25 @@ cdef bint check_buffer_format(bytes format, char** c_type):
 
 @cython.final
 cdef class __AuxBufferInterface:
-    def __init__(__AuxBufferInterface self):
+    def __init__(__AuxBufferInterface self, Sequence obj):
         self.buffer = NULL
+        self.obj = obj
 
-    cdef set_buffer(__AuxBufferInterface self, bint readonly, void* buffer, \
-                    Py_ssize_t count, char* dtype, Py_ssize_t itemsize, int ndim,
+    cdef set_buffer(__AuxBufferInterface self, bint readonly, void* buf, \
+                    Py_ssize_t count, bytes dtype, Py_ssize_t itemsize, int ndim,
                     Py_ssize_t *shape):
         cdef int i
         self.readonly = readonly
-        self.buffer = buffer
+        self.buffer = buf
         self.count = count
-        self.dtype[0] = dtype[0]
+        self.dtype = dtype
         self.itemsize = itemsize
         self.ndim = ndim
         for i in range(ndim):
             self.shape[i] = shape[i]
 
     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):
+        cdef int i
         if self.buffer == NULL:
             raise BufferError("")
         info.buf = self.buffer
@@ -859,10 +853,14 @@ cdef class __AuxBufferInterface:
         info.ndim = self.ndim
         info.format = self.dtype
         info.shape = self.shape
-        info.strides = NULL
+        stride = self.itemsize
+        for i in range(self.ndim - 1, -1, -1):
+            self.strides[i] = stride
+            stride *= self.shape[i]
+        info.strides = self.strides
         info.suboffsets = NULL  # we are always direct memory buffer
         info.itemsize = self.itemsize
-        info.obj = self
+        info.obj = self.obj
         info.internal = NULL
 
         if flags & PyBUF_WRITABLE:
@@ -884,11 +882,8 @@ cdef class __AuxBufferInterface:
         if not (flags & PyBUF_ND):
             info.shape = NULL
 
-        if (flags & PyBUF_STRIDES) or (flags & PyBUF_F_CONTIGUOUS):
+        if not (flags & PyBUF_ANY_CONTIGUOUS):
             raise BufferError("Can only create a buffer that is c contiguous in memory.")
-
-        if not (flags & PyBUF_FORMAT):
-            info.format = NULL
 
 
 cdef int raise_bound_error(char* message, double x, double y) except -1 with gil:
