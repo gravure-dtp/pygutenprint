@@ -42,6 +42,11 @@ cdef extern from "Python.h":
 
     int PyObject_GetBuffer(object obj, Py_buffer *view, int flags) except -1
 
+    bint PyBuffer_IsContiguous(Py_buffer *view, char fort)
+    # Return 1 if the memory defined by the view is C-style (fortran
+    # is 'C') or Fortran-style (fortran is 'F') contiguous or either
+    # one (fortran is 'A'). Return 0 otherwise.
+
     void PyBuffer_Release(Py_buffer *view)
     # Release the buffer view. This should be called when the buffer
     # is no longer being used as it may free memory from it.
@@ -92,93 +97,35 @@ cdef extern from "stdlib.h":
     void *memcpy(void *dest, void *src, size_t n) nogil
 
 cdef extern from "gutenprint/sequence.h":
-    # extern stp_sequence_t *stp_sequence_create(void);
     stp_sequence_t* stp_sequence_create() nogil
-
-    # extern void stp_sequence_destroy(stp_sequence_t *sequence);
     void stp_sequence_destroy(stp_sequence_t* sequence) nogil
-
-    # extern void stp_sequence_copy(stp_sequence_t *dest, const stp_sequence_t *source);
     void stp_sequence_copy(stp_sequence_t* dest, stp_sequence_t* source) nogil
-
-    # extern stp_sequence_t *stp_sequence_create_copy(const stp_sequence_t *sequence);
     stp_sequence_t* stp_sequence_create_copy(stp_sequence_t* sequence) nogil
-
-    # extern void stp_sequence_reverse(stp_sequence_t *dest, const stp_sequence_t *source);
     void stp_sequence_reverse(stp_sequence_t* dest, stp_sequence_t* source) nogil
-
-    # extern stp_sequence_t *stp_sequence_create_reverse(const stp_sequence_t *sequence);
     stp_sequence_t* stp_sequence_create_reverse(stp_sequence_t* sequence) nogil
-
-    # extern int stp_sequence_set_bounds(stp_sequence_t *sequence, double low, double high);
     bint stp_sequence_set_bounds(stp_sequence_t* sequence, double low, double high) nogil
-
-    # extern void stp_sequence_get_bounds(const stp_sequence_t *sequence, double *low, double *high);
     void stp_sequence_get_bounds(stp_sequence_t* sequence, double* low, double* high) nogil
-
-    # extern void stp_sequence_get_range(const stp_sequence_t *sequence, double *low, double *high);
     void stp_sequence_get_range(stp_sequence_t* sequence, double* low, double* high) nogil
-
-    # extern int stp_sequence_set_size(stp_sequence_t *sequence, size_t size);
     bint stp_sequence_set_size(stp_sequence_t* sequence, size_t size) nogil
-
-    # extern size_t stp_sequence_get_size(const stp_sequence_t *sequence);
     size_t stp_sequence_get_size(stp_sequence_t* sequence) nogil
-
-    # extern int stp_sequence_set_data(stp_sequence_t *sequence, size_t count, const double *data);
     bint stp_sequence_set_data(stp_sequence_t* sequence, size_t count, double* data) nogil
-
     # extern int stp_sequence_set_subrange(stp_sequence_t *sequence, size_t where, size_t size, const double *data);
-
-    # extern void stp_sequence_get_data(const stp_sequence_t *sequence, size_t *size, const double **data);
     void stp_sequence_get_data(const stp_sequence_t* sequence, size_t* size, const double** data) nogil
-
-    # extern int stp_sequence_set_point(stp_sequence_t *sequence, size_t where, double data);
     bint stp_sequence_set_point(stp_sequence_t* sequence, size_t where, double data) nogil
-
-    # extern int stp_sequence_get_point(const stp_sequence_t *sequence, size_t where, double *data);
     bint stp_sequence_get_point(stp_sequence_t* sequence, size_t where, double* data) nogil
-
-    # extern int stp_sequence_set_float_data(stp_sequence_t *sequence, size_t count, const float *data);
     bint stp_sequence_set_float_data(stp_sequence_t* sequence, size_t count, float* data) nogil
-
-    # extern int stp_sequence_set_long_data(stp_sequence_t *sequence, size_t count, const long *data);
     bint stp_sequence_set_long_data(stp_sequence_t* sequence, size_t count, long* data) nogil
-
-    # extern int stp_sequence_set_ulong_data(stp_sequence_t *sequence, size_t count, const unsigned long *data);
     bint stp_sequence_set_ulong_data(stp_sequence_t* sequence, size_t count, unsigned long* data) nogil
-
-    # extern int stp_sequence_set_int_data(stp_sequence_t *sequence, size_t count, const int *data);
     bint stp_sequence_set_int_data(stp_sequence_t* sequence, size_t count, int* data) nogil
-
-    # extern int stp_sequence_set_uint_data(stp_sequence_t *sequence, size_t count, const unsigned int *data);
     bint stp_sequence_set_uint_data(stp_sequence_t* sequence, size_t count, unsigned int* data) nogil
-
-    # extern int stp_sequence_set_short_data(stp_sequence_t *sequence, size_t count, const short *data);
     bint stp_sequence_set_short_data(stp_sequence_t* sequence, size_t count, short* data) nogil
-
-    # extern int stp_sequence_set_ushort_data(stp_sequence_t *sequence, size_t count, const unsigned short *data);
     bint stp_sequence_set_ushort_data(stp_sequence_t* sequence, size_t count, unsigned short* data) nogil
-
-    # extern const float *stp_sequence_get_float_data(const stp_sequence_t *sequence, size_t *count);
     float* stp_sequence_get_float_data(stp_sequence_t *sequence, size_t *count) nogil
-
-    # extern const long *stp_sequence_get_long_data(const stp_sequence_t *sequence, size_t *count);
     long* stp_sequence_get_long_data(stp_sequence_t *sequence, size_t *count) nogil
-
-    # extern const unsigned long *stp_sequence_get_ulong_data(const stp_sequence_t *sequence, size_t *count);
     unsigned long* stp_sequence_get_ulong_data(stp_sequence_t *sequence, size_t *count)nogil
-
-    # extern const int *stp_sequence_get_int_data(const stp_sequence_t *sequence, size_t *count);
     int* stp_sequence_get_int_data(stp_sequence_t *sequence, size_t *count) nogil
-
-    # extern const unsigned int *stp_sequence_get_uint_data(const stp_sequence_t *sequence, size_t *count);
     unsigned int* stp_sequence_get_uint_data(stp_sequence_t *sequence, size_t *count)nogil
-
-    # extern const short *stp_sequence_get_short_data(const stp_sequence_t *sequence, size_t *count);
     short* stp_sequence_get_short_data(stp_sequence_t *sequence, size_t *count) nogil
-
-    # extern const unsigned short *stp_sequence_get_ushort_data(const stp_sequence_t *sequence, size_t *count);
     unsigned short* stp_sequence_get_ushort_data(stp_sequence_t *sequence, size_t *count)nogil
 
 #
@@ -219,11 +166,11 @@ cdef class SequenceIterator:
             raise ValueError('Can\'t iterate NULL data')
 
     def __dealloc__(self):
-#        self.index = NULL
-#        self.direction = NULL
-#        self.length = NULL
-#        self.sequence = NULL
-        pass
+    #        self.index = NULL
+    #        self.direction = NULL
+    #        self.length = NULL
+    #        self.sequence = NULL
+            pass
 
     def __iter__(self):
         return self
@@ -312,7 +259,7 @@ cdef class Sequence:
     #
     # COPY METHODS
     #
-    cpdef copy_in(Sequence self, Sequence dest):
+    cpdef copy_in(Sequence self, object dest):
         """Copy this Sequence in dest.
 
         dest must be a valid Sequence previously instancied
@@ -320,8 +267,10 @@ cdef class Sequence:
 
         :param dest: dest the destination Sequence.
         """
-        if dest is not None:
-            stp_sequence_copy(dest._sequence, self._sequence)
+        cdef Sequence s
+        if isinstance(dest, Sequence):
+            s = <Sequence> dest
+            stp_sequence_copy(s._sequence, self._sequence)
         else:
             raise ValueError("The Sequence parameter is not valid")
 
@@ -348,7 +297,7 @@ cdef class Sequence:
         """
         return <Py_ssize_t> stp_sequence_get_size(self._sequence)
 
-    cpdef set_size(Sequence self, Py_ssize_t size):
+    cpdef set_size(Sequence self,  object size):
         """Set the sequence size.
 
         The size is the number of elements the sequence contains.
@@ -379,15 +328,15 @@ cdef class Sequence:
 
         :returns: True or False.
         """
-        cdef :
-            double data
-            bint ret_code
-            size_t index, length
+        cdef double data
+        cdef  bint ret_code
+        cdef size_t index, length
+        cdef stp_sequence* s = self.get_sequence()
 
         ret_code = 0
-        length = stp_sequence_get_size(self._sequence)
+        length = stp_sequence_get_size(s)
         for index in range(length):
-            stp_sequence_get_point(self._sequence, index, &data)
+            stp_sequence_get_point(s, index, &data)
             if (data == item):
                 ret_code = 1
                 break
@@ -402,9 +351,12 @@ cdef class Sequence:
         in place function.
         """
         cdef stp_sequence_t* seq_rev
-        seq_rev = stp_sequence_create_reverse(self._sequence)
-        stp_sequence_destroy(self._sequence)
-        self._sequence = seq_rev
+        cdef stp_sequence* s = self.get_sequence()
+        cdef double* data
+        cdef size_t size
+        seq_rev = stp_sequence_create_reverse(s)
+        stp_sequence_get_data(seq_rev, &size, &data)
+        stp_sequence_set_data(s, size, data)
 
     cpdef create_reverse(Sequence self):
         """Return a reversed copy.
@@ -414,10 +366,12 @@ cdef class Sequence:
 
         :returns: the new copy of the Sequence.
         """
-        cdef Sequence reverse_sequence
+        reverse = type(self)()
+        cdef Sequence rs = <Sequence> reverse
+        cdef stp_sequence* s = self.get_sequence()
         reverse_sequence = Sequence()
-        stp_sequence_reverse(reverse_sequence._sequence, self._sequence)
-        return reverse_sequence
+        stp_sequence_reverse(rs.get_sequence(), s)
+        return reverse
 
     #
     # BOUNDARY METHODS
@@ -434,7 +388,7 @@ cdef class Sequence:
         the upper bound.
         """
         cdef bint retcode
-        retcode = stp_sequence_set_bounds(self._sequence, low, high)
+        retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)
         if not retcode:
             raise ValueError('the lower bound is greater than the \
                   upper bound : %f, %f' %(low, high))
@@ -445,7 +399,7 @@ cdef class Sequence:
         :returns: a tuple of floats bounds values, (min, max).
         """
         cdef double low, high
-        stp_sequence_get_bounds(self._sequence, &low, &high)
+        stp_sequence_get_bounds(self.get_sequence(), &low, &high)
         return low, high
 
     cpdef get_range(Sequence self):
@@ -454,7 +408,7 @@ cdef class Sequence:
         :returns: a tuple of floats values (min, max).
         """
         cdef double cmin, cmax
-        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
         return cmin, cmax
 
     cpdef double min(Sequence self):
@@ -463,7 +417,7 @@ cdef class Sequence:
         :returns: a float for the low bound.
         """
         cdef double cmin, cmax
-        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
         return cmin
 
     cpdef double max(Sequence self):
@@ -472,7 +426,7 @@ cdef class Sequence:
         :returns: a float for the high bound.
         """
         cdef double cmin, cmax
-        stp_sequence_get_range(self._sequence, &cmin, &cmax)
+        stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
         return cmax
 
     #
@@ -603,21 +557,50 @@ cdef class Sequence:
     #
     # BUFFER INTERFACE [PEP 3118]
     #
+    property nbytes:
+        """readonly property nbytes
+
+        :returns: The total length in bytes of the sequence buffer
+        """
+        def __get__(self):
+            return stp_sequence_get_size(self._sequence) * sizeof(double)
+
+    property size:
+        """readonly property size
+
+        :returns: The total number of element in the sequence
+        """
+        def __get__(self):
+            return stp_sequence_get_size(self._sequence)
+
+    property shape:
+        """readonly property shape
+
+        :returns: a tuple with the sequence dimension.
+        """
+        def __get__(self):
+            return (stp_sequence_get_size(self._sequence),)
+
+    cdef void get_c_buffer(Sequence self, size_t* size_ptr, double** data_ptr)nogil:
+        stp_sequence_get_data(<const stp_sequence_t*> self._sequence, size_ptr, <const double**> data_ptr)
+
+    cdef void fill_strides_and_shape(Sequence.self)nogil:
+        self._shape[0] =  stp_sequence_get_size(self._sequence)
+        self._strides[0] =  sizeof(double)
+
     def __getbuffer__(Sequence self, Py_buffer *info, int flags):
         cdef size_t ret_size
         cdef double* data_buf
 
-        stp_sequence_get_data(<const stp_sequence_t*> self._sequence, &ret_size, <const double**> &data_buf)
-        self.shape[0] = self.__len__()
-        self.strides[0] =  sizeof(double)
-
+        self.get_c_buffer(&ret_size, &data_buf)
+        self.fill_strides_and_shape()
         info.buf = <void*> data_buf
-        info.len = self.__len__() * sizeof(double)
+        info.len = self.nbytes
         info.readonly = 0
-        info.ndim = 1
+        info.ndim = self.ndim
         info.format = b'd'
-        info.shape = self.shape
-        info.strides = self.strides
+        info.shape = self._shape
+        info.strides = self._strides
         info.suboffsets = NULL  # we are always direct memory buffer
         info.itemsize = sizeof(double)
         info.obj = self
@@ -684,14 +667,14 @@ cdef class Sequence:
         """
         cdef size_t count
         cdef float *data
-        cdef Py_ssize_t[1] shape
+        cdef stp_sequence_t * s = self.get_sequence()
 
-        data = stp_sequence_get_float_data(self._sequence, &count)
+        data = stp_sequence_get_float_data(s, &count)
         if data == NULL:
            return None
-        shape[0] = count
+        self.fill_strides_and_shape()
         self.aux_buffer.set_buffer(True, <void*> data, count, b'f', \
-                                 sizeof(float), 1, shape)
+                                 sizeof(float), self.ndim, self._shape)
         cdef cython.view.memoryview mv = cython.view.memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
         return mv
 
@@ -702,48 +685,58 @@ cdef class Sequence:
         :raises: ValueError if None or with an array with a
         not supported type.
         """
+        self.set_data_c(data, True)
+
+    cdef int set_data_c(self, object data, bint count_from_buf)except -1:
         cdef Py_buffer pybuffer
         cdef char *c_type
         cdef size_t sz, count
         cdef bint err_code = 1
         cdef bint release_buff = 0
+        cdef int err
+        cdef stp_sequence* s = self.get_sequence()
 
         if PyObject_CheckBuffer(data):
-            PyObject_GetBuffer(data, &pybuffer, PyBUF_ND | PyBUF_FORMAT)
+            err = PyObject_GetBuffer(data, &pybuffer, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)
             release_buff = 1
-            if pybuffer.ndim != 1:
+            if err == -1:
                 PyBuffer_Release(&pybuffer)
-                raise ValueError("Multidimentionnal array is not accepted.")
+                raise ValueError("Data to set is not a contigous block of memory.")
             if pybuffer.format:
                 if check_buffer_format(pybuffer.format, &c_type):
                     sz = pybuffer.itemsize
-                    count = pybuffer.shape[0]
+                    if count_from_buf:
+                        count = pybuffer.len // pybuffer.itemsize
+                    else:
+                        count = stp_sequence_get_size(s)
+                        if (pybuffer.len // pybuffer.itemsize) < count:
+                            raise ValueError("Data to set is too short.")
                     if c_type[0] == 'u':
                         if sz == sizeof(unsigned short):
-                            err_code = stp_sequence_set_ushort_data(self._sequence, \
+                            err_code = stp_sequence_set_ushort_data(s, \
                             count, <unsigned short*> pybuffer.buf)
                         elif sz == sizeof(unsigned int):
-                            err_code = stp_sequence_set_uint_data(self._sequence, \
+                            err_code = stp_sequence_set_uint_data(s, \
                             count, <unsigned int*> pybuffer.buf)
                         elif sz == sizeof(unsigned long):
-                            err_code = stp_sequence_set_ulong_data(self._sequence, \
+                            err_code = stp_sequence_set_ulong_data(s, \
                             count, <unsigned long*> pybuffer.buf)
                     elif c_type[0] == 'i':
                         if sz == sizeof(short):
-                            err_code = stp_sequence_set_short_data(self._sequence, \
+                            err_code = stp_sequence_set_short_data(s, \
                             count, <short*> pybuffer.buf)
                         elif sz == sizeof(int):
-                            err_code = stp_sequence_set_int_data(self._sequence, \
+                            err_code = stp_sequence_set_int_data(s, \
                             count, <int*> pybuffer.buf)
                         elif sz == sizeof(long):
-                            err_code = stp_sequence_set_long_data(self._sequence, \
+                            err_code = stp_sequence_set_long_data(s, \
                             count, <long*> pybuffer.buf)
                     elif c_type[0] == 'f':
                         if sz == sizeof(float):
-                            err_code = stp_sequence_set_float_data(self._sequence, \
+                            err_code = stp_sequence_set_float_data(s, \
                             count, <float*> pybuffer.buf)
                         elif sz == sizeof(double):
-                            err_code = stp_sequence_set_data(self._sequence, \
+                            err_code = stp_sequence_set_data(s, \
                             count, <double*> pybuffer.buf)
                     if err_code == 0:
                         PyBuffer_Release(&pybuffer)
@@ -760,15 +753,24 @@ cdef class Sequence:
         if not err_code:
             raise ValueError("Invalid buffer format.")
 
-    def __richcmp__(Sequence x, Sequence y, int comp):
+    def __richcmp__(x,  y, int comp):
         if comp != 2: # __eq__
             raise NotImplementedError()
-        if x is None or y is None:
+        if not(isinstance(x, Sequence) and isinstance(y, Sequence)):
             return False
         cdef int i
-        if len(x) == len(y):
-            for i in xrange(len(x)):
-                if x[i] != y[i]:
+        cdef stp_sequence_t *xs, *ys
+        cdef double xs_v, ys_v
+        cdef Sequence _x, _y
+        _x = <Sequence> x
+        _y = <Sequence> y
+        if x.shape == y.shape:
+            xs = _x.get_sequence()
+            ys = _y.get_sequence()
+            for i in xrange(x.size):
+                stp_sequence_get_point(xs, i, &xs_v)
+                stp_sequence_get_point(ys, i, &ys_v)
+                if xs_v != ys_v:
                     return False
             return True
         else:

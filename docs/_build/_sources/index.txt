@@ -9,7 +9,7 @@ Welcome to gravure's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    gravure
 

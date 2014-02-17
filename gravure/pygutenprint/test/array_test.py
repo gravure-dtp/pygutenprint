@@ -41,8 +41,8 @@ from nose.config import Config
 
 def test():
     #help(stp_Array)
-    s = Seq()
-    a = stp_Array()
+    #s = Seq()
+    a = stp_Array(data=[1, 2])
 
 if __name__ == '__main__':
     print("Test")

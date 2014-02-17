@@ -3,6 +3,6 @@
 doc_folder=docs
 package_dir=gravure
 
-/usr/local/bin/sphinx-apidoc -d 4 --separate -f -o $doc_folder $package_dir
+/usr/local/bin/sphinx-apidoc -d 7 -f -o $doc_folder $package_dir
 exec /usr/local/bin/sphinx-build -b html $doc_folder $doc_folder/_build
 

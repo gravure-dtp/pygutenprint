@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gravure.pygutenprint.array module &mdash; PyGutenprint 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="top" title="PyGutenprint 0.1 documentation" href="index.html" />
+    <link rel="up" title="gravure.pygutenprint package" href="gravure.pygutenprint.html" />
+    <link rel="next" title="gravure.pygutenprint.curve module" href="gravure.pygutenprint.curve.html" />
+    <link rel="prev" title="gravure.pygutenprint package" href="gravure.pygutenprint.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gravure.pygutenprint.curve.html" title="gravure.pygutenprint.curve module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gravure.pygutenprint.html" title="gravure.pygutenprint package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyGutenprint 0.1 documentation</a> &raquo;</li>
+          <li><a href="gravure.html" >gravure package</a> &raquo;</li>
+          <li><a href="gravure.pygutenprint.html" accesskey="U">gravure.pygutenprint package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gravure.pygutenprint.array">
+<span id="gravure-pygutenprint-array-module"></span><h1>gravure.pygutenprint.array module<a class="headerlink" href="#module-gravure.pygutenprint.array" title="Permalink to this headline">¶</a></h1>
+<p>Module gravure.pygutenprint.array.</p>
+<dl class="class">
+<dt id="gravure.pygutenprint.array.Array">
+<em class="property">class </em><tt class="descname">Array</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gravure.pygutenprint.sequence.html#gravure.pygutenprint.sequence.Sequence" title="gravure.pygutenprint.sequence.Sequence"><tt class="xref py py-class docutils literal"><span class="pre">gravure.pygutenprint.sequence.Sequence</span></tt></a></p>
+<p>Array(data=None, low=None, high=None, <a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
+The array is a simple &#8220;two-dimensional array of numbers&#8221;.</p>
+<blockquote>
+<div><p>Array &#8220;inherits&#8221; from Sequence object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body">an optional python array like object to initialize the array.    if None the size of the Array will be set with the size paramater.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param size:</th><td class="field-body">a tuple (x_size, y_size), the total size of the array will be (x_size * y_size).    If date was specified, size will have no effect.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param low:</th><td class="field-body">a number to set the low boundary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param high:</th><td class="field-body">a number to set the high boundary.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">the newly created Array.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">raises:</th><td class="field-body">MemmoryError.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="method">
+<dt id="gravure.pygutenprint.array.Array.copy">
+<tt class="descname">copy</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.array.Array.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this Array.</p>
+<p>A new Array will be created, and then the contents
+of self will be copied into it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the new copy of the SeArrayquence.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gravure.pygutenprint.array.Array.copy_in">
+<tt class="descname">copy_in</tt><big>(</big><em>self</em>, <em>dest</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.array.Array.copy_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy this Array in dest.</p>
+<p>dest must be a valid Array previously instancied
+with dest = Array().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dest</strong> &#8211; dest the destination Array.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gravure.pygutenprint.array.Array.itemsize">
+<tt class="descname">itemsize</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array.itemsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>readonly property itemsize</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A integers giving the size in bytes of each elements.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gravure.pygutenprint.array.Array.nbytes">
+<tt class="descname">nbytes</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array.nbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>readonly property nbytes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The total length in bytes of the array buffer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gravure.pygutenprint.array.Array.set_data">
+<tt class="descname">set_data</tt><big>(</big><em>self</em>, <em>data</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.array.Array.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the data in the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; a python array like object implementing the buffer interface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">ValueError if None or with an array with a</td>
+</tr>
+</tbody>
+</table>
+<p>not supported type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gravure.pygutenprint.array.Array.set_size">
+<tt class="descname">set_size</tt><big>(</big><em>self</em>, <em>size</em><big>)</big><a class="headerlink" href="#gravure.pygutenprint.array.Array.set_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize an array.</p>
+<p>Resizing an array will destroy all data stored in the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; a tuple (x_size, y_size) that define the new array shape.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">MemmoryError.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gravure.pygutenprint.array.Array.shape">
+<tt class="descname">shape</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>readonly property shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a tuple with the array dimensions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gravure.pygutenprint.array.Array.size">
+<tt class="descname">size</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>readonly property size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The total number of element in the array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gravure.pygutenprint.array.Array.strides">
+<tt class="descname">strides</tt><a class="headerlink" href="#gravure.pygutenprint.array.Array.strides" title="Permalink to this definition">¶</a></dt>
+<dd><p>readonly property strides</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A tuple of integers giving the size in bytes to access each element for each dimension of the array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gravure.pygutenprint.html"
+                        title="previous chapter">gravure.pygutenprint package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gravure.pygutenprint.curve.html"
+                        title="next chapter">gravure.pygutenprint.curve module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gravure.pygutenprint.array.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gravure.pygutenprint.curve.html" title="gravure.pygutenprint.curve module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gravure.pygutenprint.html" title="gravure.pygutenprint package"
+             >previous</a> |</li>
+        <li><a href="index.html">PyGutenprint 0.1 documentation</a> &raquo;</li>
+          <li><a href="gravure.html" >gravure package</a> &raquo;</li>
+          <li><a href="gravure.pygutenprint.html" >gravure.pygutenprint package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Atelier Obscur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

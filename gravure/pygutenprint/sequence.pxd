@@ -43,12 +43,12 @@ cdef class Sequence:
     cdef stp_sequence_t* _sequence
     cdef __AuxBufferInterface aux_buffer
     cdef int ndim
-    cdef Py_ssize_t [2] shape
-    cdef Py_ssize_t [2] strides
+    cdef Py_ssize_t [2] _shape
+    cdef Py_ssize_t [2] _strides
 
-    cpdef copy_in(Sequence, Sequence)
+    cpdef copy_in(Sequence, object)
     cpdef object copy(Sequence)
-    cpdef set_size(Sequence, Py_ssize_t)
+    cpdef set_size(Sequence, object)
     cpdef reverse(Sequence)
     cpdef object create_reverse(Sequence)
     cpdef set_bounds(Sequence, double, double)
@@ -60,6 +60,9 @@ cdef class Sequence:
     cdef stp_sequence* get_sequence(Sequence self)nogil
     cdef bint set_point(Sequence, size_t, double)nogil except 0
     cdef int set_slice(Sequence, object, object, bint)except -1
+    cdef int set_data_c(self, object data, bint count_from_buf)except -1
+    cdef void get_c_buffer(Sequence, size_t*, double**)nogil
+    cdef void fill_strides_and_shape(Sequence)nogil
 
 
 

@@ -30,7 +30,13 @@ cdef extern from "gutenprint/array.h":
 cdef class Array(Sequence):
         cdef stp_array_t* _array
 
-        cdef stp_sequence* get_sequence(Array self)nogil
+        cdef stp_sequence* get_sequence(Array)nogil
+        cdef void get_c_buffer(Array, size_t*, double**)nogil
+        cdef void fill_strides_and_shape(Array)nogil
+
+        cpdef copy_in(Array, object)
+        cpdef copy(Array)
+        cpdef set_size(Array, object)
 
 
 
