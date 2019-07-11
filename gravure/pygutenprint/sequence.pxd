@@ -17,7 +17,7 @@
 # the Debian GNU/Linux distribution in file /usr/share/common-licenses/GPL;
 # if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 # Fifth Floor, Boston, MA 02110-1301, USA.
-
+ 
 cdef extern from "gutenprint/sequence.h":
     # The sequence opaque data type.
     struct stp_sequence:
@@ -34,7 +34,6 @@ cdef class __AuxBufferInterface:
     cdef Py_ssize_t [2] shape
     cdef Py_ssize_t [2] strides
     cdef object obj
-
     cdef set_buffer(__AuxBufferInterface, bint, void*, \
                     Py_ssize_t, bytes, Py_ssize_t, int, \
                     Py_ssize_t*)
@@ -45,7 +44,6 @@ cdef class Sequence:
     cdef int ndim
     cdef Py_ssize_t [2] _shape
     cdef Py_ssize_t [2] _strides
-
     cpdef copy_in(Sequence, object)
     cpdef object copy(Sequence)
     cpdef set_size(Sequence, object)
@@ -56,15 +54,9 @@ cdef class Sequence:
     cpdef object get_range(Sequence)
     cpdef double min(Sequence)
     cpdef double max(Sequence)
-
     cdef stp_sequence* get_sequence(Sequence self)nogil
     cdef bint set_point(Sequence, size_t, double)nogil except 0
     cdef int set_slice(Sequence, object, object, bint)except -1
     cdef int set_data_c(self, object data, bint count_from_buf)except -1
     cdef void get_c_buffer(Sequence, size_t*, double**)nogil
     cdef void fill_strides_and_shape(Sequence)nogil
-
-
-
-
-

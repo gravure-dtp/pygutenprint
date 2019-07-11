@@ -187,7 +187,7 @@ cpdef bint init():
     cdef bint retcode
     retcode = stp_init()
     if (retcode):
-        print "stp_init failure"
+        print("stp_init failure")
     return not retcode
 
 

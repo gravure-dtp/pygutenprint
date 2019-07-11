@@ -1,0 +1,33 @@
+Metadata-Version: 1.2
+Name: gravure.pygutenprint
+Version: 0.1.dev0
+Summary: a Python binding to the gutenprint library
+Home-page: http://www.atelierobscur.org/
+Author: Gilles Coissac
+Author-email: dev@atelierobscur.org
+Maintainer: Gilles Coissac
+Maintainer-email: dev@atelierobscur.org
+License: LGPL v3
+Download-URL: http://www.atelierobscur.org/
+Description: ============
+        PyGutenprint
+        ============
+        
+        pygutenprint is a Python binding to th gutenprint library 
+        using Cython to interface with c shared libraries.
+        
+Keywords: print rip printer driver gutenprint
+Platform: any
+Classifier: Environment :: X11 Applications :: Gnome
+Classifier: Environment :: X11 Applications :: GTK
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: C
+Classifier: Programming Language :: Cython
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Artistic Software
+Classifier: Topic :: Desktop Environment :: Gnome
+Classifier: Topic :: Printing
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

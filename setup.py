@@ -18,83 +18,193 @@
 # if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 # Fifth Floor, Boston, MA 02110-1301, USA.
 
-#from ez_setup import use_setuptools
-#from distribute_setup import use_setuptools
-#use_setuptools()
-#from setuptools import setup, find_packages
-#from setuptools.extension import Extension
+import os
+import sys
+import multiprocessing as mp
 
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Build import cythonize
+import ez_setup
+ez_setup.use_setuptools()
+import setuptools
+from setuptools import setup
+from setuptools.extension import Extension
+from setuptools.command import build_ext
+
+MIN_CYTHON_VERSION = '0.19'
+MIN_PYTHON_VERSION = (3, 4)
+CPU_COUNT = mp.cpu_count()
+
+# Redirection of cython compilation errors in file
+sys.stderr = open('.errors_log', 'w')
+
+# Cython requierement
+try:
+    import Cython
+    from Cython.Distutils import Extension
+    has_cython = True
+except:
+    has_cython = False
+devtree = os.path.exists('DEVTREE')
+
+# extensions compilation scheme
+if devtree:
+    # we are not in a source distribution tree
+    # cython min version is an absolute requirement.
+    try:
+        setuptools.dist.Distribution(dict(setup_requires=['cython>=' + MIN_CYTHON_VERSION]))
+    except:
+        print("At least Cython %s is needed to generate c extensions files!" % (MIN_CYTHON_VERSION, ))
+        sys.exit(1)
+#    else:
+#        use_cython = True
+#else:
+    # we are in a source distribution
+    # and pyx files extensions should be already cythonized.
+#    if has_cython and Cython.__version__ >= MIN_CYTHON_VERSION:
+        # Cython is present and match minimum version
+        # so we could use it.
+#        use_cython = True
+#    else:
+        # let distribute or setuptools try to build against c files.
+ #       use_cython = False    #package_data = {'gravure/pygutenprint': ['*.pxd']},    
+
+
+#if use_cython:
+#    print("Cython %s is detected so generate c extensions files if needed." % (Cython.__version__, ))
+#    from Cython.Build import cythonize 
+#    #from Cython.Distutils import build_ext
+#    #TODO: make cython don't leave c generated files in the dev source tree
+#    def get_extensions(extensions, **_ignore):
+#        print("Cythonyze ...")
+#        #Cython.Compiler.Options.docstrings = True
+#        #Cython.Compiler.Options.emit_code_comments = True
+#        return cythonize(module_list=extensions, nthreads=CPU_COUNT-2 , language_level=3, force=True)
+#else:
+#    print("Cython %s is not present but try to continue without it..." % (MIN_CYTHON_VERSION, ))
+#    def get_extensions(extensions, **_ignore):
+#        for extension in extensions:
+#            sources = []
+#            for sfile in extension.sources:
+#                path, ext = os.path.splitext(sfile)
+#                if ext in ('.pyx', '.py'):
+#                    if extension.language == 'c++':
+#                        ext = '.cpp'
+#                    else:
+#                        ext = '.c'
+#                    sfile = path + ext
+#                sources.append(sfile)
+#            extension.sources[:] = sources
+#        return extensions
 
 #
+#=== Python version ===================
+if sys.version_info[0] == MIN_PYTHON_VERSION[0]:
+    if sys.version_info[1] < MIN_PYTHON_VERSION[1]:
+        print("You need Python %i.%i or greater" %MIN_PYTHON_VERSION)
+        sys.exit(1)
+elif sys.version_info[0] < MIN_PYTHON_VERSION[0]:
+    print("You need Python %i.%i or greater" %MIN_PYTHON_VERSION)
+    sys.exit(1)
+    
+
+    
+#
 #======================= Compilation paths ===============================
-SRC_DIR = 'gravure/pygutenprint/'
-INCLUDE_DIRS = ['/usr/include']
+SRC_DIR = 'gravure/pygutenprint'
+INCLUDE_DIRS = ['/usr/include', 'include', SRC_DIR]
 DYN_LIBRARY_DIRS = ['/usr/lib', '/usr/lib/x86_64-linux-gnu']
-LIBRARIES = ['libgutenprint']
-X_LINK_ARGS = [] # -t
-EXTRA_OBJECTS = ['/usr/lib/x86_64-linux-gnu/libgutenprint.so']
+#TODO: make this platform independant
+LIBRARIES = [] #['libgutenprint']
+EXTRA_OBJECTS = ['/usr/lib/x86_64-linux-gnu/libgutenprint.so.9']
+COMPILE_ARGS =[]
+X_LINK_ARGS = [] 
+CYTHON_DIRECTIVES = {'language_level':3, 'embedsignature':False}
+
+#
+#=== package version ===================
+version = open('VERSION').read().strip()
+open(os.path.join(SRC_DIR,'version.py'), 'w').write('__version__ = "%s"\n' % version)
 
 #
 #======================= Extensions list =================================
-extensions = [
-                Extension('sequence', \
-                          [SRC_DIR + 'sequence.pyx'], \
-                          include_dirs = INCLUDE_DIRS, \
-                          #libraries = LIBRARIES, \
-                          runtime_library_dirs=DYN_LIBRARY_DIRS, \
-                          extra_objects = EXTRA_OBJECTS \
-                          ), \
+extensions = [ \
+    Extension(\
+        'sequence', \
+        sources = [os.path.join(SRC_DIR, 'sequence.pyx')], \
+        include_dirs = INCLUDE_DIRS, \
+        libraries = LIBRARIES, \
+        runtime_library_dirs = DYN_LIBRARY_DIRS, \
+        extra_objects = EXTRA_OBJECTS, \
+        cython_directives = CYTHON_DIRECTIVES \
+    ), \
+    Extension(\
+        'array', \
+        sources = [os.path.join(SRC_DIR, 'array.pyx')], \
+        include_dirs = INCLUDE_DIRS, \
+        libraries = LIBRARIES, \
+        runtime_library_dirs = DYN_LIBRARY_DIRS, \
+        extra_objects = EXTRA_OBJECTS, \
+        cython_directives = CYTHON_DIRECTIVES \
+    ), \
+#   Extension(
+#       'curve', \
+#       sources = [os.path.join(SRC_DIR, 'curve.pyx')], \
+#       include_dirs = INCLUDE_DIRS, \
+#       libraries = LIBRARIES, \
+#   ), \
+    Extension('util', \
+        sources = [os.path.join(SRC_DIR, 'util.pyx')], \
+        include_dirs = INCLUDE_DIRS, \
+        libraries = LIBRARIES, \
+        runtime_library_dirs = DYN_LIBRARY_DIRS, \
+        extra_objects = EXTRA_OBJECTS, \
+        cython_directives = CYTHON_DIRECTIVES \
+    ) \
+]
 
-                Extension('array', \
-                          [SRC_DIR + 'array.pyx'], \
-                         #libraries = LIBRARIES, \
-                          runtime_library_dirs=DYN_LIBRARY_DIRS, \
-                          extra_objects = EXTRA_OBJECTS \
-                          ), \
+#extensions = get_extensions(extensions)
 
-#                Extension('curve', \
-#                          [SRC_DIR + 'curve.pyx'], \
-#                          include_dirs = INCLUDE_DIRS, \
-#                          libraries = LIBRARIES, \
-#                          ), \
-
-                Extension('util', \
-                          [SRC_DIR + 'util.pyx'], \
-                          include_dirs = INCLUDE_DIRS, \
-                          #libraries = LIBRARIES, \
-                          runtime_library_dirs=DYN_LIBRARY_DIRS, \
-                          extra_objects = EXTRA_OBJECTS \
-                          ) \
-                ]
 #
 #=========================== SETUP COMMANDE ===================================
 setup(
-      name              = 'pygutenprint',
-      description       = 'a Python binding to the gutenprint library',
-      author            = 'Gilles Coissac',
-      author_email      = 'dev@atelierobscur.org',
-      maintainer        = 'Gilles Coissac',
-      maintainer_email  = 'gilles@atelierobscur.org',
-      url               = 'http://www.atelierobscur.org/',
-      download_url      = 'http://www.atelierobscur.org/',
-      version           = '0.1dev',
-      license           = 'LGPL v2',
-      #keywords          = '',
-      long_description  = open('README.txt').read(),
-      #url               = '',
-      #classifiers       = [],
-      packages          = ['gravure.pygutenprint'],
-      namespace_packages = ['gravure'],
-      ext_package       = 'gravure.pygutenprint',
-      ext_modules       = cythonize(extensions),
+    name              = 'gravure.pygutenprint',
+    version           = version,
+    platforms         = ['any'],
+    
+    packages = ['gravure.pygutenprint'],
+    ext_modules = extensions,
+    #package_data = {'pygutenprint': ['*.pxd']},
+    zip_safe = False,
+    
+    #test_suite = '',
+    #tests_require = 'nose'
 
-      # Project uses reStructuredText, so ensure that the docutils get
-      # installed or upgraded on the target machine
-      #install_requires = ['docutils>=0.3'],
-      #test_suite = '',
-      #tests_require = 'nose'
+    # Project uses reStructuredText,
+    # and sphinx 1.1
+    # install_requires = ['sphinx>=1.1'],
+    
+    author            = 'Gilles Coissac',
+    author_email      = 'dev@atelierobscur.org',
+    maintainer        = 'Gilles Coissac',
+    maintainer_email  = 'dev@atelierobscur.org',
+    description       = 'a Python binding to the gutenprint library',  
+    long_description  = open('README.txt').read(),
+    license           = 'LGPL v3',
+    keywords          = "print rip printer driver gutenprint",
+    url               = 'http://www.atelierobscur.org/',
+    download_url      = 'http://www.atelierobscur.org/',
+    classifiers=[
+        "Environment :: X11 Applications :: Gnome",
+        "Environment :: X11 Applications :: GTK",
+        "Intended Audience :: End Users/Desktop",
+        "Natural Language :: English",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: C",
+        "Programming Language :: Cython",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.4",
+        "Topic :: Artistic Software",
+        "Topic :: Desktop Environment :: Gnome",
+        "Topic :: Printing",
+        "Topic :: Software Development :: Libraries :: Python Modules"
+    ]
 )
-

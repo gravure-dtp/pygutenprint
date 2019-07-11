@@ -1,0 +1,13 @@
+README.txt
+setup.cfg
+setup.py
+gravure.pygutenprint.egg-info/PKG-INFO
+gravure.pygutenprint.egg-info/SOURCES.txt
+gravure.pygutenprint.egg-info/dependency_links.txt
+gravure.pygutenprint.egg-info/not-zip-safe
+gravure.pygutenprint.egg-info/top_level.txt
+gravure/pygutenprint/__init__.py
+gravure/pygutenprint/array.pyx
+gravure/pygutenprint/sequence.pyx
+gravure/pygutenprint/util.pyx
+gravure/pygutenprint/version.py

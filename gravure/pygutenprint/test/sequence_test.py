@@ -33,9 +33,9 @@ from nose.failure import *
 import cython
 import gravure.pygutenprint.sequence as stp
 
-#--------------------------------------------------------------------------------
-# Object creation                                                                #
-#                                                                                           #
+#-----------------------------------------------------------------------------
+# Object creation                                                            #
+#                                                                            #
 def test_new():
     stp_seq = stp.Sequence()
     assert_is_instance(stp_seq, stp.Sequence)
@@ -56,9 +56,9 @@ def test_new():
     eq_(15,  len(stp_seq))
 
 
-#--------------------------------------------------------------------------------
-# __len__()                                                                            #
-#                                                                                           #
+#-----------------------------------------------------------------------------
+# __len__()                                                                  #
+#                                                                            #
 def test_len():
     stp_seq = stp.Sequence()
     stp_seq.set_size(30)
@@ -68,9 +68,9 @@ def test_len():
     stp_seq = stp.Sequence()
     eq_(len(stp_seq), 0)
 
-#--------------------------------------------------------------------------------
-# set_size()                                                                           #
-#                                                                                            #
+#-----------------------------------------------------------------------------
+# set_size()                                                                 #
+#                                                                            #
 def test_set_size():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -80,9 +80,9 @@ def test_set_size():
     eq_(30,  len(stp_seq))
     eq_((-20, 20), stp_seq.get_bounds())
 
-#-------------------------------------------------------------------------------
-# set_bounds()                                                                   #
-#                                                                                         #
+#-----------------------------------------------------------------------------
+# set_bounds()                                                               #
+#                                                                            #
 def test_bounds():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -92,9 +92,9 @@ def test_bounds():
     assert_raises(ValueError, stp_seq.set_bounds, 5,  2)
     assert_raises(stp.SequenceBoundsError,  stp_seq.__setitem__, 4,  22)
 
-#-------------------------------------------------------------------------------
-# ranges                                                                             #
-#                                                                                         #
+#-----------------------------------------------------------------------------
+# ranges                                                                     #
+#                                                                            #
 def test_range():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -104,9 +104,9 @@ def test_range():
     stp_seq.set_size(10)
     eq_(stp_seq.get_range(), (0, 0))
 
-#-------------------------------------------------------------------------------
-# copy                                                                                #
-#                                                                                         #
+#-----------------------------------------------------------------------------
+# copy                                                                       #
+#                                                                            #
 def test_copy():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -127,9 +127,9 @@ def test_copy():
     for i in range(15):
         eq_(stp_seq[i], stp_seq_c[i])
 
-#-------------------------------------------------------------------------------
-# reverse                                                                 #
-#                                                                             #
+#-----------------------------------------------------------------------------
+# reverse                                                                    #
+#                                                                            #
 def test_reverse():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -146,9 +146,9 @@ def test_reverse():
         eq_(stp_seq[i], stp_seq_c[i])
 
 
-#
-#------------------------------------------------------------------------------
-# __contains__()
+#-----------------------------------------------------------------------------
+# __contains__()                                                             #  
+#                                                                            #
 def contains_test():
     stp_seq = stp.Sequence()
     stp_seq.set_size(30)
@@ -164,9 +164,9 @@ def contains_test():
     assert_raises(TypeError, stp_seq.__contains__, *arg)
 
 
-#--------------------------------------------------------------------------------
-# __setitem__()                                                                     #
-#                                                                                            #
+#-----------------------------------------------------------------------------
+# __setitem__()                                                              #
+#                                                                            #
 def setitem_base_test():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -269,9 +269,9 @@ def setitem_negative_index_test():
     assert_raises(IndexError, stp_seq.__setitem__, -31,  .33333)
 
 
-#------------------------------------------------------------------------------
-# __getitem__()
-#
+#-----------------------------------------------------------------------------
+# __getitem__()                                                              #
+#                                                                            #
 def getitem_base_test():
     stp_seq = stp.Sequence()
     stp_seq.set_size(30)
@@ -365,9 +365,9 @@ def getitem_slice2_test():
     stp_c = stp_seq[0:10:2]
     assert_equal(len(stp_c), 5)
 
-#
-# Buffer interface
-#
+#-----------------------------------------------------------------------------
+# Buffer interface                                                           #
+#                                                                            #
 def  test_buffer():
     a = array("f", range(-15, 0))
     stp_seq = stp.Sequence(a, low=-20,  high=20)
@@ -428,8 +428,6 @@ def  test_buffer():
 #    assert_raises(StopIteration, it.next)
 #
 
-
-
 ##TODO: with eval(repr(sequence)), should recreate
 ## a valid Sequence equal to sequence
 #def repr_test():
@@ -443,9 +441,9 @@ def  test_buffer():
 #    assert_equal(st, repr(li_b))
 
 
-#--------------------------------------------------------------------------------
-# Main                                                                                  #
-#                                                                                           #
+#-----------------------------------------------------------------------------
+# Main                                                                       #
+#                                                                            #
 from nose.plugins.testid import TestId
 from nose.config import Config
 
@@ -453,8 +451,8 @@ if __name__ == '__main__':
 
     nose.runmodule(name='__main__')
 
-#----------------------------------------------------------------------------
-# BENCHMARK                                                                 #
-#                                                                           #
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# BENCHMARK                                                                  #
+#                                                                            #
+#-----------------------------------------------------------------------------
 

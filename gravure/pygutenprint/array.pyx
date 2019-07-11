@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 
 # Copyright (C) 2011 Atelier Obscur.
 # Authors:
@@ -201,6 +201,14 @@ cdef class Array(Sequence):
         self._shape[1] = y
         self._strides[1] =  sizeof(double)
         self._strides[0] = x * self._strides[1]
+
+    def __setitem__(Sequence self, object index, object value):
+        pass
+
+
+
+
+
 
 
 

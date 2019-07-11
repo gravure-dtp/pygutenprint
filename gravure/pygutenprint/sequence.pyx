@@ -18,8 +18,6 @@
 # if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 # Fifth Floor, Boston, MA 02110-1301, USA.
 
-#cython: embedsignature=True
-
 """Module gravure.pygutenprint.sequence.
 
 Curve code borrowed from GTK+, http://www.gtk.org/
@@ -27,7 +25,7 @@ Curve code borrowed from GTK+, http://www.gtk.org/
 
 import cython
 cimport cython
-
+from cython.view cimport memoryview
 
 __all__ = ['Sequence', 'SequenceBoundsError', 'SequenceIndexError', \
                 'SequenceNaNError', 'SequenceTypeError']
@@ -450,7 +448,7 @@ cdef class Sequence:
 
     cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:
         cdef Py_ssize_t start, stop, size, i, v, _len
-        cdef cython.view.memoryview mv
+        cdef memoryview mv
         cdef Py_buffer pybuffer
         cdef double d_val
 
@@ -485,7 +483,7 @@ cdef class Sequence:
         v = 0
 
         if val_is_slice:
-            mv = <cython.view.memoryview> value
+            mv = <memoryview> value
             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
             if pybuffer.ndim != 1:
                 PyBuffer_Release(&pybuffer)
@@ -645,7 +643,7 @@ cdef class Sequence:
         def __get__(self):
             # Make this a property as 'self.data' may be set after instantiation
             flags =  PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE
-            cdef cython.view.memoryview mv = cython.view.memoryview(self, flags, False)
+            cdef memoryview mv = memoryview(self, flags, False)
             return mv
 
     def get_data(self):
@@ -675,7 +673,7 @@ cdef class Sequence:
         self.fill_strides_and_shape()
         self.aux_buffer.set_buffer(True, <void*> data, count, b'f', \
                                  sizeof(float), self.ndim, self._shape)
-        cdef cython.view.memoryview mv = cython.view.memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
+        cdef memoryview mv = memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
         return mv
 
     def set_data(self, data not None):
@@ -711,7 +709,7 @@ cdef class Sequence:
                         count = stp_sequence_get_size(s)
                         if (pybuffer.len // pybuffer.itemsize) < count:
                             raise ValueError("Data to set is too short.")
-                    if c_type[0] == 'u':
+                    if c_type[0] == b'u':
                         if sz == sizeof(unsigned short):
                             err_code = stp_sequence_set_ushort_data(s, \
                             count, <unsigned short*> pybuffer.buf)
@@ -721,7 +719,7 @@ cdef class Sequence:
                         elif sz == sizeof(unsigned long):
                             err_code = stp_sequence_set_ulong_data(s, \
                             count, <unsigned long*> pybuffer.buf)
-                    elif c_type[0] == 'i':
+                    elif c_type[0] == b'i':
                         if sz == sizeof(short):
                             err_code = stp_sequence_set_short_data(s, \
                             count, <short*> pybuffer.buf)
@@ -731,7 +729,7 @@ cdef class Sequence:
                         elif sz == sizeof(long):
                             err_code = stp_sequence_set_long_data(s, \
                             count, <long*> pybuffer.buf)
-                    elif c_type[0] == 'f':
+                    elif c_type[0] == b'f':
                         if sz == sizeof(float):
                             err_code = stp_sequence_set_float_data(s, \
                             count, <float*> pybuffer.buf)
@@ -793,14 +791,14 @@ cdef bint check_buffer_format(bytes format, char** c_type):
     with nogil:
         fmt_c[blen] = 0
         i = 0
-        if fmt_c[i] == '@' or fmt_c[i] == '=' or \
-           fmt_c[i] == '<' or fmt_c[i] == '>' or \
-           fmt_c[i] == '!' :
+        if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \
+           fmt_c[i] == b'<' or fmt_c[i] == b'>' or \
+           fmt_c[i] == b'!' :
             i += 1
         fmt = 0
         digit = 0
         while i < blen:
-            if fmt_c[i] == '1':
+            if fmt_c[i] == b'1':
                 if digit:
                     break
                 else:
@@ -815,13 +813,13 @@ cdef bint check_buffer_format(bytes format, char** c_type):
                 break
 
         if fmt != 0 and i == blen: # no complex format code
-            if fmt == 'h' or fmt == 'i' or fmt == 'l' or fmt == 'q':
+            if fmt == b'h' or fmt == b'i' or fmt == b'l' or fmt == b'q':
                 c_type[0] = 'i' # signed integer
                 return 1
-            if fmt == 'H' or fmt == 'I' or fmt == 'L' or fmt == 'Q':
+            if fmt == b'H' or fmt == b'I' or fmt == b'L' or fmt == b'Q':
                 c_type[0] = 'u' # unsigned interger
                 return 1
-            if fmt  == 'f' or fmt == 'd':
+            if fmt  == b'f' or fmt == b'd':
                 c_type[0] = 'f' # float
                 return 1
     return 0
@@ -899,10 +897,10 @@ cdef int raise_nan_error(char* message) except -1 with gil:
 
 
 cdef object is_slice(obj):
-    cdef cython.view.memoryview mv
+    cdef memoryview mv
     try:
         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
-        mv = cython.view.memoryview(obj, flags, False)
+        mv = memoryview(obj, flags, False)
         obj = mv
     except TypeError:
         return None
