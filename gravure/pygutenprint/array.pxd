@@ -38,6 +38,8 @@ cdef class Array(Sequence):
         cpdef copy(Array)
         cpdef set_size(Array, object)
 
-
+        cdef int setslice(Array, tuple, object)except -1
+        cdef bint set_point(Array, size_t, size_t, double)nogil except 0
+        cdef bint check_index(Array, tuple)
 
 

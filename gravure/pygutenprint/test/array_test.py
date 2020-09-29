@@ -19,34 +19,32 @@
 # Fifth Floor, Boston, MA 02110-1301, USA.
 
 import sys
-
 import numpy as np
 import array
 import timeit
 
-import nose
-from nose import *
-from nose.tools import *
-from nose.failure import *
+#import nose
+#from nose import *
+#from nose.tools import *
+#from nose.failure import *
 
 from  gravure.pygutenprint.array import Array as stp_Array
-from  gravure.pygutenprint.sequence import Sequence as Seq
+from  gravure.pygutenprint.sequence import Sequence as stp_Seq
 
 
 #--------------------------------------------------------------------------------
 # Main                                                                                    #
 #                                                                                             #
-from nose.plugins.testid import TestId
-from nose.config import Config
+#from nose.plugins.testid import TestId
+#from nose.config import Config
 
-def test():
+def _test():
     #help(stp_Array)
-    #s = Seq()
-    a = stp_Array(data=[1, 2])
+    s = stp_Seq()
 
 if __name__ == '__main__':
     print("Test")
-    test()
+    #_test()
     #stp.test_data()
     #nose.runmodule(name='__main__')
 

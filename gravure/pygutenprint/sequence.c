@@ -966,7 +966,7 @@ struct __pyx_obj_8sequence___AuxBufferInterface {
 };
 
 
-/* "sequence.pxd":42
+/* "sequence.pxd":41
  *                     Py_ssize_t*)
  * 
  * cdef class Sequence:             # <<<<<<<<<<<<<<
@@ -1098,7 +1098,7 @@ struct __pyx_vtabstruct_memoryview {
 static struct __pyx_vtabstruct_memoryview *__pyx_vtabptr_memoryview;
 
 
-/* "sequence.pyx":828
+/* "sequence.pyx":823
  * 
  * @cython.final
  * cdef class __AuxBufferInterface:             # <<<<<<<<<<<<<<
@@ -1134,8 +1134,8 @@ struct __pyx_vtabstruct_8sequence_Sequence {
   double (*max)(struct __pyx_obj_8sequence_Sequence *, int __pyx_skip_dispatch);
   struct stp_sequence *(*get_sequence)(struct __pyx_obj_8sequence_Sequence *);
   int (*set_point)(struct __pyx_obj_8sequence_Sequence *, size_t, double);
-  int (*set_slice)(struct __pyx_obj_8sequence_Sequence *, PyObject *, PyObject *, int);
   int (*set_data_c)(struct __pyx_obj_8sequence_Sequence *, PyObject *, int);
+  int (*setslice)(struct __pyx_obj_8sequence_Sequence *, PyObject *, PyObject *, PyObject *);
   void (*get_c_buffer)(struct __pyx_obj_8sequence_Sequence *, size_t *, double **);
   void (*fill_strides_and_shape)(struct __pyx_obj_8sequence_Sequence *);
 };
@@ -1358,6 +1358,11 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 /* PyObjectCall2Args.proto */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
 
+/* WriteUnraisableException.proto */
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback, int nogil);
+
 /* PyIntBinop.proto */
 #if !CYTHON_COMPILING_IN_PYPY
 static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, long intval, int inplace);
@@ -1409,10 +1414,37 @@ static PyObject* __Pyx_PyObject_Format(PyObject* s, PyObject* f);
 static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
                                       Py_UCS4 max_char);
 
-/* WriteUnraisableException.proto */
-static void __Pyx_WriteUnraisable(const char *name, int clineno,
-                                  int lineno, const char *filename,
-                                  int full_traceback, int nogil);
+/* GetTopmostException.proto */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* PyErrExceptionMatches.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
+#else
+#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
+#endif
+
+/* PyIntBinop.proto */
+#if !CYTHON_COMPILING_IN_PYPY
+static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, int inplace);
+#else
+#define __Pyx_PyInt_AddObjC(op1, op2, intval, inplace)\
+    (inplace ? PyNumber_InPlaceAdd(op1, op2) : PyNumber_Add(op1, op2))
+#endif
 
 /* PyIntCompare.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_NeObjC(PyObject *op1, PyObject *op2, long intval, long inplace);
@@ -1464,30 +1496,6 @@ static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
          const char* cstring, Py_ssize_t start, Py_ssize_t stop,
          const char* encoding, const char* errors,
          PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors));
-
-/* GetTopmostException.proto */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
-#endif
-
-/* SaveResetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-#else
-#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
-#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
-#endif
-
-/* PyErrExceptionMatches.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
-static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
-#else
-#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
-#endif
 
 /* GetException.proto */
 #if CYTHON_FAST_THREAD_STATE
@@ -1570,14 +1578,6 @@ static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
 }
 #else
 #define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
-#endif
-
-/* PyIntBinop.proto */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, int inplace);
-#else
-#define __Pyx_PyInt_AddObjC(op1, op2, intval, inplace)\
-    (inplace ? PyNumber_InPlaceAdd(op1, op2) : PyNumber_Add(op1, op2))
 #endif
 
 /* ListExtend.proto */
@@ -1765,6 +1765,9 @@ static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
 
+/* FunctionExport.proto */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig);
+
 /* InitStrings.proto */
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
@@ -1779,7 +1782,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
 static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
-static int __pyx_f_8sequence_8Sequence_set_slice(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, PyObject *__pyx_v_index, PyObject *__pyx_v_value, int __pyx_v_val_is_slice); /* proto*/
+static int __pyx_f_8sequence_8Sequence_setslice(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, PyObject *__pyx_v_start, PyObject *__pyx_v_stop, PyObject *__pyx_v_value); /* proto*/
 static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, size_t __pyx_v_index, double __pyx_v_value); /* proto*/
 static void __pyx_f_8sequence_8Sequence_get_c_buffer(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, size_t *__pyx_v_size_ptr, double **__pyx_v_data_ptr); /* proto*/
 static void __pyx_f_8sequence_8Sequence_fill_strides_and_shape(struct __pyx_obj_8sequence_Sequence *__pyx_v_self); /* proto*/
@@ -1815,11 +1818,10 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static int __pyx_f_8sequence_check_buffer_format(PyObject *, char **); /*proto*/
 static int __pyx_f_8sequence_raise_bound_error(char *, double, double); /*proto*/
 static int __pyx_f_8sequence_raise_index_error(char *, int); /*proto*/
 static int __pyx_f_8sequence_raise_nan_error(char *); /*proto*/
-static PyObject *__pyx_f_8sequence_is_slice(PyObject *); /*proto*/
+static int __pyx_f_8sequence_check_buffer_format(PyObject *, char **); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1868,6 +1870,7 @@ static PyObject *__pyx_builtin_IndexError;
 static PyObject *__pyx_builtin_xrange;
 static PyObject *__pyx_builtin_BufferError;
 static PyObject *__pyx_builtin_NotImplementedError;
+static PyObject *__pyx_builtin_AttributeError;
 static PyObject *__pyx_builtin_enumerate;
 static PyObject *__pyx_builtin_Ellipsis;
 static PyObject *__pyx_builtin_id;
@@ -1961,6 +1964,7 @@ static const char __pyx_k_Sequence_data[] = "Sequence(data=[";
 static const char __pyx_k_StopIteration[] = "StopIteration";
 static const char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
+static const char __pyx_k_AttributeError[] = "AttributeError";
 static const char __pyx_k_create_reverse[] = "create_reverse";
 static const char __pyx_k_View_MemoryView[] = "View.MemoryView";
 static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
@@ -2013,16 +2017,17 @@ static const char __pyx_k_Multidimentionnal_array_is_not_a[] = "Multidimentionna
 static const char __pyx_k_Out_of_bounds_on_buffer_access_a[] = "Out of bounds on buffer access (axis %d)";
 static const char __pyx_k_Sequence_indices_must_be_integer[] = "Sequence indices must be integers, not %s";
 static const char __pyx_k_The_Sequence_parameter_is_not_va[] = "The Sequence parameter is not valid";
+static const char __pyx_k_Try_multidimentional_indexing_on[] = "Try multidimentional indexing on Sequence";
 static const char __pyx_k_Unable_to_convert_item_to_object[] = "Unable to convert item to object";
 static const char __pyx_k_got_differing_extents_in_dimensi[] = "got differing extents in dimension %d (got %d and %d)";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
-static const char __pyx_k_step_in_slice_is_not_implemented[] = "step in slice is not implemented";
 static const char __pyx_k_unable_to_allocate_shape_and_str[] = "unable to allocate shape and strides.";
 static const char __pyx_k_Can_only_create_a_buffer_that_is_2[] = "Can only create a buffer that is readonly.";
 static const char __pyx_k_Can_only_create_a_buffer_that_is_3[] = "Can only create a buffer that is c contiguous in memory.";
 static PyObject *__pyx_n_s_ASCII;
 static PyObject *__pyx_kp_u_Abnormal_Stop_Iteration;
 static PyObject *__pyx_kp_u_Attempt_to_set_value_out_of_boun;
+static PyObject *__pyx_n_s_AttributeError;
 static PyObject *__pyx_n_s_AuxBufferInterface;
 static PyObject *__pyx_n_s_BufferError;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
@@ -2069,6 +2074,7 @@ static PyObject *__pyx_n_s_StopIteration;
 static PyObject *__pyx_n_s_SystemError;
 static PyObject *__pyx_kp_u_The_Sequence_parameter_is_not_va;
 static PyObject *__pyx_kp_u_The_array_provided_is_too_short;
+static PyObject *__pyx_kp_u_Try_multidimentional_indexing_on;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
 static PyObject *__pyx_kp_u_Unable_to_create_a_new_sequence;
@@ -2162,7 +2168,6 @@ static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
 static PyObject *__pyx_n_s_step;
-static PyObject *__pyx_kp_u_step_in_slice_is_not_implemented;
 static PyObject *__pyx_n_s_stop;
 static PyObject *__pyx_kp_s_strided_and_direct;
 static PyObject *__pyx_kp_s_strided_and_direct_or_indirect;
@@ -2891,7 +2896,6 @@ static PyObject *__pyx_pf_8sequence_16SequenceIterator_8__next__(struct __pyx_ob
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_16SequenceIterator_11__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_16SequenceIterator_10__reduce_cython__[] = "SequenceIterator.__reduce_cython__(self)";
 static PyObject *__pyx_pw_8sequence_16SequenceIterator_11__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2946,7 +2950,6 @@ static PyObject *__pyx_pf_8sequence_16SequenceIterator_10__reduce_cython__(CYTHO
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_16SequenceIterator_13__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static char __pyx_doc_8sequence_16SequenceIterator_12__setstate_cython__[] = "SequenceIterator.__setstate_cython__(self, __pyx_state)";
 static PyObject *__pyx_pw_8sequence_16SequenceIterator_13__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -3452,8 +3455,8 @@ static int __pyx_pf_8sequence_8Sequence_2__init__(struct __pyx_obj_8sequence_Seq
  *             self.set_data(data)
  * 
  *     def __dealloc__(Sequence self):             # <<<<<<<<<<<<<<
- *         if self._sequence is not NULL:
- *             stp_sequence_destroy(self._sequence)
+ *         if self.__class__ == Sequence:
+ *             if self._sequence is not NULL:
  */
 
 /* Python wrapper */
@@ -3469,34 +3472,60 @@ static void __pyx_pw_8sequence_8Sequence_5__dealloc__(PyObject *__pyx_v_self) {
 
 static void __pyx_pf_8sequence_8Sequence_4__dealloc__(struct __pyx_obj_8sequence_Sequence *__pyx_v_self) {
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_3;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
   /* "sequence.pyx":221
  * 
  *     def __dealloc__(Sequence self):
- *         if self._sequence is not NULL:             # <<<<<<<<<<<<<<
- *             stp_sequence_destroy(self._sequence)
- * 
+ *         if self.__class__ == Sequence:             # <<<<<<<<<<<<<<
+ *             if self._sequence is not NULL:
+ *                 stp_sequence_destroy(self._sequence)
  */
-  __pyx_t_1 = ((__pyx_v_self->_sequence != NULL) != 0);
-  if (__pyx_t_1) {
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, ((PyObject *)__pyx_ptype_8sequence_Sequence), Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_3) {
 
     /* "sequence.pyx":222
  *     def __dealloc__(Sequence self):
- *         if self._sequence is not NULL:
- *             stp_sequence_destroy(self._sequence)             # <<<<<<<<<<<<<<
+ *         if self.__class__ == Sequence:
+ *             if self._sequence is not NULL:             # <<<<<<<<<<<<<<
+ *                 stp_sequence_destroy(self._sequence)
+ * 
+ */
+    __pyx_t_3 = ((__pyx_v_self->_sequence != NULL) != 0);
+    if (__pyx_t_3) {
+
+      /* "sequence.pyx":223
+ *         if self.__class__ == Sequence:
+ *             if self._sequence is not NULL:
+ *                 stp_sequence_destroy(self._sequence)             # <<<<<<<<<<<<<<
  * 
  *     cdef stp_sequence_t* get_sequence(Sequence self)nogil:
  */
-    stp_sequence_destroy(__pyx_v_self->_sequence);
+      stp_sequence_destroy(__pyx_v_self->_sequence);
+
+      /* "sequence.pyx":222
+ *     def __dealloc__(Sequence self):
+ *         if self.__class__ == Sequence:
+ *             if self._sequence is not NULL:             # <<<<<<<<<<<<<<
+ *                 stp_sequence_destroy(self._sequence)
+ * 
+ */
+    }
 
     /* "sequence.pyx":221
  * 
  *     def __dealloc__(Sequence self):
- *         if self._sequence is not NULL:             # <<<<<<<<<<<<<<
- *             stp_sequence_destroy(self._sequence)
- * 
+ *         if self.__class__ == Sequence:             # <<<<<<<<<<<<<<
+ *             if self._sequence is not NULL:
+ *                 stp_sequence_destroy(self._sequence)
  */
   }
 
@@ -3504,16 +3533,22 @@ static void __pyx_pf_8sequence_8Sequence_4__dealloc__(struct __pyx_obj_8sequence
  *             self.set_data(data)
  * 
  *     def __dealloc__(Sequence self):             # <<<<<<<<<<<<<<
- *         if self._sequence is not NULL:
- *             stp_sequence_destroy(self._sequence)
+ *         if self.__class__ == Sequence:
+ *             if self._sequence is not NULL:
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_WriteUnraisable("sequence.Sequence.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
   __Pyx_RefNannyFinishContext();
 }
 
-/* "sequence.pyx":224
- *             stp_sequence_destroy(self._sequence)
+/* "sequence.pyx":225
+ *                 stp_sequence_destroy(self._sequence)
  * 
  *     cdef stp_sequence_t* get_sequence(Sequence self)nogil:             # <<<<<<<<<<<<<<
  *         return self._sequence
@@ -3523,7 +3558,7 @@ static void __pyx_pf_8sequence_8Sequence_4__dealloc__(struct __pyx_obj_8sequence
 static stp_sequence_t *__pyx_f_8sequence_8Sequence_get_sequence(struct __pyx_obj_8sequence_Sequence *__pyx_v_self) {
   stp_sequence_t *__pyx_r;
 
-  /* "sequence.pyx":225
+  /* "sequence.pyx":226
  * 
  *     cdef stp_sequence_t* get_sequence(Sequence self)nogil:
  *         return self._sequence             # <<<<<<<<<<<<<<
@@ -3533,8 +3568,8 @@ static stp_sequence_t *__pyx_f_8sequence_8Sequence_get_sequence(struct __pyx_obj
   __pyx_r = __pyx_v_self->_sequence;
   goto __pyx_L0;
 
-  /* "sequence.pyx":224
- *             stp_sequence_destroy(self._sequence)
+  /* "sequence.pyx":225
+ *                 stp_sequence_destroy(self._sequence)
  * 
  *     cdef stp_sequence_t* get_sequence(Sequence self)nogil:             # <<<<<<<<<<<<<<
  *         return self._sequence
@@ -3546,7 +3581,7 @@ static stp_sequence_t *__pyx_f_8sequence_8Sequence_get_sequence(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "sequence.pyx":230
+/* "sequence.pyx":231
  *     # STRING REPRESENTATION
  *     #
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -3579,7 +3614,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6__str__(struct __pyx_obj_8sequenc
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "sequence.pyx":237
+  /* "sequence.pyx":238
  *         :returns: a string
  *         """
  *         return self.__repr__()             # <<<<<<<<<<<<<<
@@ -3587,7 +3622,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6__str__(struct __pyx_obj_8sequenc
  *     def __repr__(Sequence self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_repr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_repr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3601,14 +3636,14 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6__str__(struct __pyx_obj_8sequenc
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 237, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":230
+  /* "sequence.pyx":231
  *     # STRING REPRESENTATION
  *     #
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -3629,7 +3664,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6__str__(struct __pyx_obj_8sequenc
   return __pyx_r;
 }
 
-/* "sequence.pyx":239
+/* "sequence.pyx":240
  *         return self.__repr__()
  * 
  *     def __repr__(Sequence self):             # <<<<<<<<<<<<<<
@@ -3667,7 +3702,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
   PyObject *(*__pyx_t_6)(PyObject *);
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "sequence.pyx":249
+  /* "sequence.pyx":250
  *         :returns: a string
  *         """
  *         _str = "Sequence(data=["             # <<<<<<<<<<<<<<
@@ -3677,14 +3712,14 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
   __Pyx_INCREF(__pyx_kp_u_Sequence_data);
   __pyx_v__str = __pyx_kp_u_Sequence_data;
 
-  /* "sequence.pyx":250
+  /* "sequence.pyx":251
  *         """
  *         _str = "Sequence(data=["
  *         if self.__len__():             # <<<<<<<<<<<<<<
  *             for i in range(self.__len__() - 1):
  *                 _str += "%f, " %self[i]
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3698,21 +3733,21 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 251, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "sequence.pyx":251
+    /* "sequence.pyx":252
  *         _str = "Sequence(data=["
  *         if self.__len__():
  *             for i in range(self.__len__() - 1):             # <<<<<<<<<<<<<<
  *                 _str += "%f, " %self[i]
  *             _str += "%f" %self[-1]
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3726,22 +3761,22 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
     }
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
       __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_5 = 0;
       __pyx_t_6 = NULL;
     } else {
-      __pyx_t_5 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __pyx_t_5 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __pyx_t_6 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 252, __pyx_L1_error)
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     for (;;) {
@@ -3749,17 +3784,17 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
         if (likely(PyList_CheckExact(__pyx_t_2))) {
           if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_5); __Pyx_INCREF(__pyx_t_1); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_5); __Pyx_INCREF(__pyx_t_1); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         } else {
           if (__pyx_t_5 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_5); __Pyx_INCREF(__pyx_t_1); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_5); __Pyx_INCREF(__pyx_t_1); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         }
@@ -3769,7 +3804,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 251, __pyx_L1_error)
+            else __PYX_ERR(0, 252, __pyx_L1_error)
           }
           break;
         }
@@ -3778,25 +3813,25 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "sequence.pyx":252
+      /* "sequence.pyx":253
  *         if self.__len__():
  *             for i in range(self.__len__() - 1):
  *                 _str += "%f, " %self[i]             # <<<<<<<<<<<<<<
  *             _str += "%f" %self[-1]
  *         _str += "], low=%f, high=%f)" %self.get_bounds()
  */
-      __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_f, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_f, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 253, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF_SET(__pyx_v__str, ((PyObject*)__pyx_t_1));
       __pyx_t_1 = 0;
 
-      /* "sequence.pyx":251
+      /* "sequence.pyx":252
  *         _str = "Sequence(data=["
  *         if self.__len__():
  *             for i in range(self.__len__() - 1):             # <<<<<<<<<<<<<<
@@ -3806,25 +3841,25 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "sequence.pyx":253
+    /* "sequence.pyx":254
  *             for i in range(self.__len__() - 1):
  *                 _str += "%f, " %self[i]
  *             _str += "%f" %self[-1]             # <<<<<<<<<<<<<<
  *         _str += "], low=%f, high=%f)" %self.get_bounds()
  *         return _str
  */
-    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self), -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 253, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self), -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_f_2, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_f_2, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 253, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF_SET(__pyx_v__str, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "sequence.pyx":250
+    /* "sequence.pyx":251
  *         """
  *         _str = "Sequence(data=["
  *         if self.__len__():             # <<<<<<<<<<<<<<
@@ -3833,25 +3868,25 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":254
+  /* "sequence.pyx":255
  *                 _str += "%f, " %self[i]
  *             _str += "%f" %self[-1]
  *         _str += "], low=%f, high=%f)" %self.get_bounds()             # <<<<<<<<<<<<<<
  *         return _str
  * 
  */
-  __pyx_t_2 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_bounds(__pyx_v_self, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
+  __pyx_t_2 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_bounds(__pyx_v_self, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_low_f_high_f, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_low_f_high_f, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_v__str, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF_SET(__pyx_v__str, ((PyObject*)__pyx_t_2));
   __pyx_t_2 = 0;
 
-  /* "sequence.pyx":255
+  /* "sequence.pyx":256
  *             _str += "%f" %self[-1]
  *         _str += "], low=%f, high=%f)" %self.get_bounds()
  *         return _str             # <<<<<<<<<<<<<<
@@ -3863,7 +3898,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
   __pyx_r = __pyx_v__str;
   goto __pyx_L0;
 
-  /* "sequence.pyx":239
+  /* "sequence.pyx":240
  *         return self.__repr__()
  * 
  *     def __repr__(Sequence self):             # <<<<<<<<<<<<<<
@@ -3886,7 +3921,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_8__repr__(struct __pyx_obj_8sequen
   return __pyx_r;
 }
 
-/* "sequence.pyx":260
+/* "sequence.pyx":261
  *     # COPY METHODS
  *     #
  *     cpdef copy_in(Sequence self, object dest):             # <<<<<<<<<<<<<<
@@ -3916,7 +3951,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_in); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_in); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_11copy_in)) {
         __Pyx_XDECREF(__pyx_r);
@@ -3933,7 +3968,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_dest) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_dest);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -3954,7 +3989,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
     #endif
   }
 
-  /* "sequence.pyx":269
+  /* "sequence.pyx":270
  *         """
  *         cdef Sequence s
  *         if isinstance(dest, Sequence):             # <<<<<<<<<<<<<<
@@ -3965,7 +4000,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
   __pyx_t_6 = (__pyx_t_5 != 0);
   if (likely(__pyx_t_6)) {
 
-    /* "sequence.pyx":270
+    /* "sequence.pyx":271
  *         cdef Sequence s
  *         if isinstance(dest, Sequence):
  *             s = <Sequence> dest             # <<<<<<<<<<<<<<
@@ -3977,7 +4012,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
     __pyx_v_s = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "sequence.pyx":271
+    /* "sequence.pyx":272
  *         if isinstance(dest, Sequence):
  *             s = <Sequence> dest
  *             stp_sequence_copy(s._sequence, self._sequence)             # <<<<<<<<<<<<<<
@@ -3986,7 +4021,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
  */
     stp_sequence_copy(__pyx_v_s->_sequence, __pyx_v_self->_sequence);
 
-    /* "sequence.pyx":269
+    /* "sequence.pyx":270
  *         """
  *         cdef Sequence s
  *         if isinstance(dest, Sequence):             # <<<<<<<<<<<<<<
@@ -3996,7 +4031,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
     goto __pyx_L3;
   }
 
-  /* "sequence.pyx":273
+  /* "sequence.pyx":274
  *             stp_sequence_copy(s._sequence, self._sequence)
  *         else:
  *             raise ValueError("The Sequence parameter is not valid")             # <<<<<<<<<<<<<<
@@ -4004,15 +4039,15 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
  *     cpdef copy(Sequence self):
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 274, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 273, __pyx_L1_error)
+    __PYX_ERR(0, 274, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "sequence.pyx":260
+  /* "sequence.pyx":261
  *     # COPY METHODS
  *     #
  *     cpdef copy_in(Sequence self, object dest):             # <<<<<<<<<<<<<<
@@ -4039,7 +4074,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy_in(struct __pyx_obj_8sequence_
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_11copy_in(PyObject *__pyx_v_self, PyObject *__pyx_v_dest); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_10copy_in[] = "Sequence.copy_in(self, dest)\nCopy this Sequence in dest.\n\n        dest must be a valid Sequence previously instancied\n        with dest = Sequence().\n\n        :param dest: dest the destination Sequence.\n        ";
+static char __pyx_doc_8sequence_8Sequence_10copy_in[] = "Copy this Sequence in dest.\n\n        dest must be a valid Sequence previously instancied\n        with dest = Sequence().\n\n        :param dest: dest the destination Sequence.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_11copy_in(PyObject *__pyx_v_self, PyObject *__pyx_v_dest) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -4057,7 +4092,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_10copy_in(struct __pyx_obj_8sequen
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("copy_in", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_copy_in(__pyx_v_self, __pyx_v_dest, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_copy_in(__pyx_v_self, __pyx_v_dest, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4074,7 +4109,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_10copy_in(struct __pyx_obj_8sequen
   return __pyx_r;
 }
 
-/* "sequence.pyx":275
+/* "sequence.pyx":276
  *             raise ValueError("The Sequence parameter is not valid")
  * 
  *     cpdef copy(Sequence self):             # <<<<<<<<<<<<<<
@@ -4102,7 +4137,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_13copy)) {
         __Pyx_XDECREF(__pyx_r);
@@ -4119,7 +4154,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 275, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 276, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -4140,19 +4175,19 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
     #endif
   }
 
-  /* "sequence.pyx":284
+  /* "sequence.pyx":285
  *         """
  *         cdef Sequence copy_sequence
  *         copy_sequence = Sequence()             # <<<<<<<<<<<<<<
  *         stp_sequence_copy(copy_sequence._sequence, self._sequence)
  *         return copy_sequence
  */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_8sequence_Sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_8sequence_Sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_copy_sequence = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "sequence.pyx":285
+  /* "sequence.pyx":286
  *         cdef Sequence copy_sequence
  *         copy_sequence = Sequence()
  *         stp_sequence_copy(copy_sequence._sequence, self._sequence)             # <<<<<<<<<<<<<<
@@ -4161,7 +4196,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
  */
   stp_sequence_copy(__pyx_v_copy_sequence->_sequence, __pyx_v_self->_sequence);
 
-  /* "sequence.pyx":286
+  /* "sequence.pyx":287
  *         copy_sequence = Sequence()
  *         stp_sequence_copy(copy_sequence._sequence, self._sequence)
  *         return copy_sequence             # <<<<<<<<<<<<<<
@@ -4173,7 +4208,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
   __pyx_r = ((PyObject *)__pyx_v_copy_sequence);
   goto __pyx_L0;
 
-  /* "sequence.pyx":275
+  /* "sequence.pyx":276
  *             raise ValueError("The Sequence parameter is not valid")
  * 
  *     cpdef copy(Sequence self):             # <<<<<<<<<<<<<<
@@ -4198,7 +4233,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_copy(struct __pyx_obj_8sequence_Seq
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_13copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_12copy[] = "Sequence.copy(self)\nReturn a copy of this Sequence.\n\n        A new sequence will be created, and then the contents\n        of self will be copied into it.\n\n        :returns: the new copy of the Sequence.\n        ";
+static char __pyx_doc_8sequence_8Sequence_12copy[] = "Return a copy of this Sequence.\n\n        A new sequence will be created, and then the contents\n        of self will be copied into it.\n\n        :returns: the new copy of the Sequence.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_13copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -4216,7 +4251,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_12copy(struct __pyx_obj_8sequence_
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("copy", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_copy(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_copy(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4233,7 +4268,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_12copy(struct __pyx_obj_8sequence_
   return __pyx_r;
 }
 
-/* "sequence.pyx":291
+/* "sequence.pyx":292
  *     # SIZED INTERFACE
  *     #
  *     def __len__(Sequence self):             # <<<<<<<<<<<<<<
@@ -4263,7 +4298,7 @@ static Py_ssize_t __pyx_pf_8sequence_8Sequence_14__len__(struct __pyx_obj_8seque
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__len__", 0);
 
-  /* "sequence.pyx":296
+  /* "sequence.pyx":297
  *         :returns: the sequence size.
  *         """
  *         return <Py_ssize_t> stp_sequence_get_size(self._sequence)             # <<<<<<<<<<<<<<
@@ -4273,7 +4308,7 @@ static Py_ssize_t __pyx_pf_8sequence_8Sequence_14__len__(struct __pyx_obj_8seque
   __pyx_r = ((Py_ssize_t)stp_sequence_get_size(__pyx_v_self->_sequence));
   goto __pyx_L0;
 
-  /* "sequence.pyx":291
+  /* "sequence.pyx":292
  *     # SIZED INTERFACE
  *     #
  *     def __len__(Sequence self):             # <<<<<<<<<<<<<<
@@ -4287,7 +4322,7 @@ static Py_ssize_t __pyx_pf_8sequence_8Sequence_14__len__(struct __pyx_obj_8seque
   return __pyx_r;
 }
 
-/* "sequence.pyx":298
+/* "sequence.pyx":299
  *         return <Py_ssize_t> stp_sequence_get_size(self._sequence)
  * 
  *     cpdef set_size(Sequence self,  object size):             # <<<<<<<<<<<<<<
@@ -4317,7 +4352,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_17set_size)) {
         __Pyx_XDECREF(__pyx_r);
@@ -4334,7 +4369,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_size) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_size);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -4355,17 +4390,17 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
     #endif
   }
 
-  /* "sequence.pyx":309
+  /* "sequence.pyx":310
  *         """
  *         cdef bint retcode
  *         retcode = stp_sequence_set_size(self._sequence, <size_t> size)             # <<<<<<<<<<<<<<
  *         if not retcode:
  *             raise MemoryError("Unable to resize this sequence.")
  */
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_v_size); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 309, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_v_size); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 310, __pyx_L1_error)
   __pyx_v_retcode = stp_sequence_set_size(__pyx_v_self->_sequence, ((size_t)__pyx_t_5));
 
-  /* "sequence.pyx":310
+  /* "sequence.pyx":311
  *         cdef bint retcode
  *         retcode = stp_sequence_set_size(self._sequence, <size_t> size)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -4375,20 +4410,20 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
   __pyx_t_6 = ((!(__pyx_v_retcode != 0)) != 0);
   if (unlikely(__pyx_t_6)) {
 
-    /* "sequence.pyx":311
+    /* "sequence.pyx":312
  *         retcode = stp_sequence_set_size(self._sequence, <size_t> size)
  *         if not retcode:
  *             raise MemoryError("Unable to resize this sequence.")             # <<<<<<<<<<<<<<
  * 
  *     #
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 311, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 312, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 311, __pyx_L1_error)
+    __PYX_ERR(0, 312, __pyx_L1_error)
 
-    /* "sequence.pyx":310
+    /* "sequence.pyx":311
  *         cdef bint retcode
  *         retcode = stp_sequence_set_size(self._sequence, <size_t> size)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -4397,7 +4432,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
  */
   }
 
-  /* "sequence.pyx":298
+  /* "sequence.pyx":299
  *         return <Py_ssize_t> stp_sequence_get_size(self._sequence)
  * 
  *     cpdef set_size(Sequence self,  object size):             # <<<<<<<<<<<<<<
@@ -4423,7 +4458,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_size(struct __pyx_obj_8sequence
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_17set_size(PyObject *__pyx_v_self, PyObject *__pyx_v_size); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_16set_size[] = "Sequence.set_size(self, size)\nSet the sequence size.\n\n        The size is the number of elements the sequence contains.\n        Note! : that resizing will destroy all data contained\n        in the sequence.\n\n        :param size: the size to set the sequence to.\n        :raises: MemmoryError.\n        ";
+static char __pyx_doc_8sequence_8Sequence_16set_size[] = "Set the sequence size.\n\n        The size is the number of elements the sequence contains.\n        Note! : that resizing will destroy all data contained\n        in the sequence.\n\n        :param size: the size to set the sequence to.\n        :raises: MemmoryError.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_17set_size(PyObject *__pyx_v_self, PyObject *__pyx_v_size) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -4441,7 +4476,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_16set_size(struct __pyx_obj_8seque
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("set_size", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_set_size(__pyx_v_self, __pyx_v_size, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_set_size(__pyx_v_self, __pyx_v_size, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4458,7 +4493,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_16set_size(struct __pyx_obj_8seque
   return __pyx_r;
 }
 
-/* "sequence.pyx":316
+/* "sequence.pyx":317
  *     # ITERATOR INTERFACE
  *     #
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4489,7 +4524,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_18__iter__(struct __pyx_obj_8seque
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "sequence.pyx":319
+  /* "sequence.pyx":320
  *         """Return: iterator for sequence.
  *         """
  *         return SequenceIterator(self)             # <<<<<<<<<<<<<<
@@ -4497,13 +4532,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_18__iter__(struct __pyx_obj_8seque
  *     #
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_8sequence_SequenceIterator), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 319, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_8sequence_SequenceIterator), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 320, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":316
+  /* "sequence.pyx":317
  *     # ITERATOR INTERFACE
  *     #
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -4522,7 +4557,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_18__iter__(struct __pyx_obj_8seque
   return __pyx_r;
 }
 
-/* "sequence.pyx":324
+/* "sequence.pyx":325
  *     # CONTAINER INTERFACE
  *     #
  *     def __contains__(Sequence self, double item):             # <<<<<<<<<<<<<<
@@ -4542,7 +4577,7 @@ static int __pyx_pw_8sequence_8Sequence_21__contains__(PyObject *__pyx_v_self, P
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__contains__ (wrapper)", 0);
   assert(__pyx_arg_item); {
-    __pyx_v_item = __pyx_PyFloat_AsDouble(__pyx_arg_item); if (unlikely((__pyx_v_item == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 324, __pyx_L3_error)
+    __pyx_v_item = __pyx_PyFloat_AsDouble(__pyx_arg_item); if (unlikely((__pyx_v_item == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 325, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -4571,7 +4606,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
   int __pyx_t_4;
   __Pyx_RefNannySetupContext("__contains__", 0);
 
-  /* "sequence.pyx":332
+  /* "sequence.pyx":333
  *         cdef  bint ret_code
  *         cdef size_t index, length
  *         cdef stp_sequence* s = self.get_sequence()             # <<<<<<<<<<<<<<
@@ -4580,7 +4615,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
   __pyx_v_s = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self);
 
-  /* "sequence.pyx":334
+  /* "sequence.pyx":335
  *         cdef stp_sequence* s = self.get_sequence()
  * 
  *         ret_code = 0             # <<<<<<<<<<<<<<
@@ -4589,7 +4624,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
   __pyx_v_ret_code = 0;
 
-  /* "sequence.pyx":335
+  /* "sequence.pyx":336
  * 
  *         ret_code = 0
  *         length = stp_sequence_get_size(s)             # <<<<<<<<<<<<<<
@@ -4598,7 +4633,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
   __pyx_v_length = stp_sequence_get_size(__pyx_v_s);
 
-  /* "sequence.pyx":336
+  /* "sequence.pyx":337
  *         ret_code = 0
  *         length = stp_sequence_get_size(s)
  *         for index in range(length):             # <<<<<<<<<<<<<<
@@ -4610,7 +4645,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_index = __pyx_t_3;
 
-    /* "sequence.pyx":337
+    /* "sequence.pyx":338
  *         length = stp_sequence_get_size(s)
  *         for index in range(length):
  *             stp_sequence_get_point(s, index, &data)             # <<<<<<<<<<<<<<
@@ -4619,7 +4654,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
     (void)(stp_sequence_get_point(__pyx_v_s, __pyx_v_index, (&__pyx_v_data)));
 
-    /* "sequence.pyx":338
+    /* "sequence.pyx":339
  *         for index in range(length):
  *             stp_sequence_get_point(s, index, &data)
  *             if (data == item):             # <<<<<<<<<<<<<<
@@ -4629,7 +4664,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
     __pyx_t_4 = ((__pyx_v_data == __pyx_v_item) != 0);
     if (__pyx_t_4) {
 
-      /* "sequence.pyx":339
+      /* "sequence.pyx":340
  *             stp_sequence_get_point(s, index, &data)
  *             if (data == item):
  *                 ret_code = 1             # <<<<<<<<<<<<<<
@@ -4638,7 +4673,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
       __pyx_v_ret_code = 1;
 
-      /* "sequence.pyx":340
+      /* "sequence.pyx":341
  *             if (data == item):
  *                 ret_code = 1
  *                 break             # <<<<<<<<<<<<<<
@@ -4647,7 +4682,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
  */
       goto __pyx_L4_break;
 
-      /* "sequence.pyx":338
+      /* "sequence.pyx":339
  *         for index in range(length):
  *             stp_sequence_get_point(s, index, &data)
  *             if (data == item):             # <<<<<<<<<<<<<<
@@ -4658,7 +4693,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
   }
   __pyx_L4_break:;
 
-  /* "sequence.pyx":341
+  /* "sequence.pyx":342
  *                 ret_code = 1
  *                 break
  *         return ret_code             # <<<<<<<<<<<<<<
@@ -4668,7 +4703,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
   __pyx_r = __pyx_v_ret_code;
   goto __pyx_L0;
 
-  /* "sequence.pyx":324
+  /* "sequence.pyx":325
  *     # CONTAINER INTERFACE
  *     #
  *     def __contains__(Sequence self, double item):             # <<<<<<<<<<<<<<
@@ -4682,7 +4717,7 @@ static int __pyx_pf_8sequence_8Sequence_20__contains__(struct __pyx_obj_8sequenc
   return __pyx_r;
 }
 
-/* "sequence.pyx":343
+/* "sequence.pyx":344
  *         return ret_code
  * 
  *     cpdef reverse(Sequence self):             # <<<<<<<<<<<<<<
@@ -4713,7 +4748,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reverse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reverse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 344, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_23reverse)) {
         __Pyx_XDECREF(__pyx_r);
@@ -4730,7 +4765,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 343, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 344, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -4751,7 +4786,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
     #endif
   }
 
-  /* "sequence.pyx":352
+  /* "sequence.pyx":353
  *         """
  *         cdef stp_sequence_t* seq_rev
  *         cdef stp_sequence* s = self.get_sequence()             # <<<<<<<<<<<<<<
@@ -4760,7 +4795,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
  */
   __pyx_v_s = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self);
 
-  /* "sequence.pyx":355
+  /* "sequence.pyx":356
  *         cdef double* data
  *         cdef size_t size
  *         seq_rev = stp_sequence_create_reverse(s)             # <<<<<<<<<<<<<<
@@ -4769,7 +4804,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
  */
   __pyx_v_seq_rev = stp_sequence_create_reverse(__pyx_v_s);
 
-  /* "sequence.pyx":356
+  /* "sequence.pyx":357
  *         cdef size_t size
  *         seq_rev = stp_sequence_create_reverse(s)
  *         stp_sequence_get_data(seq_rev, &size, &data)             # <<<<<<<<<<<<<<
@@ -4778,7 +4813,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
  */
   stp_sequence_get_data(__pyx_v_seq_rev, (&__pyx_v_size), (&__pyx_v_data));
 
-  /* "sequence.pyx":357
+  /* "sequence.pyx":358
  *         seq_rev = stp_sequence_create_reverse(s)
  *         stp_sequence_get_data(seq_rev, &size, &data)
  *         stp_sequence_set_data(s, size, data)             # <<<<<<<<<<<<<<
@@ -4787,7 +4822,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
  */
   (void)(stp_sequence_set_data(__pyx_v_s, __pyx_v_size, __pyx_v_data));
 
-  /* "sequence.pyx":343
+  /* "sequence.pyx":344
  *         return ret_code
  * 
  *     cpdef reverse(Sequence self):             # <<<<<<<<<<<<<<
@@ -4813,7 +4848,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_reverse(struct __pyx_obj_8sequence_
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_23reverse(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_22reverse[] = "Sequence.reverse(self)\nReverse the sequence in place.\n\n        Note : this is a different behavior from the c implementation function.\n        The c function stp_reverse() copy the reversed data in a destination\n        structure without touching the source. The c api doesn't provide\n        in place function.\n        ";
+static char __pyx_doc_8sequence_8Sequence_22reverse[] = "Reverse the sequence in place.\n\n        Note : this is a different behavior from the c implementation function.\n        The c function stp_reverse() copy the reversed data in a destination\n        structure without touching the source. The c api doesn't provide\n        in place function.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_23reverse(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -4831,7 +4866,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_22reverse(struct __pyx_obj_8sequen
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("reverse", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_reverse(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_reverse(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 344, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4848,7 +4883,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_22reverse(struct __pyx_obj_8sequen
   return __pyx_r;
 }
 
-/* "sequence.pyx":359
+/* "sequence.pyx":360
  *         stp_sequence_set_data(s, size, data)
  * 
  *     cpdef create_reverse(Sequence self):             # <<<<<<<<<<<<<<
@@ -4879,7 +4914,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_create_reverse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 359, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_create_reverse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 360, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_25create_reverse)) {
         __Pyx_XDECREF(__pyx_r);
@@ -4896,7 +4931,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 359, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 360, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -4917,7 +4952,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
     #endif
   }
 
-  /* "sequence.pyx":367
+  /* "sequence.pyx":368
  *         :returns: the new copy of the Sequence.
  *         """
  *         reverse = type(self)()             # <<<<<<<<<<<<<<
@@ -4937,13 +4972,13 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 368, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_reverse = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "sequence.pyx":368
+  /* "sequence.pyx":369
  *         """
  *         reverse = type(self)()
  *         cdef Sequence rs = <Sequence> reverse             # <<<<<<<<<<<<<<
@@ -4955,7 +4990,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
   __pyx_v_rs = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "sequence.pyx":369
+  /* "sequence.pyx":370
  *         reverse = type(self)()
  *         cdef Sequence rs = <Sequence> reverse
  *         cdef stp_sequence* s = self.get_sequence()             # <<<<<<<<<<<<<<
@@ -4964,19 +4999,19 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
  */
   __pyx_v_s = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self);
 
-  /* "sequence.pyx":370
+  /* "sequence.pyx":371
  *         cdef Sequence rs = <Sequence> reverse
  *         cdef stp_sequence* s = self.get_sequence()
  *         reverse_sequence = Sequence()             # <<<<<<<<<<<<<<
  *         stp_sequence_reverse(rs.get_sequence(), s)
  *         return reverse
  */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_8sequence_Sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 370, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_8sequence_Sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 371, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_reverse_sequence = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "sequence.pyx":371
+  /* "sequence.pyx":372
  *         cdef stp_sequence* s = self.get_sequence()
  *         reverse_sequence = Sequence()
  *         stp_sequence_reverse(rs.get_sequence(), s)             # <<<<<<<<<<<<<<
@@ -4985,7 +5020,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
  */
   stp_sequence_reverse(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_rs->__pyx_vtab)->get_sequence(__pyx_v_rs), __pyx_v_s);
 
-  /* "sequence.pyx":372
+  /* "sequence.pyx":373
  *         reverse_sequence = Sequence()
  *         stp_sequence_reverse(rs.get_sequence(), s)
  *         return reverse             # <<<<<<<<<<<<<<
@@ -4997,7 +5032,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
   __pyx_r = __pyx_v_reverse;
   goto __pyx_L0;
 
-  /* "sequence.pyx":359
+  /* "sequence.pyx":360
  *         stp_sequence_set_data(s, size, data)
  * 
  *     cpdef create_reverse(Sequence self):             # <<<<<<<<<<<<<<
@@ -5024,7 +5059,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_create_reverse(struct __pyx_obj_8se
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_25create_reverse(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_24create_reverse[] = "Sequence.create_reverse(self)\nReturn a reversed copy.\n\n        A new Sequence will be returned with the reverse contents\n        of self being copied into it.\n\n        :returns: the new copy of the Sequence.\n        ";
+static char __pyx_doc_8sequence_8Sequence_24create_reverse[] = "Return a reversed copy.\n\n        A new Sequence will be returned with the reverse contents\n        of self being copied into it.\n\n        :returns: the new copy of the Sequence.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_25create_reverse(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5042,7 +5077,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_24create_reverse(struct __pyx_obj_
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("create_reverse", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_create_reverse(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 359, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_create_reverse(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 360, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5059,7 +5094,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_24create_reverse(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "sequence.pyx":377
+/* "sequence.pyx":378
  *     # BOUNDARY METHODS
  *     #
  *     cpdef set_bounds(Sequence self, double low, double high):             # <<<<<<<<<<<<<<
@@ -5094,13 +5129,13 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_bounds); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 377, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_bounds); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 378, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_27set_bounds)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 377, __pyx_L1_error)
+        __pyx_t_3 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 378, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_4 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 377, __pyx_L1_error)
+        __pyx_t_4 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 378, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_5 = __pyx_t_1; __pyx_t_6 = NULL;
@@ -5118,7 +5153,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 377, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 378, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5128,7 +5163,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 377, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 378, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5136,7 +5171,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
         } else
         #endif
         {
-          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 377, __pyx_L1_error)
+          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 378, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           if (__pyx_t_6) {
             __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -5147,7 +5182,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
           PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_t_4);
           __pyx_t_3 = 0;
           __pyx_t_4 = 0;
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 377, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 378, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         }
@@ -5170,7 +5205,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
     #endif
   }
 
-  /* "sequence.pyx":389
+  /* "sequence.pyx":390
  *         """
  *         cdef bint retcode
  *         retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)             # <<<<<<<<<<<<<<
@@ -5179,7 +5214,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
  */
   __pyx_v_retcode = stp_sequence_set_bounds(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self), __pyx_v_low, __pyx_v_high);
 
-  /* "sequence.pyx":390
+  /* "sequence.pyx":391
  *         cdef bint retcode
  *         retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -5189,14 +5224,14 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
   __pyx_t_9 = ((!(__pyx_v_retcode != 0)) != 0);
   if (unlikely(__pyx_t_9)) {
 
-    /* "sequence.pyx":391
+    /* "sequence.pyx":392
  *         retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)
  *         if not retcode:
  *             raise ValueError('the lower bound is greater than the \             # <<<<<<<<<<<<<<
  *                   upper bound : %f, %f' %(low, high))
  * 
  */
-    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 391, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_10 = 0;
     __pyx_t_11 = 127;
@@ -5205,16 +5240,16 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
     __Pyx_GIVEREF(__pyx_kp_u_the_lower_bound_is_greater_than);
     PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_the_lower_bound_is_greater_than);
 
-    /* "sequence.pyx":392
+    /* "sequence.pyx":393
  *         if not retcode:
  *             raise ValueError('the lower bound is greater than the \
  *                   upper bound : %f, %f' %(low, high))             # <<<<<<<<<<<<<<
  * 
  *     cpdef get_bounds(Sequence self):
  */
-    __pyx_t_2 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 392, __pyx_L1_error)
+    __pyx_t_2 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_Format(__pyx_t_2, __pyx_n_u_f_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 392, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Format(__pyx_t_2, __pyx_n_u_f_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_11 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_11) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_11;
@@ -5226,9 +5261,9 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
     __pyx_t_10 += 2;
     __Pyx_GIVEREF(__pyx_kp_u__8);
     PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u__8);
-    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 392, __pyx_L1_error)
+    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_Format(__pyx_t_5, __pyx_n_u_f_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 392, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Format(__pyx_t_5, __pyx_n_u_f_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_11 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_11) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_11;
@@ -5237,24 +5272,24 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
     PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "sequence.pyx":391
+    /* "sequence.pyx":392
  *         retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)
  *         if not retcode:
  *             raise ValueError('the lower bound is greater than the \             # <<<<<<<<<<<<<<
  *                   upper bound : %f, %f' %(low, high))
  * 
  */
-    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_10, __pyx_t_11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 391, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_10, __pyx_t_11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 392, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 391, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 391, __pyx_L1_error)
+    __PYX_ERR(0, 392, __pyx_L1_error)
 
-    /* "sequence.pyx":390
+    /* "sequence.pyx":391
  *         cdef bint retcode
  *         retcode = stp_sequence_set_bounds(self.get_sequence(), low, high)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -5263,7 +5298,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":377
+  /* "sequence.pyx":378
  *     # BOUNDARY METHODS
  *     #
  *     cpdef set_bounds(Sequence self, double low, double high):             # <<<<<<<<<<<<<<
@@ -5292,7 +5327,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_set_bounds(struct __pyx_obj_8sequen
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_27set_bounds(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_26set_bounds[] = "Sequence.set_bounds(self, double low, double high)\nSet the lower and upper bounds.\n\n        The lower and upper bounds set the minimum and maximum values\n        that a point in the sequence may hold.\n\n        :param low: the float min value for the lower bound.\n        :param high: the float max value for the upper bound.\n        :raises: ValueError if the lower bound is greater than\n        the upper bound.\n        ";
+static char __pyx_doc_8sequence_8Sequence_26set_bounds[] = "Set the lower and upper bounds.\n\n        The lower and upper bounds set the minimum and maximum values\n        that a point in the sequence may hold.\n\n        :param low: the float min value for the lower bound.\n        :param high: the float max value for the upper bound.\n        :raises: ValueError if the lower bound is greater than\n        the upper bound.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_27set_bounds(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   double __pyx_v_low;
   double __pyx_v_high;
@@ -5322,11 +5357,11 @@ static PyObject *__pyx_pw_8sequence_8Sequence_27set_bounds(PyObject *__pyx_v_sel
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_high)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("set_bounds", 1, 2, 2, 1); __PYX_ERR(0, 377, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("set_bounds", 1, 2, 2, 1); __PYX_ERR(0, 378, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_bounds") < 0)) __PYX_ERR(0, 377, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_bounds") < 0)) __PYX_ERR(0, 378, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -5334,12 +5369,12 @@ static PyObject *__pyx_pw_8sequence_8Sequence_27set_bounds(PyObject *__pyx_v_sel
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_low = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_low == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 377, __pyx_L3_error)
-    __pyx_v_high = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_high == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 377, __pyx_L3_error)
+    __pyx_v_low = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_low == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 378, __pyx_L3_error)
+    __pyx_v_high = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_high == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 378, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_bounds", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 377, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_bounds", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 378, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("sequence.Sequence.set_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5358,7 +5393,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_26set_bounds(struct __pyx_obj_8seq
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("set_bounds", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_set_bounds(__pyx_v_self, __pyx_v_low, __pyx_v_high, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 377, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_set_bounds(__pyx_v_self, __pyx_v_low, __pyx_v_high, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 378, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5375,7 +5410,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_26set_bounds(struct __pyx_obj_8seq
   return __pyx_r;
 }
 
-/* "sequence.pyx":394
+/* "sequence.pyx":395
  *                   upper bound : %f, %f' %(low, high))
  * 
  *     cpdef get_bounds(Sequence self):             # <<<<<<<<<<<<<<
@@ -5404,7 +5439,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_bounds); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 394, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_bounds); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_29get_bounds)) {
         __Pyx_XDECREF(__pyx_r);
@@ -5421,7 +5456,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 394, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 395, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -5442,7 +5477,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
     #endif
   }
 
-  /* "sequence.pyx":400
+  /* "sequence.pyx":401
  *         """
  *         cdef double low, high
  *         stp_sequence_get_bounds(self.get_sequence(), &low, &high)             # <<<<<<<<<<<<<<
@@ -5451,7 +5486,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
  */
   stp_sequence_get_bounds(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self), (&__pyx_v_low), (&__pyx_v_high));
 
-  /* "sequence.pyx":401
+  /* "sequence.pyx":402
  *         cdef double low, high
  *         stp_sequence_get_bounds(self.get_sequence(), &low, &high)
  *         return low, high             # <<<<<<<<<<<<<<
@@ -5459,11 +5494,11 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
  *     cpdef get_range(Sequence self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 401, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_low); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 402, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_high); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 402, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 401, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 402, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -5475,7 +5510,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":394
+  /* "sequence.pyx":395
  *                   upper bound : %f, %f' %(low, high))
  * 
  *     cpdef get_bounds(Sequence self):             # <<<<<<<<<<<<<<
@@ -5499,7 +5534,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_bounds(struct __pyx_obj_8sequen
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_29get_bounds(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_28get_bounds[] = "Sequence.get_bounds(self)\nGet the lower and upper bounds.\n\n        :returns: a tuple of floats bounds values, (min, max).\n        ";
+static char __pyx_doc_8sequence_8Sequence_28get_bounds[] = "Get the lower and upper bounds.\n\n        :returns: a tuple of floats bounds values, (min, max).\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_29get_bounds(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5517,7 +5552,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_28get_bounds(struct __pyx_obj_8seq
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_bounds", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_get_bounds(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 394, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_get_bounds(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5534,7 +5569,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_28get_bounds(struct __pyx_obj_8seq
   return __pyx_r;
 }
 
-/* "sequence.pyx":403
+/* "sequence.pyx":404
  *         return low, high
  * 
  *     cpdef get_range(Sequence self):             # <<<<<<<<<<<<<<
@@ -5563,7 +5598,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_range); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 403, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_range); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 404, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_31get_range)) {
         __Pyx_XDECREF(__pyx_r);
@@ -5580,7 +5615,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 403, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 404, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -5601,7 +5636,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
     #endif
   }
 
-  /* "sequence.pyx":409
+  /* "sequence.pyx":410
  *         """
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)             # <<<<<<<<<<<<<<
@@ -5610,7 +5645,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
  */
   stp_sequence_get_range(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self), (&__pyx_v_cmin), (&__pyx_v_cmax));
 
-  /* "sequence.pyx":410
+  /* "sequence.pyx":411
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
  *         return cmin, cmax             # <<<<<<<<<<<<<<
@@ -5618,11 +5653,11 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
  *     cpdef double min(Sequence self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_cmin); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 410, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_cmin); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_cmax); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 410, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_cmax); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 410, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -5634,7 +5669,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":403
+  /* "sequence.pyx":404
  *         return low, high
  * 
  *     cpdef get_range(Sequence self):             # <<<<<<<<<<<<<<
@@ -5658,7 +5693,7 @@ static PyObject *__pyx_f_8sequence_8Sequence_get_range(struct __pyx_obj_8sequenc
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_31get_range(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_30get_range[] = "Sequence.get_range(self)\nGet range of values stored in the sequence.\n\n        :returns: a tuple of floats values (min, max).\n        ";
+static char __pyx_doc_8sequence_8Sequence_30get_range[] = "Get range of values stored in the sequence.\n\n        :returns: a tuple of floats values (min, max).\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_31get_range(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5676,7 +5711,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_30get_range(struct __pyx_obj_8sequ
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_range", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_8sequence_8Sequence_get_range(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 403, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8sequence_8Sequence_get_range(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 404, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5693,7 +5728,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_30get_range(struct __pyx_obj_8sequ
   return __pyx_r;
 }
 
-/* "sequence.pyx":412
+/* "sequence.pyx":413
  *         return cmin, cmax
  * 
  *     cpdef double min(Sequence self):             # <<<<<<<<<<<<<<
@@ -5723,7 +5758,7 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_min); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 412, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_min); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 413, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_33min)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -5739,10 +5774,10 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 412, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 412, __pyx_L1_error)
+        __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 413, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -5761,7 +5796,7 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
     #endif
   }
 
-  /* "sequence.pyx":418
+  /* "sequence.pyx":419
  *         """
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)             # <<<<<<<<<<<<<<
@@ -5770,7 +5805,7 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
  */
   stp_sequence_get_range(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self), (&__pyx_v_cmin), (&__pyx_v_cmax));
 
-  /* "sequence.pyx":419
+  /* "sequence.pyx":420
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
  *         return cmin             # <<<<<<<<<<<<<<
@@ -5780,7 +5815,7 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
   __pyx_r = __pyx_v_cmin;
   goto __pyx_L0;
 
-  /* "sequence.pyx":412
+  /* "sequence.pyx":413
  *         return cmin, cmax
  * 
  *     cpdef double min(Sequence self):             # <<<<<<<<<<<<<<
@@ -5803,7 +5838,7 @@ static double __pyx_f_8sequence_8Sequence_min(struct __pyx_obj_8sequence_Sequenc
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_33min(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_32min[] = "Sequence.min(self) -> double\nGet the min value stored in the sequence.\n\n        :returns: a float for the low bound.\n        ";
+static char __pyx_doc_8sequence_8Sequence_32min[] = "Get the min value stored in the sequence.\n\n        :returns: a float for the low bound.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_33min(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5821,7 +5856,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_32min(struct __pyx_obj_8sequence_S
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("min", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_8sequence_8Sequence_min(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_8sequence_8Sequence_min(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5838,7 +5873,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_32min(struct __pyx_obj_8sequence_S
   return __pyx_r;
 }
 
-/* "sequence.pyx":421
+/* "sequence.pyx":422
  *         return cmin
  * 
  *     cpdef double max(Sequence self):             # <<<<<<<<<<<<<<
@@ -5868,7 +5903,7 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_max); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_max); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 422, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_8sequence_8Sequence_35max)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -5884,10 +5919,10 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 421, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 422, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 421, __pyx_L1_error)
+        __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 422, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -5906,7 +5941,7 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
     #endif
   }
 
-  /* "sequence.pyx":427
+  /* "sequence.pyx":428
  *         """
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)             # <<<<<<<<<<<<<<
@@ -5915,7 +5950,7 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
  */
   stp_sequence_get_range(((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self), (&__pyx_v_cmin), (&__pyx_v_cmax));
 
-  /* "sequence.pyx":428
+  /* "sequence.pyx":429
  *         cdef double cmin, cmax
  *         stp_sequence_get_range(self.get_sequence(), &cmin, &cmax)
  *         return cmax             # <<<<<<<<<<<<<<
@@ -5925,7 +5960,7 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
   __pyx_r = __pyx_v_cmax;
   goto __pyx_L0;
 
-  /* "sequence.pyx":421
+  /* "sequence.pyx":422
  *         return cmin
  * 
  *     cpdef double max(Sequence self):             # <<<<<<<<<<<<<<
@@ -5948,7 +5983,7 @@ static double __pyx_f_8sequence_8Sequence_max(struct __pyx_obj_8sequence_Sequenc
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_35max(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_34max[] = "Sequence.max(self) -> double\nGet the max value stored in the sequence.\n\n        :returns: a float for the high bound.\n        ";
+static char __pyx_doc_8sequence_8Sequence_34max[] = "Get the max value stored in the sequence.\n\n        :returns: a float for the high bound.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_35max(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5966,7 +6001,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_34max(struct __pyx_obj_8sequence_S
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("max", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_8sequence_8Sequence_max(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 421, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_8sequence_8Sequence_max(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 422, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5983,12 +6018,12 @@ static PyObject *__pyx_pf_8sequence_8Sequence_34max(struct __pyx_obj_8sequence_S
   return __pyx_r;
 }
 
-/* "sequence.pyx":433
+/* "sequence.pyx":434
  *     # SEQUENCE INTERFACE : __getitem__(), __setitem__()
  *     #
  *     def __setitem__(Sequence self, object index, object value):             # <<<<<<<<<<<<<<
- *         if isinstance(index, slice):
- *             obj = is_slice(value)
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")
  */
 
 /* Python wrapper */
@@ -6005,172 +6040,166 @@ static int __pyx_pw_8sequence_8Sequence_37__setitem__(PyObject *__pyx_v_self, Py
 }
 
 static int __pyx_pf_8sequence_8Sequence_36__setitem__(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, PyObject *__pyx_v_index, PyObject *__pyx_v_value) {
-  PyObject *__pyx_v_obj = NULL;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
-  int __pyx_t_4;
-  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
   size_t __pyx_t_7;
   double __pyx_t_8;
   __Pyx_RefNannySetupContext("__setitem__", 0);
   __Pyx_INCREF(__pyx_v_index);
 
-  /* "sequence.pyx":434
+  /* "sequence.pyx":435
  *     #
  *     def __setitem__(Sequence self, object index, object value):
- *         if isinstance(index, slice):             # <<<<<<<<<<<<<<
- *             obj = is_slice(value)
- *             if obj:
+ *         if isinstance(index, tuple):             # <<<<<<<<<<<<<<
+ *             raise IndexError("Try multidimentional indexing on Sequence")
+ *         elif isinstance(index, slice):
  */
-  __pyx_t_1 = PySlice_Check(__pyx_v_index); 
+  __pyx_t_1 = PyTuple_Check(__pyx_v_index); 
   __pyx_t_2 = (__pyx_t_1 != 0);
-  if (__pyx_t_2) {
-
-    /* "sequence.pyx":435
- *     def __setitem__(Sequence self, object index, object value):
- *         if isinstance(index, slice):
- *             obj = is_slice(value)             # <<<<<<<<<<<<<<
- *             if obj:
- *                 self.set_slice(index, obj, True)
- */
-    __pyx_t_3 = __pyx_f_8sequence_is_slice(__pyx_v_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 435, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_v_obj = __pyx_t_3;
-    __pyx_t_3 = 0;
+  if (unlikely(__pyx_t_2)) {
 
     /* "sequence.pyx":436
- *         if isinstance(index, slice):
- *             obj = is_slice(value)
- *             if obj:             # <<<<<<<<<<<<<<
- *                 self.set_slice(index, obj, True)
- *             else:
+ *     def __setitem__(Sequence self, object index, object value):
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")             # <<<<<<<<<<<<<<
+ *         elif isinstance(index, slice):
+ *             self.setslice(index.start, index.stop, value)
  */
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_obj); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 436, __pyx_L1_error)
-    if (__pyx_t_2) {
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 436, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __PYX_ERR(0, 436, __pyx_L1_error)
 
-      /* "sequence.pyx":437
- *             obj = is_slice(value)
- *             if obj:
- *                 self.set_slice(index, obj, True)             # <<<<<<<<<<<<<<
- *             else:
- *                 self.set_slice(index, value, False)
+    /* "sequence.pyx":435
+ *     #
+ *     def __setitem__(Sequence self, object index, object value):
+ *         if isinstance(index, tuple):             # <<<<<<<<<<<<<<
+ *             raise IndexError("Try multidimentional indexing on Sequence")
+ *         elif isinstance(index, slice):
  */
-      __pyx_t_4 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_slice(__pyx_v_self, __pyx_v_index, __pyx_v_obj, 1); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(0, 437, __pyx_L1_error)
+  }
 
-      /* "sequence.pyx":436
- *         if isinstance(index, slice):
- *             obj = is_slice(value)
- *             if obj:             # <<<<<<<<<<<<<<
- *                 self.set_slice(index, obj, True)
- *             else:
+  /* "sequence.pyx":437
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")
+ *         elif isinstance(index, slice):             # <<<<<<<<<<<<<<
+ *             self.setslice(index.start, index.stop, value)
+ *         elif PyIndex_Check(index):
  */
-      goto __pyx_L4;
-    }
+  __pyx_t_2 = PySlice_Check(__pyx_v_index); 
+  __pyx_t_1 = (__pyx_t_2 != 0);
+  if (__pyx_t_1) {
 
-    /* "sequence.pyx":439
- *                 self.set_slice(index, obj, True)
- *             else:
- *                 self.set_slice(index, value, False)             # <<<<<<<<<<<<<<
+    /* "sequence.pyx":438
+ *             raise IndexError("Try multidimentional indexing on Sequence")
+ *         elif isinstance(index, slice):
+ *             self.setslice(index.start, index.stop, value)             # <<<<<<<<<<<<<<
  *         elif PyIndex_Check(index):
  *             if index < 0:
  */
-    /*else*/ {
-      __pyx_t_4 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_slice(__pyx_v_self, __pyx_v_index, __pyx_v_value, 0); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(0, 439, __pyx_L1_error)
-    }
-    __pyx_L4:;
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->setslice(__pyx_v_self, __pyx_t_3, __pyx_t_4, __pyx_v_value); if (unlikely(__pyx_t_5 == ((int)-1))) __PYX_ERR(0, 438, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "sequence.pyx":434
- *     #
- *     def __setitem__(Sequence self, object index, object value):
- *         if isinstance(index, slice):             # <<<<<<<<<<<<<<
- *             obj = is_slice(value)
- *             if obj:
+    /* "sequence.pyx":437
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")
+ *         elif isinstance(index, slice):             # <<<<<<<<<<<<<<
+ *             self.setslice(index.start, index.stop, value)
+ *         elif PyIndex_Check(index):
  */
     goto __pyx_L3;
   }
 
-  /* "sequence.pyx":440
- *             else:
- *                 self.set_slice(index, value, False)
+  /* "sequence.pyx":439
+ *         elif isinstance(index, slice):
+ *             self.setslice(index.start, index.stop, value)
  *         elif PyIndex_Check(index):             # <<<<<<<<<<<<<<
  *             if index < 0:
  *                 index += self.__len__()
  */
-  __pyx_t_2 = (PyIndex_Check(__pyx_v_index) != 0);
-  if (likely(__pyx_t_2)) {
+  __pyx_t_1 = (PyIndex_Check(__pyx_v_index) != 0);
+  if (likely(__pyx_t_1)) {
 
-    /* "sequence.pyx":441
- *                 self.set_slice(index, value, False)
+    /* "sequence.pyx":440
+ *             self.setslice(index.start, index.stop, value)
  *         elif PyIndex_Check(index):
  *             if index < 0:             # <<<<<<<<<<<<<<
  *                 index += self.__len__()
  *                 if index < 0:
  */
-    __pyx_t_3 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 441, __pyx_L1_error)
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 441, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (__pyx_t_2) {
+    __pyx_t_4 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 440, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 440, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (__pyx_t_1) {
 
-      /* "sequence.pyx":442
+      /* "sequence.pyx":441
  *         elif PyIndex_Check(index):
  *             if index < 0:
  *                 index += self.__len__()             # <<<<<<<<<<<<<<
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")
  */
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 442, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 441, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_6 = NULL;
-      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
-        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_5);
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
         if (likely(__pyx_t_6)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
           __Pyx_INCREF(__pyx_t_6);
           __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_5, function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
         }
       }
-      __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_5);
+      __pyx_t_4 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 442, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_index, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 442, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 441, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_DECREF_SET(__pyx_v_index, __pyx_t_5);
-      __pyx_t_5 = 0;
+      __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_v_index, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 441, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF_SET(__pyx_v_index, __pyx_t_3);
+      __pyx_t_3 = 0;
 
-      /* "sequence.pyx":443
+      /* "sequence.pyx":442
  *             if index < 0:
  *                 index += self.__len__()
  *                 if index < 0:             # <<<<<<<<<<<<<<
  *                     raise IndexError("Index out of bounds.")
  *             self.set_point(index, value)
  */
-      __pyx_t_5 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 443, __pyx_L1_error)
-      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 443, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (unlikely(__pyx_t_2)) {
+      __pyx_t_3 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 442, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 442, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(__pyx_t_1)) {
 
-        /* "sequence.pyx":444
+        /* "sequence.pyx":443
  *                 index += self.__len__()
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")             # <<<<<<<<<<<<<<
  *             self.set_point(index, value)
  *         else:
  */
-        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 444, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __Pyx_Raise(__pyx_t_5, 0, 0, 0);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __PYX_ERR(0, 444, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 443, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __PYX_ERR(0, 443, __pyx_L1_error)
 
-        /* "sequence.pyx":443
+        /* "sequence.pyx":442
  *             if index < 0:
  *                 index += self.__len__()
  *                 if index < 0:             # <<<<<<<<<<<<<<
@@ -6179,8 +6208,8 @@ static int __pyx_pf_8sequence_8Sequence_36__setitem__(struct __pyx_obj_8sequence
  */
       }
 
-      /* "sequence.pyx":441
- *                 self.set_slice(index, value, False)
+      /* "sequence.pyx":440
+ *             self.setslice(index.start, index.stop, value)
  *         elif PyIndex_Check(index):
  *             if index < 0:             # <<<<<<<<<<<<<<
  *                 index += self.__len__()
@@ -6188,20 +6217,20 @@ static int __pyx_pf_8sequence_8Sequence_36__setitem__(struct __pyx_obj_8sequence
  */
     }
 
-    /* "sequence.pyx":445
+    /* "sequence.pyx":444
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")
  *             self.set_point(index, value)             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError("Cannot index with type '%s'" % type(index))
  */
-    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_v_index); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 445, __pyx_L1_error)
-    __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 445, __pyx_L1_error)
-    __pyx_t_2 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_t_7, __pyx_t_8); if (unlikely(__pyx_t_2 == ((int)0))) __PYX_ERR(0, 445, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_v_index); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 444, __pyx_L1_error)
+    __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 444, __pyx_L1_error)
+    __pyx_t_1 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_t_7, __pyx_t_8); if (unlikely(__pyx_t_1 == ((int)0))) __PYX_ERR(0, 444, __pyx_L1_error)
 
-    /* "sequence.pyx":440
- *             else:
- *                 self.set_slice(index, value, False)
+    /* "sequence.pyx":439
+ *         elif isinstance(index, slice):
+ *             self.setslice(index.start, index.stop, value)
  *         elif PyIndex_Check(index):             # <<<<<<<<<<<<<<
  *             if index < 0:
  *                 index += self.__len__()
@@ -6209,31 +6238,31 @@ static int __pyx_pf_8sequence_8Sequence_36__setitem__(struct __pyx_obj_8sequence
     goto __pyx_L3;
   }
 
-  /* "sequence.pyx":447
+  /* "sequence.pyx":446
  *             self.set_point(index, value)
  *         else:
  *             raise TypeError("Cannot index with type '%s'" % type(index))             # <<<<<<<<<<<<<<
  * 
- *     cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:
+ *     cdef int setslice(Sequence self, start, stop, object value)except -1:
  */
   /*else*/ {
-    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_Cannot_index_with_type_s, ((PyObject *)Py_TYPE(__pyx_v_index))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 447, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_TypeError, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 447, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_Cannot_index_with_type_s, ((PyObject *)Py_TYPE(__pyx_v_index))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_TypeError, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 446, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 447, __pyx_L1_error)
+    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __PYX_ERR(0, 446, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "sequence.pyx":433
+  /* "sequence.pyx":434
  *     # SEQUENCE INTERFACE : __getitem__(), __setitem__()
  *     #
  *     def __setitem__(Sequence self, object index, object value):             # <<<<<<<<<<<<<<
- *         if isinstance(index, slice):
- *             obj = is_slice(value)
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")
  */
 
   /* function exit code */
@@ -6241,744 +6270,727 @@ static int __pyx_pf_8sequence_8Sequence_36__setitem__(struct __pyx_obj_8sequence
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("sequence.Sequence.__setitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_obj);
   __Pyx_XDECREF(__pyx_v_index);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "sequence.pyx":449
+/* "sequence.pyx":448
  *             raise TypeError("Cannot index with type '%s'" % type(index))
  * 
- *     cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:             # <<<<<<<<<<<<<<
- *         cdef Py_ssize_t start, stop, size, i, v, _len
- *         cdef memoryview mv
+ *     cdef int setslice(Sequence self, start, stop, object value)except -1:             # <<<<<<<<<<<<<<
+ *         cdef Py_ssize_t size, i, v, _len
+ *         cdef memoryview mv = None
  */
 
-static int __pyx_f_8sequence_8Sequence_set_slice(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, PyObject *__pyx_v_index, PyObject *__pyx_v_value, int __pyx_v_val_is_slice) {
-  Py_ssize_t __pyx_v_start;
-  Py_ssize_t __pyx_v_stop;
+static int __pyx_f_8sequence_8Sequence_setslice(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, PyObject *__pyx_v_start, PyObject *__pyx_v_stop, PyObject *__pyx_v_value) {
   Py_ssize_t __pyx_v_size;
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_v;
   Py_ssize_t __pyx_v__len;
   struct __pyx_memoryview_obj *__pyx_v_mv = 0;
-  Py_buffer __pyx_v_pybuffer;
   double __pyx_v_d_val;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
+  PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
-  int __pyx_t_4;
+  Py_ssize_t __pyx_t_4;
   int __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
-  Py_ssize_t __pyx_t_7;
-  int __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
   double __pyx_t_11;
-  __Pyx_RefNannySetupContext("set_slice", 0);
+  long __pyx_t_12;
+  long __pyx_t_13;
+  long __pyx_t_14;
+  __Pyx_RefNannySetupContext("setslice", 0);
+  __Pyx_INCREF(__pyx_v_start);
+  __Pyx_INCREF(__pyx_v_stop);
 
-  /* "sequence.pyx":455
+  /* "sequence.pyx":450
+ *     cdef int setslice(Sequence self, start, stop, object value)except -1:
+ *         cdef Py_ssize_t size, i, v, _len
+ *         cdef memoryview mv = None             # <<<<<<<<<<<<<<
+ *         cdef Py_buffer pybuffer
+ *         cdef double d_val
+ */
+  __Pyx_INCREF(Py_None);
+  __pyx_v_mv = ((struct __pyx_memoryview_obj *)Py_None);
+
+  /* "sequence.pyx":454
  *         cdef double d_val
  * 
- *         if index.step != 1 and index.step is not None:             # <<<<<<<<<<<<<<
- *             raise ValueError("step in slice is not implemented")
- *         _len = self.__len__( )
- */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_step); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 455, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_NeObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 455, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 455, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__pyx_t_4) {
-  } else {
-    __pyx_t_1 = __pyx_t_4;
-    goto __pyx_L4_bool_binop_done;
-  }
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_step); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 455, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = (__pyx_t_3 != Py_None);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_5 = (__pyx_t_4 != 0);
-  __pyx_t_1 = __pyx_t_5;
-  __pyx_L4_bool_binop_done:;
-  if (unlikely(__pyx_t_1)) {
-
-    /* "sequence.pyx":456
- * 
- *         if index.step != 1 and index.step is not None:
- *             raise ValueError("step in slice is not implemented")             # <<<<<<<<<<<<<<
- *         _len = self.__len__( )
- *         if index.start == None:
- */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 456, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 456, __pyx_L1_error)
-
-    /* "sequence.pyx":455
- *         cdef double d_val
- * 
- *         if index.step != 1 and index.step is not None:             # <<<<<<<<<<<<<<
- *             raise ValueError("step in slice is not implemented")
- *         _len = self.__len__( )
- */
-  }
-
-  /* "sequence.pyx":457
- *         if index.step != 1 and index.step is not None:
- *             raise ValueError("step in slice is not implemented")
- *         _len = self.__len__( )             # <<<<<<<<<<<<<<
- *         if index.start == None:
+ *         _len = self.__len__()             # <<<<<<<<<<<<<<
+ *         if start is None:
  *             start = 0
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 457, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 454, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = NULL;
+  __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_6)) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_2, function);
     }
   }
-  __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 457, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 454, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 457, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v__len = __pyx_t_7;
+  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 454, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v__len = __pyx_t_4;
 
-  /* "sequence.pyx":458
- *             raise ValueError("step in slice is not implemented")
- *         _len = self.__len__( )
- *         if index.start == None:             # <<<<<<<<<<<<<<
+  /* "sequence.pyx":455
+ * 
+ *         _len = self.__len__()
+ *         if start is None:             # <<<<<<<<<<<<<<
  *             start = 0
- *         elif index.start < 0:
+ *         elif start < 0:
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 458, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_3, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 458, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 458, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__pyx_t_1) {
+  __pyx_t_5 = (__pyx_v_start == Py_None);
+  __pyx_t_6 = (__pyx_t_5 != 0);
+  if (__pyx_t_6) {
 
-    /* "sequence.pyx":459
- *         _len = self.__len__( )
- *         if index.start == None:
+    /* "sequence.pyx":456
+ *         _len = self.__len__()
+ *         if start is None:
  *             start = 0             # <<<<<<<<<<<<<<
- *         elif index.start < 0:
- *             start = index.start + _len
+ *         elif start < 0:
+ *             start += _len
  */
-    __pyx_v_start = 0;
+    __Pyx_INCREF(__pyx_int_0);
+    __Pyx_DECREF_SET(__pyx_v_start, __pyx_int_0);
+
+    /* "sequence.pyx":455
+ * 
+ *         _len = self.__len__()
+ *         if start is None:             # <<<<<<<<<<<<<<
+ *             start = 0
+ *         elif start < 0:
+ */
+    goto __pyx_L3;
+  }
+
+  /* "sequence.pyx":457
+ *         if start is None:
+ *             start = 0
+ *         elif start < 0:             # <<<<<<<<<<<<<<
+ *             start += _len
+ *             if start < 0:
+ */
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_start, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 457, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 457, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_6) {
 
     /* "sequence.pyx":458
- *             raise ValueError("step in slice is not implemented")
- *         _len = self.__len__( )
- *         if index.start == None:             # <<<<<<<<<<<<<<
  *             start = 0
- *         elif index.start < 0:
- */
-    goto __pyx_L6;
-  }
-
-  /* "sequence.pyx":460
- *         if index.start == None:
- *             start = 0
- *         elif index.start < 0:             # <<<<<<<<<<<<<<
- *             start = index.start + _len
- *             if start < 0:
- */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 460, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 460, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 460, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__pyx_t_1) {
-
-    /* "sequence.pyx":461
- *             start = 0
- *         elif index.start < 0:
- *             start = index.start + _len             # <<<<<<<<<<<<<<
+ *         elif start < 0:
+ *             start += _len             # <<<<<<<<<<<<<<
  *             if start < 0:
  *                 start = 0
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 461, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 461, __pyx_L1_error)
+    __pyx_t_1 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 458, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_v_start, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = PyNumber_Add(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 461, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_6); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 461, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_v_start = __pyx_t_7;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF_SET(__pyx_v_start, __pyx_t_2);
+    __pyx_t_2 = 0;
 
-    /* "sequence.pyx":462
- *         elif index.start < 0:
- *             start = index.start + _len
+    /* "sequence.pyx":459
+ *         elif start < 0:
+ *             start += _len
  *             if start < 0:             # <<<<<<<<<<<<<<
  *                 start = 0
- *         elif index.start > _len:
+ *         elif start > _len:
  */
-    __pyx_t_1 = ((__pyx_v_start < 0) != 0);
-    if (__pyx_t_1) {
+    __pyx_t_2 = PyObject_RichCompare(__pyx_v_start, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 459, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 459, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (__pyx_t_6) {
 
-      /* "sequence.pyx":463
- *             start = index.start + _len
+      /* "sequence.pyx":460
+ *             start += _len
  *             if start < 0:
  *                 start = 0             # <<<<<<<<<<<<<<
- *         elif index.start > _len:
+ *         elif start > _len:
  *             start = _len
  */
-      __pyx_v_start = 0;
+      __Pyx_INCREF(__pyx_int_0);
+      __Pyx_DECREF_SET(__pyx_v_start, __pyx_int_0);
 
-      /* "sequence.pyx":462
- *         elif index.start < 0:
- *             start = index.start + _len
+      /* "sequence.pyx":459
+ *         elif start < 0:
+ *             start += _len
  *             if start < 0:             # <<<<<<<<<<<<<<
  *                 start = 0
- *         elif index.start > _len:
+ *         elif start > _len:
  */
     }
 
-    /* "sequence.pyx":460
- *         if index.start == None:
+    /* "sequence.pyx":457
+ *         if start is None:
  *             start = 0
- *         elif index.start < 0:             # <<<<<<<<<<<<<<
- *             start = index.start + _len
+ *         elif start < 0:             # <<<<<<<<<<<<<<
+ *             start += _len
  *             if start < 0:
  */
-    goto __pyx_L6;
+    goto __pyx_L3;
   }
+
+  /* "sequence.pyx":461
+ *             if start < 0:
+ *                 start = 0
+ *         elif start > _len:             # <<<<<<<<<<<<<<
+ *             start = _len
+ * 
+ */
+  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 461, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_start, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 461, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 461, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_6) {
+
+    /* "sequence.pyx":462
+ *                 start = 0
+ *         elif start > _len:
+ *             start = _len             # <<<<<<<<<<<<<<
+ * 
+ *         if stop is None:
+ */
+    __pyx_t_1 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 462, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF_SET(__pyx_v_start, __pyx_t_1);
+    __pyx_t_1 = 0;
+
+    /* "sequence.pyx":461
+ *             if start < 0:
+ *                 start = 0
+ *         elif start > _len:             # <<<<<<<<<<<<<<
+ *             start = _len
+ * 
+ */
+  }
+  __pyx_L3:;
 
   /* "sequence.pyx":464
- *             if start < 0:
- *                 start = 0
- *         elif index.start > _len:             # <<<<<<<<<<<<<<
  *             start = _len
- *         else:
+ * 
+ *         if stop is None:             # <<<<<<<<<<<<<<
+ *             stop = _len - 1
+ *         elif stop < 0:
  */
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 464, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 464, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_6, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 464, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 464, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__pyx_t_1) {
+  __pyx_t_6 = (__pyx_v_stop == Py_None);
+  __pyx_t_5 = (__pyx_t_6 != 0);
+  if (__pyx_t_5) {
 
     /* "sequence.pyx":465
- *                 start = 0
- *         elif index.start > _len:
- *             start = _len             # <<<<<<<<<<<<<<
- *         else:
- *             start = index.start
+ * 
+ *         if stop is None:
+ *             stop = _len - 1             # <<<<<<<<<<<<<<
+ *         elif stop < 0:
+ *             stop += _len
  */
-    __pyx_v_start = __pyx_v__len;
+    __pyx_t_1 = PyInt_FromSsize_t((__pyx_v__len - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 465, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF_SET(__pyx_v_stop, __pyx_t_1);
+    __pyx_t_1 = 0;
 
     /* "sequence.pyx":464
- *             if start < 0:
- *                 start = 0
- *         elif index.start > _len:             # <<<<<<<<<<<<<<
  *             start = _len
- *         else:
+ * 
+ *         if stop is None:             # <<<<<<<<<<<<<<
+ *             stop = _len - 1
+ *         elif stop < 0:
  */
-    goto __pyx_L6;
+    goto __pyx_L5;
   }
 
-  /* "sequence.pyx":467
- *             start = _len
- *         else:
- *             start = index.start             # <<<<<<<<<<<<<<
- * 
- *         if index.stop == None:
- */
-  /*else*/ {
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_start); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 467, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 467, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_start = __pyx_t_7;
-  }
-  __pyx_L6:;
-
-  /* "sequence.pyx":469
- *             start = index.start
- * 
- *         if index.stop == None:             # <<<<<<<<<<<<<<
+  /* "sequence.pyx":466
+ *         if stop is None:
  *             stop = _len - 1
- *         elif index.stop < 0:
- */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 469, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_3, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 469, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 469, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__pyx_t_1) {
-
-    /* "sequence.pyx":470
- * 
- *         if index.stop == None:
- *             stop = _len - 1             # <<<<<<<<<<<<<<
- *         elif index.stop < 0:
- *             stop = index.stop + _len
- */
-    __pyx_v_stop = (__pyx_v__len - 1);
-
-    /* "sequence.pyx":469
- *             start = index.start
- * 
- *         if index.stop == None:             # <<<<<<<<<<<<<<
- *             stop = _len - 1
- *         elif index.stop < 0:
- */
-    goto __pyx_L8;
-  }
-
-  /* "sequence.pyx":471
- *         if index.stop == None:
- *             stop = _len - 1
- *         elif index.stop < 0:             # <<<<<<<<<<<<<<
- *             stop = index.stop + _len
+ *         elif stop < 0:             # <<<<<<<<<<<<<<
+ *             stop += _len
  *             if stop < 0:
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 471, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 471, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__pyx_t_1) {
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_stop, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_5) {
 
-    /* "sequence.pyx":472
+    /* "sequence.pyx":467
  *             stop = _len - 1
- *         elif index.stop < 0:
- *             stop = index.stop + _len             # <<<<<<<<<<<<<<
+ *         elif stop < 0:
+ *             stop += _len             # <<<<<<<<<<<<<<
  *             if stop < 0:
  *                 stop = 0
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 472, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 472, __pyx_L1_error)
+    __pyx_t_1 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 467, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_v_stop, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 467, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = PyNumber_Add(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 472, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_6); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 472, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_v_stop = __pyx_t_7;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF_SET(__pyx_v_stop, __pyx_t_2);
+    __pyx_t_2 = 0;
 
-    /* "sequence.pyx":473
- *         elif index.stop < 0:
- *             stop = index.stop + _len
+    /* "sequence.pyx":468
+ *         elif stop < 0:
+ *             stop += _len
  *             if stop < 0:             # <<<<<<<<<<<<<<
  *                 stop = 0
- *         elif index.stop > _len:
+ *         elif stop > _len:
  */
-    __pyx_t_1 = ((__pyx_v_stop < 0) != 0);
-    if (__pyx_t_1) {
+    __pyx_t_2 = PyObject_RichCompare(__pyx_v_stop, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 468, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 468, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (__pyx_t_5) {
 
-      /* "sequence.pyx":474
- *             stop = index.stop + _len
+      /* "sequence.pyx":469
+ *             stop += _len
  *             if stop < 0:
  *                 stop = 0             # <<<<<<<<<<<<<<
- *         elif index.stop > _len:
+ *         elif stop > _len:
  *             stop = _len
  */
-      __pyx_v_stop = 0;
+      __Pyx_INCREF(__pyx_int_0);
+      __Pyx_DECREF_SET(__pyx_v_stop, __pyx_int_0);
 
-      /* "sequence.pyx":473
- *         elif index.stop < 0:
- *             stop = index.stop + _len
+      /* "sequence.pyx":468
+ *         elif stop < 0:
+ *             stop += _len
  *             if stop < 0:             # <<<<<<<<<<<<<<
  *                 stop = 0
- *         elif index.stop > _len:
+ *         elif stop > _len:
  */
     }
 
-    /* "sequence.pyx":471
- *         if index.stop == None:
+    /* "sequence.pyx":466
+ *         if stop is None:
  *             stop = _len - 1
- *         elif index.stop < 0:             # <<<<<<<<<<<<<<
- *             stop = index.stop + _len
+ *         elif stop < 0:             # <<<<<<<<<<<<<<
+ *             stop += _len
  *             if stop < 0:
  */
-    goto __pyx_L8;
+    goto __pyx_L5;
   }
 
-  /* "sequence.pyx":475
+  /* "sequence.pyx":470
  *             if stop < 0:
  *                 stop = 0
- *         elif index.stop > _len:             # <<<<<<<<<<<<<<
+ *         elif stop > _len:             # <<<<<<<<<<<<<<
  *             stop = _len
- *         else:
+ * 
  */
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 475, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 475, __pyx_L1_error)
+  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 470, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_6, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 475, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_stop, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 475, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__pyx_t_1) {
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 470, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_5) {
 
-    /* "sequence.pyx":476
+    /* "sequence.pyx":471
  *                 stop = 0
- *         elif index.stop > _len:
+ *         elif stop > _len:
  *             stop = _len             # <<<<<<<<<<<<<<
- *         else:
- *             stop = index.stop
- */
-    __pyx_v_stop = __pyx_v__len;
-
-    /* "sequence.pyx":475
- *             if stop < 0:
- *                 stop = 0
- *         elif index.stop > _len:             # <<<<<<<<<<<<<<
- *             stop = _len
- *         else:
- */
-    goto __pyx_L8;
-  }
-
-  /* "sequence.pyx":478
- *             stop = _len
- *         else:
- *             stop = index.stop             # <<<<<<<<<<<<<<
  * 
  *         if stop <= start:
  */
-  /*else*/ {
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_index, __pyx_n_s_stop); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 478, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 478, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_stop = __pyx_t_7;
-  }
-  __pyx_L8:;
+    __pyx_t_1 = PyInt_FromSsize_t(__pyx_v__len); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 471, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF_SET(__pyx_v_stop, __pyx_t_1);
+    __pyx_t_1 = 0;
 
-  /* "sequence.pyx":480
- *             stop = index.stop
+    /* "sequence.pyx":470
+ *             if stop < 0:
+ *                 stop = 0
+ *         elif stop > _len:             # <<<<<<<<<<<<<<
+ *             stop = _len
+ * 
+ */
+  }
+  __pyx_L5:;
+
+  /* "sequence.pyx":473
+ *             stop = _len
  * 
  *         if stop <= start:             # <<<<<<<<<<<<<<
  *             return 1
- *         size = stop - start
+ *             #raise IndexError("Index out of bounds.")
  */
-  __pyx_t_1 = ((__pyx_v_stop <= __pyx_v_start) != 0);
-  if (__pyx_t_1) {
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_stop, __pyx_v_start, Py_LE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 473, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_5) {
 
-    /* "sequence.pyx":481
+    /* "sequence.pyx":474
  * 
  *         if stop <= start:
  *             return 1             # <<<<<<<<<<<<<<
- *         size = stop - start
- *         v = 0
+ *             #raise IndexError("Index out of bounds.")
+ * 
  */
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "sequence.pyx":480
- *             stop = index.stop
+    /* "sequence.pyx":473
+ *             stop = _len
  * 
  *         if stop <= start:             # <<<<<<<<<<<<<<
  *             return 1
- *         size = stop - start
+ *             #raise IndexError("Index out of bounds.")
  */
   }
 
-  /* "sequence.pyx":482
- *         if stop <= start:
- *             return 1
+  /* "sequence.pyx":477
+ *             #raise IndexError("Index out of bounds.")
+ * 
  *         size = stop - start             # <<<<<<<<<<<<<<
  *         v = 0
  * 
  */
-  __pyx_v_size = (__pyx_v_stop - __pyx_v_start);
+  __pyx_t_1 = PyNumber_Subtract(__pyx_v_stop, __pyx_v_start); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 477, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 477, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_size = __pyx_t_4;
 
-  /* "sequence.pyx":483
- *             return 1
+  /* "sequence.pyx":478
+ * 
  *         size = stop - start
  *         v = 0             # <<<<<<<<<<<<<<
  * 
- *         if val_is_slice:
+ *         try:
  */
   __pyx_v_v = 0;
 
-  /* "sequence.pyx":485
+  /* "sequence.pyx":480
  *         v = 0
  * 
- *         if val_is_slice:             # <<<<<<<<<<<<<<
- *             mv = <memoryview> value
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
+ *         try:             # <<<<<<<<<<<<<<
+ *             mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+ *         except TypeError:
  */
-  __pyx_t_1 = (__pyx_v_val_is_slice != 0);
-  if (__pyx_t_1) {
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9);
+    __Pyx_XGOTREF(__pyx_t_7);
+    __Pyx_XGOTREF(__pyx_t_8);
+    __Pyx_XGOTREF(__pyx_t_9);
+    /*try:*/ {
+
+      /* "sequence.pyx":481
+ * 
+ *         try:
+ *             mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)             # <<<<<<<<<<<<<<
+ *         except TypeError:
+ *             pass
+ */
+      __pyx_t_1 = __Pyx_PyInt_From_int((PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 481, __pyx_L8_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 481, __pyx_L8_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx_v_value);
+      __Pyx_GIVEREF(__pyx_v_value);
+      PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_value);
+      __Pyx_GIVEREF(__pyx_t_1);
+      PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_1);
+      __Pyx_INCREF(Py_False);
+      __Pyx_GIVEREF(Py_False);
+      PyTuple_SET_ITEM(__pyx_t_2, 2, Py_False);
+      __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 481, __pyx_L8_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF_SET(__pyx_v_mv, ((struct __pyx_memoryview_obj *)__pyx_t_1));
+      __pyx_t_1 = 0;
+
+      /* "sequence.pyx":480
+ *         v = 0
+ * 
+ *         try:             # <<<<<<<<<<<<<<
+ *             mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+ *         except TypeError:
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+    goto __pyx_L13_try_end;
+    __pyx_L8_error:;
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "sequence.pyx":482
+ *         try:
+ *             mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+ *         except TypeError:             # <<<<<<<<<<<<<<
+ *             pass
+ * 
+ */
+    __pyx_t_10 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_TypeError);
+    if (__pyx_t_10) {
+      __Pyx_ErrRestore(0,0,0);
+      goto __pyx_L9_exception_handled;
+    }
+    goto __pyx_L10_except_error;
+    __pyx_L10_except_error:;
+
+    /* "sequence.pyx":480
+ *         v = 0
+ * 
+ *         try:             # <<<<<<<<<<<<<<
+ *             mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+ *         except TypeError:
+ */
+    __Pyx_XGIVEREF(__pyx_t_7);
+    __Pyx_XGIVEREF(__pyx_t_8);
+    __Pyx_XGIVEREF(__pyx_t_9);
+    __Pyx_ExceptionReset(__pyx_t_7, __pyx_t_8, __pyx_t_9);
+    goto __pyx_L1_error;
+    __pyx_L9_exception_handled:;
+    __Pyx_XGIVEREF(__pyx_t_7);
+    __Pyx_XGIVEREF(__pyx_t_8);
+    __Pyx_XGIVEREF(__pyx_t_9);
+    __Pyx_ExceptionReset(__pyx_t_7, __pyx_t_8, __pyx_t_9);
+    __pyx_L13_try_end:;
+  }
+
+  /* "sequence.pyx":485
+ *             pass
+ * 
+ *         if mv == None:             # <<<<<<<<<<<<<<
+ *             d_val = <double> value
+ *             for i in xrange(start, stop + 1):
+ */
+  __pyx_t_1 = PyObject_RichCompare(((PyObject *)__pyx_v_mv), Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_5) {
 
     /* "sequence.pyx":486
  * 
- *         if val_is_slice:
- *             mv = <memoryview> value             # <<<<<<<<<<<<<<
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
- *             if pybuffer.ndim != 1:
- */
-    __pyx_t_3 = __pyx_v_value;
-    __Pyx_INCREF(__pyx_t_3);
-    __pyx_v_mv = ((struct __pyx_memoryview_obj *)__pyx_t_3);
-    __pyx_t_3 = 0;
-
-    /* "sequence.pyx":487
- *         if val_is_slice:
- *             mv = <memoryview> value
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)             # <<<<<<<<<<<<<<
- *             if pybuffer.ndim != 1:
- *                 PyBuffer_Release(&pybuffer)
- */
-    __pyx_t_8 = PyObject_GetBuffer(((PyObject *)__pyx_v_mv), (&__pyx_v_pybuffer), PyBUF_ND); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 487, __pyx_L1_error)
-
-    /* "sequence.pyx":488
- *             mv = <memoryview> value
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
- *             if pybuffer.ndim != 1:             # <<<<<<<<<<<<<<
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- */
-    __pyx_t_1 = ((__pyx_v_pybuffer.ndim != 1) != 0);
-    if (unlikely(__pyx_t_1)) {
-
-      /* "sequence.pyx":489
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
- *             if pybuffer.ndim != 1:
- *                 PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- *             if pybuffer.shape[0] >= size:
- */
-      PyBuffer_Release((&__pyx_v_pybuffer));
-
-      /* "sequence.pyx":490
- *             if pybuffer.ndim != 1:
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("Multidimentionnal array is not accepted.")             # <<<<<<<<<<<<<<
- *             if pybuffer.shape[0] >= size:
- *                 for i in xrange(start, stop):
- */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 490, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 490, __pyx_L1_error)
-
-      /* "sequence.pyx":488
- *             mv = <memoryview> value
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
- *             if pybuffer.ndim != 1:             # <<<<<<<<<<<<<<
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- */
-    }
-
-    /* "sequence.pyx":491
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- *             if pybuffer.shape[0] >= size:             # <<<<<<<<<<<<<<
- *                 for i in xrange(start, stop):
- *                     if not self.set_point(i, <double> mv[v]):
- */
-    __pyx_t_1 = (((__pyx_v_pybuffer.shape[0]) >= __pyx_v_size) != 0);
-    if (likely(__pyx_t_1)) {
-
-      /* "sequence.pyx":492
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- *             if pybuffer.shape[0] >= size:
- *                 for i in xrange(start, stop):             # <<<<<<<<<<<<<<
- *                     if not self.set_point(i, <double> mv[v]):
- *                         PyBuffer_Release(&pybuffer)
- */
-      __pyx_t_7 = __pyx_v_stop;
-      __pyx_t_9 = __pyx_t_7;
-      for (__pyx_t_10 = __pyx_v_start; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
-        __pyx_v_i = __pyx_t_10;
-
-        /* "sequence.pyx":493
- *             if pybuffer.shape[0] >= size:
- *                 for i in xrange(start, stop):
- *                     if not self.set_point(i, <double> mv[v]):             # <<<<<<<<<<<<<<
- *                         PyBuffer_Release(&pybuffer)
- *                     v += 1
- */
-        __pyx_t_3 = __Pyx_GetItemInt(((PyObject *)__pyx_v_mv), __pyx_v_v, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 493, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 493, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_1 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_v_i, ((double)__pyx_t_11)); if (unlikely(__pyx_t_1 == ((int)0))) __PYX_ERR(0, 493, __pyx_L1_error)
-        __pyx_t_5 = ((!(__pyx_t_1 != 0)) != 0);
-        if (__pyx_t_5) {
-
-          /* "sequence.pyx":494
- *                 for i in xrange(start, stop):
- *                     if not self.set_point(i, <double> mv[v]):
- *                         PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
- *                     v += 1
- *                 PyBuffer_Release(&pybuffer)
- */
-          PyBuffer_Release((&__pyx_v_pybuffer));
-
-          /* "sequence.pyx":493
- *             if pybuffer.shape[0] >= size:
- *                 for i in xrange(start, stop):
- *                     if not self.set_point(i, <double> mv[v]):             # <<<<<<<<<<<<<<
- *                         PyBuffer_Release(&pybuffer)
- *                     v += 1
- */
-        }
-
-        /* "sequence.pyx":495
- *                     if not self.set_point(i, <double> mv[v]):
- *                         PyBuffer_Release(&pybuffer)
- *                     v += 1             # <<<<<<<<<<<<<<
- *                 PyBuffer_Release(&pybuffer)
- *             else:
- */
-        __pyx_v_v = (__pyx_v_v + 1);
-      }
-
-      /* "sequence.pyx":496
- *                         PyBuffer_Release(&pybuffer)
- *                     v += 1
- *                 PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
- *             else:
- *                 PyBuffer_Release(&pybuffer)
- */
-      PyBuffer_Release((&__pyx_v_pybuffer));
-
-      /* "sequence.pyx":491
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("Multidimentionnal array is not accepted.")
- *             if pybuffer.shape[0] >= size:             # <<<<<<<<<<<<<<
- *                 for i in xrange(start, stop):
- *                     if not self.set_point(i, <double> mv[v]):
- */
-      goto __pyx_L13;
-    }
-
-    /* "sequence.pyx":498
- *                 PyBuffer_Release(&pybuffer)
- *             else:
- *                 PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
- *                 raise ValueError("The array provided is too short.")
- *         else:
- */
-    /*else*/ {
-      PyBuffer_Release((&__pyx_v_pybuffer));
-
-      /* "sequence.pyx":499
- *             else:
- *                 PyBuffer_Release(&pybuffer)
- *                 raise ValueError("The array provided is too short.")             # <<<<<<<<<<<<<<
- *         else:
- *             d_val = <double> value
- */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 499, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 499, __pyx_L1_error)
-    }
-    __pyx_L13:;
-
-    /* "sequence.pyx":485
- *         v = 0
- * 
- *         if val_is_slice:             # <<<<<<<<<<<<<<
- *             mv = <memoryview> value
- *             PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
- */
-    goto __pyx_L11;
-  }
-
-  /* "sequence.pyx":501
- *                 raise ValueError("The array provided is too short.")
- *         else:
+ *         if mv == None:
  *             d_val = <double> value             # <<<<<<<<<<<<<<
  *             for i in xrange(start, stop + 1):
  *                 self.set_point(i, d_val)
  */
-  /*else*/ {
-    __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 501, __pyx_L1_error)
+    __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 486, __pyx_L1_error)
     __pyx_v_d_val = ((double)__pyx_t_11);
 
-    /* "sequence.pyx":502
- *         else:
+    /* "sequence.pyx":487
+ *         if mv == None:
  *             d_val = <double> value
  *             for i in xrange(start, stop + 1):             # <<<<<<<<<<<<<<
  *                 self.set_point(i, d_val)
- * 
+ *         else:
  */
-    __pyx_t_7 = (__pyx_v_stop + 1);
-    __pyx_t_9 = __pyx_t_7;
-    for (__pyx_t_10 = __pyx_v_start; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
-      __pyx_v_i = __pyx_t_10;
+    __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_stop, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 487, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_12 = __Pyx_PyInt_As_long(__pyx_t_1); if (unlikely((__pyx_t_12 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 487, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_13 = __Pyx_PyInt_As_long(__pyx_v_start); if (unlikely((__pyx_t_13 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 487, __pyx_L1_error)
+    __pyx_t_14 = __pyx_t_12;
+    for (__pyx_t_4 = __pyx_t_13; __pyx_t_4 < __pyx_t_14; __pyx_t_4+=1) {
+      __pyx_v_i = __pyx_t_4;
 
-      /* "sequence.pyx":503
+      /* "sequence.pyx":488
  *             d_val = <double> value
  *             for i in xrange(start, stop + 1):
  *                 self.set_point(i, d_val)             # <<<<<<<<<<<<<<
+ *         else:
+ *             if mv.ndim != 1:
+ */
+      __pyx_t_5 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_v_i, __pyx_v_d_val); if (unlikely(__pyx_t_5 == ((int)0))) __PYX_ERR(0, 488, __pyx_L1_error)
+    }
+
+    /* "sequence.pyx":485
+ *             pass
+ * 
+ *         if mv == None:             # <<<<<<<<<<<<<<
+ *             d_val = <double> value
+ *             for i in xrange(start, stop + 1):
+ */
+    goto __pyx_L14;
+  }
+
+  /* "sequence.pyx":490
+ *                 self.set_point(i, d_val)
+ *         else:
+ *             if mv.ndim != 1:             # <<<<<<<<<<<<<<
+ *                 raise ValueError("Multidimentionnal array is not accepted.")
+ *             if mv.shape[0] >= size:
+ */
+  /*else*/ {
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_mv), __pyx_n_s_ndim); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 490, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyInt_NeObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 490, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 490, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (unlikely(__pyx_t_5)) {
+
+      /* "sequence.pyx":491
+ *         else:
+ *             if mv.ndim != 1:
+ *                 raise ValueError("Multidimentionnal array is not accepted.")             # <<<<<<<<<<<<<<
+ *             if mv.shape[0] >= size:
+ *                 for i in xrange(start, stop):
+ */
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 491, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __PYX_ERR(0, 491, __pyx_L1_error)
+
+      /* "sequence.pyx":490
+ *                 self.set_point(i, d_val)
+ *         else:
+ *             if mv.ndim != 1:             # <<<<<<<<<<<<<<
+ *                 raise ValueError("Multidimentionnal array is not accepted.")
+ *             if mv.shape[0] >= size:
+ */
+    }
+
+    /* "sequence.pyx":492
+ *             if mv.ndim != 1:
+ *                 raise ValueError("Multidimentionnal array is not accepted.")
+ *             if mv.shape[0] >= size:             # <<<<<<<<<<<<<<
+ *                 for i in xrange(start, stop):
+ *                     self.set_point(i, <double> mv[v])
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_mv), __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (likely(__pyx_t_5)) {
+
+      /* "sequence.pyx":493
+ *                 raise ValueError("Multidimentionnal array is not accepted.")
+ *             if mv.shape[0] >= size:
+ *                 for i in xrange(start, stop):             # <<<<<<<<<<<<<<
+ *                     self.set_point(i, <double> mv[v])
+ *                     v += 1
+ */
+      __pyx_t_12 = __Pyx_PyInt_As_long(__pyx_v_stop); if (unlikely((__pyx_t_12 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 493, __pyx_L1_error)
+      __pyx_t_14 = __Pyx_PyInt_As_long(__pyx_v_start); if (unlikely((__pyx_t_14 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 493, __pyx_L1_error)
+      __pyx_t_13 = __pyx_t_12;
+      for (__pyx_t_4 = __pyx_t_14; __pyx_t_4 < __pyx_t_13; __pyx_t_4+=1) {
+        __pyx_v_i = __pyx_t_4;
+
+        /* "sequence.pyx":494
+ *             if mv.shape[0] >= size:
+ *                 for i in xrange(start, stop):
+ *                     self.set_point(i, <double> mv[v])             # <<<<<<<<<<<<<<
+ *                     v += 1
+ *             else:
+ */
+        __pyx_t_3 = __Pyx_GetItemInt(((PyObject *)__pyx_v_mv), __pyx_v_v, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 494, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 494, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_v_i, ((double)__pyx_t_11)); if (unlikely(__pyx_t_5 == ((int)0))) __PYX_ERR(0, 494, __pyx_L1_error)
+
+        /* "sequence.pyx":495
+ *                 for i in xrange(start, stop):
+ *                     self.set_point(i, <double> mv[v])
+ *                     v += 1             # <<<<<<<<<<<<<<
+ *             else:
+ *                 raise ValueError("The array provided is too short.")
+ */
+        __pyx_v_v = (__pyx_v_v + 1);
+      }
+
+      /* "sequence.pyx":492
+ *             if mv.ndim != 1:
+ *                 raise ValueError("Multidimentionnal array is not accepted.")
+ *             if mv.shape[0] >= size:             # <<<<<<<<<<<<<<
+ *                 for i in xrange(start, stop):
+ *                     self.set_point(i, <double> mv[v])
+ */
+      goto __pyx_L18;
+    }
+
+    /* "sequence.pyx":497
+ *                     v += 1
+ *             else:
+ *                 raise ValueError("The array provided is too short.")             # <<<<<<<<<<<<<<
+ *         return 1
+ * 
+ */
+    /*else*/ {
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 497, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __PYX_ERR(0, 497, __pyx_L1_error)
+    }
+    __pyx_L18:;
+  }
+  __pyx_L14:;
+
+  /* "sequence.pyx":498
+ *             else:
+ *                 raise ValueError("The array provided is too short.")
+ *         return 1             # <<<<<<<<<<<<<<
  * 
  *     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:
  */
-      __pyx_t_5 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_point(__pyx_v_self, __pyx_v_i, __pyx_v_d_val); if (unlikely(__pyx_t_5 == ((int)0))) __PYX_ERR(0, 503, __pyx_L1_error)
-    }
-  }
-  __pyx_L11:;
+  __pyx_r = 1;
+  goto __pyx_L0;
 
-  /* "sequence.pyx":449
+  /* "sequence.pyx":448
  *             raise TypeError("Cannot index with type '%s'" % type(index))
  * 
- *     cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:             # <<<<<<<<<<<<<<
- *         cdef Py_ssize_t start, stop, size, i, v, _len
- *         cdef memoryview mv
+ *     cdef int setslice(Sequence self, start, stop, object value)except -1:             # <<<<<<<<<<<<<<
+ *         cdef Py_ssize_t size, i, v, _len
+ *         cdef memoryview mv = None
  */
 
   /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
   __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("sequence.Sequence.set_slice", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("sequence.Sequence.setslice", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_mv);
+  __Pyx_XDECREF(__pyx_v_start);
+  __Pyx_XDECREF(__pyx_v_stop);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "sequence.pyx":505
- *                 self.set_point(i, d_val)
+/* "sequence.pyx":500
+ *         return 1
  * 
  *     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:             # <<<<<<<<<<<<<<
  *         """Set the data at a single point in a Sequence.
@@ -6995,7 +7007,7 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
   int __pyx_t_2;
   int __pyx_t_3;
 
-  /* "sequence.pyx":516
+  /* "sequence.pyx":511
  *         cdef size_t last_index
  * 
  *         retcode = stp_sequence_set_point(self._sequence, index, value)             # <<<<<<<<<<<<<<
@@ -7004,7 +7016,7 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
  */
   __pyx_v_retcode = stp_sequence_set_point(__pyx_v_self->_sequence, __pyx_v_index, __pyx_v_value);
 
-  /* "sequence.pyx":517
+  /* "sequence.pyx":512
  * 
  *         retcode = stp_sequence_set_point(self._sequence, index, value)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -7014,7 +7026,7 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
   __pyx_t_1 = ((!(__pyx_v_retcode != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":518
+    /* "sequence.pyx":513
  *         retcode = stp_sequence_set_point(self._sequence, index, value)
  *         if not retcode:
  *             last_index = stp_sequence_get_size(self._sequence) - 1             # <<<<<<<<<<<<<<
@@ -7023,20 +7035,20 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
  */
     __pyx_v_last_index = (stp_sequence_get_size(__pyx_v_self->_sequence) - 1);
 
-    /* "sequence.pyx":519
+    /* "sequence.pyx":514
  *         if not retcode:
  *             last_index = stp_sequence_get_size(self._sequence) - 1
  *             stp_sequence_get_bounds(self._sequence, &low, &high)             # <<<<<<<<<<<<<<
  *             if (value < low or value > high):
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  */
     stp_sequence_get_bounds(__pyx_v_self->_sequence, (&__pyx_v_low), (&__pyx_v_high));
 
-    /* "sequence.pyx":520
+    /* "sequence.pyx":515
  *             last_index = stp_sequence_get_size(self._sequence) - 1
  *             stp_sequence_get_bounds(self._sequence, &low, &high)
  *             if (value < low or value > high):             # <<<<<<<<<<<<<<
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  *             elif (index>last_index or last_index<0):
  */
     __pyx_t_2 = ((__pyx_v_value < __pyx_v_low) != 0);
@@ -7050,28 +7062,28 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
     __pyx_L5_bool_binop_done:;
     if (__pyx_t_1) {
 
-      /* "sequence.pyx":521
+      /* "sequence.pyx":516
  *             stp_sequence_get_bounds(self._sequence, &low, &high)
  *             if (value < low or value > high):
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)             # <<<<<<<<<<<<<<
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)             # <<<<<<<<<<<<<<
  *             elif (index>last_index or last_index<0):
  *                 raise_index_error("[%d], Sequence index out of range", index)
  */
-      __pyx_t_3 = __pyx_f_8sequence_raise_bound_error(((char *)"Attempt to set value out of bounds (%f, %f)"), __pyx_v_low, __pyx_v_high); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 521, __pyx_L1_error)
+      __pyx_t_3 = __pyx_f_8sequence_raise_bound_error(((char *)"Attempt to set a value out of bounds (%f, %f)"), __pyx_v_low, __pyx_v_high); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 516, __pyx_L1_error)
 
-      /* "sequence.pyx":520
+      /* "sequence.pyx":515
  *             last_index = stp_sequence_get_size(self._sequence) - 1
  *             stp_sequence_get_bounds(self._sequence, &low, &high)
  *             if (value < low or value > high):             # <<<<<<<<<<<<<<
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  *             elif (index>last_index or last_index<0):
  */
       goto __pyx_L4;
     }
 
-    /* "sequence.pyx":522
+    /* "sequence.pyx":517
  *             if (value < low or value > high):
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  *             elif (index>last_index or last_index<0):             # <<<<<<<<<<<<<<
  *                 raise_index_error("[%d], Sequence index out of range", index)
  *             else:
@@ -7087,18 +7099,18 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_1) {
 
-      /* "sequence.pyx":523
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+      /* "sequence.pyx":518
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  *             elif (index>last_index or last_index<0):
  *                 raise_index_error("[%d], Sequence index out of range", index)             # <<<<<<<<<<<<<<
  *             else:
- *                 raise_nan_error("Sequence value is not a finite number")
+ *                 raise_nan_error("Value is not a finite number")
  */
-      __pyx_t_3 = __pyx_f_8sequence_raise_index_error(((char *)"[%d], Sequence index out of range"), __pyx_v_index); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 523, __pyx_L1_error)
+      __pyx_t_3 = __pyx_f_8sequence_raise_index_error(((char *)"[%d], Sequence index out of range"), __pyx_v_index); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 518, __pyx_L1_error)
 
-      /* "sequence.pyx":522
+      /* "sequence.pyx":517
  *             if (value < low or value > high):
- *                 raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+ *                 raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
  *             elif (index>last_index or last_index<0):             # <<<<<<<<<<<<<<
  *                 raise_index_error("[%d], Sequence index out of range", index)
  *             else:
@@ -7106,19 +7118,19 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
       goto __pyx_L4;
     }
 
-    /* "sequence.pyx":525
+    /* "sequence.pyx":520
  *                 raise_index_error("[%d], Sequence index out of range", index)
  *             else:
- *                 raise_nan_error("Sequence value is not a finite number")             # <<<<<<<<<<<<<<
+ *                 raise_nan_error("Value is not a finite number")             # <<<<<<<<<<<<<<
  *         return 1
  * 
  */
     /*else*/ {
-      __pyx_t_3 = __pyx_f_8sequence_raise_nan_error(((char *)"Sequence value is not a finite number")); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 525, __pyx_L1_error)
+      __pyx_t_3 = __pyx_f_8sequence_raise_nan_error(((char *)"Value is not a finite number")); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 520, __pyx_L1_error)
     }
     __pyx_L4:;
 
-    /* "sequence.pyx":517
+    /* "sequence.pyx":512
  * 
  *         retcode = stp_sequence_set_point(self._sequence, index, value)
  *         if not retcode:             # <<<<<<<<<<<<<<
@@ -7127,9 +7139,9 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
  */
   }
 
-  /* "sequence.pyx":526
+  /* "sequence.pyx":521
  *             else:
- *                 raise_nan_error("Sequence value is not a finite number")
+ *                 raise_nan_error("Value is not a finite number")
  *         return 1             # <<<<<<<<<<<<<<
  * 
  *     def __getitem__(self, index):
@@ -7137,8 +7149,8 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "sequence.pyx":505
- *                 self.set_point(i, d_val)
+  /* "sequence.pyx":500
+ *         return 1
  * 
  *     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:             # <<<<<<<<<<<<<<
  *         """Set the data at a single point in a Sequence.
@@ -7161,7 +7173,7 @@ static int __pyx_f_8sequence_8Sequence_set_point(struct __pyx_obj_8sequence_Sequ
   return __pyx_r;
 }
 
-/* "sequence.pyx":528
+/* "sequence.pyx":523
  *         return 1
  * 
  *     def __getitem__(self, index):             # <<<<<<<<<<<<<<
@@ -7200,7 +7212,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
   __Pyx_RefNannySetupContext("__getitem__", 0);
   __Pyx_INCREF(__pyx_v_index);
 
-  /* "sequence.pyx":541
+  /* "sequence.pyx":536
  *         cdef bint ret_code
  * 
  *         if (isinstance(index, slice)):             # <<<<<<<<<<<<<<
@@ -7211,7 +7223,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "sequence.pyx":542
+    /* "sequence.pyx":537
  * 
  *         if (isinstance(index, slice)):
  *             return self.memview.__getitem__(index)             # <<<<<<<<<<<<<<
@@ -7219,9 +7231,9 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  *             if index < 0:
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_memview); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 542, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_memview); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 537, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_getitem); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 542, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_getitem); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 537, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -7236,14 +7248,14 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
     }
     __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, __pyx_v_index) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_index);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 542, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 537, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "sequence.pyx":541
+    /* "sequence.pyx":536
  *         cdef bint ret_code
  * 
  *         if (isinstance(index, slice)):             # <<<<<<<<<<<<<<
@@ -7252,7 +7264,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  */
   }
 
-  /* "sequence.pyx":543
+  /* "sequence.pyx":538
  *         if (isinstance(index, slice)):
  *             return self.memview.__getitem__(index)
  *         elif PyIndex_Check(index):             # <<<<<<<<<<<<<<
@@ -7262,26 +7274,26 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
   __pyx_t_2 = (PyIndex_Check(__pyx_v_index) != 0);
   if (likely(__pyx_t_2)) {
 
-    /* "sequence.pyx":544
+    /* "sequence.pyx":539
  *             return self.memview.__getitem__(index)
  *         elif PyIndex_Check(index):
  *             if index < 0:             # <<<<<<<<<<<<<<
  *                 index += self.__len__()
  *                 if index < 0:
  */
-    __pyx_t_3 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 544, __pyx_L1_error)
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 544, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 539, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 539, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_2) {
 
-      /* "sequence.pyx":545
+      /* "sequence.pyx":540
  *         elif PyIndex_Check(index):
  *             if index < 0:
  *                 index += self.__len__()             # <<<<<<<<<<<<<<
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")
  */
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 545, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_len); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 540, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_t_4 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
@@ -7295,41 +7307,41 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
       }
       __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_5);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 545, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 540, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_index, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 545, __pyx_L1_error)
+      __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_index, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 540, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF_SET(__pyx_v_index, __pyx_t_5);
       __pyx_t_5 = 0;
 
-      /* "sequence.pyx":546
+      /* "sequence.pyx":541
  *             if index < 0:
  *                 index += self.__len__()
  *                 if index < 0:             # <<<<<<<<<<<<<<
  *                     raise IndexError("Index out of bounds.")
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
  */
-      __pyx_t_5 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 546, __pyx_L1_error)
-      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 546, __pyx_L1_error)
+      __pyx_t_5 = PyObject_RichCompare(__pyx_v_index, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 541, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 541, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       if (unlikely(__pyx_t_2)) {
 
-        /* "sequence.pyx":547
+        /* "sequence.pyx":542
  *                 index += self.__len__()
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")             # <<<<<<<<<<<<<<
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
  *             if not ret_code:
  */
-        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 547, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 542, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_Raise(__pyx_t_5, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __PYX_ERR(0, 547, __pyx_L1_error)
+        __PYX_ERR(0, 542, __pyx_L1_error)
 
-        /* "sequence.pyx":546
+        /* "sequence.pyx":541
  *             if index < 0:
  *                 index += self.__len__()
  *                 if index < 0:             # <<<<<<<<<<<<<<
@@ -7338,7 +7350,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  */
       }
 
-      /* "sequence.pyx":544
+      /* "sequence.pyx":539
  *             return self.memview.__getitem__(index)
  *         elif PyIndex_Check(index):
  *             if index < 0:             # <<<<<<<<<<<<<<
@@ -7347,17 +7359,17 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  */
     }
 
-    /* "sequence.pyx":548
+    /* "sequence.pyx":543
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)             # <<<<<<<<<<<<<<
  *             if not ret_code:
  *                 raise IndexError('[%d], Sequence index out of range' %index)
  */
-    __pyx_t_6 = __Pyx_PyInt_As_size_t(__pyx_v_index); if (unlikely((__pyx_t_6 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 548, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_size_t(__pyx_v_index); if (unlikely((__pyx_t_6 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 543, __pyx_L1_error)
     __pyx_v_ret_code = stp_sequence_get_point(__pyx_v_self->_sequence, ((size_t)__pyx_t_6), (&__pyx_v_data));
 
-    /* "sequence.pyx":549
+    /* "sequence.pyx":544
  *                     raise IndexError("Index out of bounds.")
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
  *             if not ret_code:             # <<<<<<<<<<<<<<
@@ -7367,23 +7379,23 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
     __pyx_t_2 = ((!(__pyx_v_ret_code != 0)) != 0);
     if (unlikely(__pyx_t_2)) {
 
-      /* "sequence.pyx":550
+      /* "sequence.pyx":545
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
  *             if not ret_code:
  *                 raise IndexError('[%d], Sequence index out of range' %index)             # <<<<<<<<<<<<<<
  *             return data
  *         else:
  */
-      __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_d_Sequence_index_out_of_range, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 550, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_d_Sequence_index_out_of_range, __pyx_v_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 545, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 550, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 545, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_Raise(__pyx_t_3, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 550, __pyx_L1_error)
+      __PYX_ERR(0, 545, __pyx_L1_error)
 
-      /* "sequence.pyx":549
+      /* "sequence.pyx":544
  *                     raise IndexError("Index out of bounds.")
  *             ret_code = stp_sequence_get_point(self._sequence, <size_t> index, &data)
  *             if not ret_code:             # <<<<<<<<<<<<<<
@@ -7392,7 +7404,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  */
     }
 
-    /* "sequence.pyx":551
+    /* "sequence.pyx":546
  *             if not ret_code:
  *                 raise IndexError('[%d], Sequence index out of range' %index)
  *             return data             # <<<<<<<<<<<<<<
@@ -7400,13 +7412,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  *             raise TypeError('Sequence indices must be integers, not %s' %type(index).__name__)
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = PyFloat_FromDouble(__pyx_v_data); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 551, __pyx_L1_error)
+    __pyx_t_3 = PyFloat_FromDouble(__pyx_v_data); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 546, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "sequence.pyx":543
+    /* "sequence.pyx":538
  *         if (isinstance(index, slice)):
  *             return self.memview.__getitem__(index)
  *         elif PyIndex_Check(index):             # <<<<<<<<<<<<<<
@@ -7415,7 +7427,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  */
   }
 
-  /* "sequence.pyx":553
+  /* "sequence.pyx":548
  *             return data
  *         else:
  *             raise TypeError('Sequence indices must be integers, not %s' %type(index).__name__)             # <<<<<<<<<<<<<<
@@ -7423,20 +7435,20 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
  *     #
  */
   /*else*/ {
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_index)), __pyx_n_s_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 553, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_index)), __pyx_n_s_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 548, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_Sequence_indices_must_be_integer, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 553, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyUnicode_FormatSafe(__pyx_kp_u_Sequence_indices_must_be_integer, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 548, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_TypeError, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 553, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_TypeError, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 548, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 553, __pyx_L1_error)
+    __PYX_ERR(0, 548, __pyx_L1_error)
   }
 
-  /* "sequence.pyx":528
+  /* "sequence.pyx":523
  *         return 1
  * 
  *     def __getitem__(self, index):             # <<<<<<<<<<<<<<
@@ -7458,7 +7470,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_38__getitem__(struct __pyx_obj_8se
   return __pyx_r;
 }
 
-/* "sequence.pyx":563
+/* "sequence.pyx":558
  *         :returns: The total length in bytes of the sequence buffer
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7485,7 +7497,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6nbytes___get__(struct __pyx_obj_8
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "sequence.pyx":564
+  /* "sequence.pyx":559
  *         """
  *         def __get__(self):
  *             return stp_sequence_get_size(self._sequence) * sizeof(double)             # <<<<<<<<<<<<<<
@@ -7493,13 +7505,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6nbytes___get__(struct __pyx_obj_8
  *     property size:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t((stp_sequence_get_size(__pyx_v_self->_sequence) * (sizeof(double)))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 564, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t((stp_sequence_get_size(__pyx_v_self->_sequence) * (sizeof(double)))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 559, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":563
+  /* "sequence.pyx":558
  *         :returns: The total length in bytes of the sequence buffer
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7518,7 +7530,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_6nbytes___get__(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "sequence.pyx":571
+/* "sequence.pyx":566
  *         :returns: The total number of element in the sequence
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7545,7 +7557,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_4size___get__(struct __pyx_obj_8se
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "sequence.pyx":572
+  /* "sequence.pyx":567
  *         """
  *         def __get__(self):
  *             return stp_sequence_get_size(self._sequence)             # <<<<<<<<<<<<<<
@@ -7553,13 +7565,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_4size___get__(struct __pyx_obj_8se
  *     property shape:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(stp_sequence_get_size(__pyx_v_self->_sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(stp_sequence_get_size(__pyx_v_self->_sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 567, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":571
+  /* "sequence.pyx":566
  *         :returns: The total number of element in the sequence
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7578,7 +7590,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_4size___get__(struct __pyx_obj_8se
   return __pyx_r;
 }
 
-/* "sequence.pyx":579
+/* "sequence.pyx":574
  *         :returns: a tuple with the sequence dimension.
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7606,7 +7618,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_5shape___get__(struct __pyx_obj_8s
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "sequence.pyx":580
+  /* "sequence.pyx":575
  *         """
  *         def __get__(self):
  *             return (stp_sequence_get_size(self._sequence),)             # <<<<<<<<<<<<<<
@@ -7614,9 +7626,9 @@ static PyObject *__pyx_pf_8sequence_8Sequence_5shape___get__(struct __pyx_obj_8s
  *     cdef void get_c_buffer(Sequence self, size_t* size_ptr, double** data_ptr)nogil:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(stp_sequence_get_size(__pyx_v_self->_sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 580, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(stp_sequence_get_size(__pyx_v_self->_sequence)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 575, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 580, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 575, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -7625,7 +7637,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_5shape___get__(struct __pyx_obj_8s
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":579
+  /* "sequence.pyx":574
  *         :returns: a tuple with the sequence dimension.
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7645,7 +7657,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_5shape___get__(struct __pyx_obj_8s
   return __pyx_r;
 }
 
-/* "sequence.pyx":582
+/* "sequence.pyx":577
  *             return (stp_sequence_get_size(self._sequence),)
  * 
  *     cdef void get_c_buffer(Sequence self, size_t* size_ptr, double** data_ptr)nogil:             # <<<<<<<<<<<<<<
@@ -7655,7 +7667,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_5shape___get__(struct __pyx_obj_8s
 
 static void __pyx_f_8sequence_8Sequence_get_c_buffer(struct __pyx_obj_8sequence_Sequence *__pyx_v_self, size_t *__pyx_v_size_ptr, double **__pyx_v_data_ptr) {
 
-  /* "sequence.pyx":583
+  /* "sequence.pyx":578
  * 
  *     cdef void get_c_buffer(Sequence self, size_t* size_ptr, double** data_ptr)nogil:
  *         stp_sequence_get_data(<const stp_sequence_t*> self._sequence, size_ptr, <const double**> data_ptr)             # <<<<<<<<<<<<<<
@@ -7664,7 +7676,7 @@ static void __pyx_f_8sequence_8Sequence_get_c_buffer(struct __pyx_obj_8sequence_
  */
   stp_sequence_get_data(((stp_sequence_t const *)__pyx_v_self->_sequence), __pyx_v_size_ptr, ((double const **)__pyx_v_data_ptr));
 
-  /* "sequence.pyx":582
+  /* "sequence.pyx":577
  *             return (stp_sequence_get_size(self._sequence),)
  * 
  *     cdef void get_c_buffer(Sequence self, size_t* size_ptr, double** data_ptr)nogil:             # <<<<<<<<<<<<<<
@@ -7675,7 +7687,7 @@ static void __pyx_f_8sequence_8Sequence_get_c_buffer(struct __pyx_obj_8sequence_
   /* function exit code */
 }
 
-/* "sequence.pyx":585
+/* "sequence.pyx":580
  *         stp_sequence_get_data(<const stp_sequence_t*> self._sequence, size_ptr, <const double**> data_ptr)
  * 
  *     cdef void fill_strides_and_shape(Sequence.self)nogil:             # <<<<<<<<<<<<<<
@@ -7685,7 +7697,7 @@ static void __pyx_f_8sequence_8Sequence_get_c_buffer(struct __pyx_obj_8sequence_
 
 static void __pyx_f_8sequence_8Sequence_fill_strides_and_shape(struct __pyx_obj_8sequence_Sequence *__pyx_v_self) {
 
-  /* "sequence.pyx":586
+  /* "sequence.pyx":581
  * 
  *     cdef void fill_strides_and_shape(Sequence.self)nogil:
  *         self._shape[0] =  stp_sequence_get_size(self._sequence)             # <<<<<<<<<<<<<<
@@ -7694,7 +7706,7 @@ static void __pyx_f_8sequence_8Sequence_fill_strides_and_shape(struct __pyx_obj_
  */
   (__pyx_v_self->_shape[0]) = stp_sequence_get_size(__pyx_v_self->_sequence);
 
-  /* "sequence.pyx":587
+  /* "sequence.pyx":582
  *     cdef void fill_strides_and_shape(Sequence.self)nogil:
  *         self._shape[0] =  stp_sequence_get_size(self._sequence)
  *         self._strides[0] =  sizeof(double)             # <<<<<<<<<<<<<<
@@ -7703,7 +7715,7 @@ static void __pyx_f_8sequence_8Sequence_fill_strides_and_shape(struct __pyx_obj_
  */
   (__pyx_v_self->_strides[0]) = (sizeof(double));
 
-  /* "sequence.pyx":585
+  /* "sequence.pyx":580
  *         stp_sequence_get_data(<const stp_sequence_t*> self._sequence, size_ptr, <const double**> data_ptr)
  * 
  *     cdef void fill_strides_and_shape(Sequence.self)nogil:             # <<<<<<<<<<<<<<
@@ -7714,7 +7726,7 @@ static void __pyx_f_8sequence_8Sequence_fill_strides_and_shape(struct __pyx_obj_
   /* function exit code */
 }
 
-/* "sequence.pyx":589
+/* "sequence.pyx":584
  *         self._strides[0] =  sizeof(double)
  * 
  *     def __getbuffer__(Sequence self, Py_buffer *info, int flags):             # <<<<<<<<<<<<<<
@@ -7754,7 +7766,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_v_info->obj = Py_None; __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(__pyx_v_info->obj);
 
-  /* "sequence.pyx":593
+  /* "sequence.pyx":588
  *         cdef double* data_buf
  * 
  *         self.get_c_buffer(&ret_size, &data_buf)             # <<<<<<<<<<<<<<
@@ -7763,7 +7775,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_c_buffer(__pyx_v_self, (&__pyx_v_ret_size), (&__pyx_v_data_buf));
 
-  /* "sequence.pyx":594
+  /* "sequence.pyx":589
  * 
  *         self.get_c_buffer(&ret_size, &data_buf)
  *         self.fill_strides_and_shape()             # <<<<<<<<<<<<<<
@@ -7772,7 +7784,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->fill_strides_and_shape(__pyx_v_self);
 
-  /* "sequence.pyx":595
+  /* "sequence.pyx":590
  *         self.get_c_buffer(&ret_size, &data_buf)
  *         self.fill_strides_and_shape()
  *         info.buf = <void*> data_buf             # <<<<<<<<<<<<<<
@@ -7781,20 +7793,20 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->buf = ((void *)__pyx_v_data_buf);
 
-  /* "sequence.pyx":596
+  /* "sequence.pyx":591
  *         self.fill_strides_and_shape()
  *         info.buf = <void*> data_buf
  *         info.len = self.nbytes             # <<<<<<<<<<<<<<
  *         info.readonly = 0
  *         info.ndim = self.ndim
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_nbytes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_nbytes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 591, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_2 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_2 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 591, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_info->len = __pyx_t_2;
 
-  /* "sequence.pyx":597
+  /* "sequence.pyx":592
  *         info.buf = <void*> data_buf
  *         info.len = self.nbytes
  *         info.readonly = 0             # <<<<<<<<<<<<<<
@@ -7803,7 +7815,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->readonly = 0;
 
-  /* "sequence.pyx":598
+  /* "sequence.pyx":593
  *         info.len = self.nbytes
  *         info.readonly = 0
  *         info.ndim = self.ndim             # <<<<<<<<<<<<<<
@@ -7813,7 +7825,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_3 = __pyx_v_self->ndim;
   __pyx_v_info->ndim = __pyx_t_3;
 
-  /* "sequence.pyx":599
+  /* "sequence.pyx":594
  *         info.readonly = 0
  *         info.ndim = self.ndim
  *         info.format = b'd'             # <<<<<<<<<<<<<<
@@ -7822,7 +7834,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->format = ((char *)"d");
 
-  /* "sequence.pyx":600
+  /* "sequence.pyx":595
  *         info.ndim = self.ndim
  *         info.format = b'd'
  *         info.shape = self._shape             # <<<<<<<<<<<<<<
@@ -7832,7 +7844,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_4 = __pyx_v_self->_shape;
   __pyx_v_info->shape = __pyx_t_4;
 
-  /* "sequence.pyx":601
+  /* "sequence.pyx":596
  *         info.format = b'd'
  *         info.shape = self._shape
  *         info.strides = self._strides             # <<<<<<<<<<<<<<
@@ -7842,7 +7854,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_4 = __pyx_v_self->_strides;
   __pyx_v_info->strides = __pyx_t_4;
 
-  /* "sequence.pyx":602
+  /* "sequence.pyx":597
  *         info.shape = self._shape
  *         info.strides = self._strides
  *         info.suboffsets = NULL  # we are always direct memory buffer             # <<<<<<<<<<<<<<
@@ -7851,7 +7863,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->suboffsets = NULL;
 
-  /* "sequence.pyx":603
+  /* "sequence.pyx":598
  *         info.strides = self._strides
  *         info.suboffsets = NULL  # we are always direct memory buffer
  *         info.itemsize = sizeof(double)             # <<<<<<<<<<<<<<
@@ -7860,7 +7872,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->itemsize = (sizeof(double));
 
-  /* "sequence.pyx":604
+  /* "sequence.pyx":599
  *         info.suboffsets = NULL  # we are always direct memory buffer
  *         info.itemsize = sizeof(double)
  *         info.obj = self             # <<<<<<<<<<<<<<
@@ -7873,7 +7885,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __Pyx_DECREF(__pyx_v_info->obj);
   __pyx_v_info->obj = ((PyObject *)__pyx_v_self);
 
-  /* "sequence.pyx":605
+  /* "sequence.pyx":600
  *         info.itemsize = sizeof(double)
  *         info.obj = self
  *         info.internal = NULL             # <<<<<<<<<<<<<<
@@ -7882,7 +7894,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_info->internal = NULL;
 
-  /* "sequence.pyx":607
+  /* "sequence.pyx":602
  *         info.internal = NULL
  * 
  *         if flags & PyBUF_WRITABLE:             # <<<<<<<<<<<<<<
@@ -7892,7 +7904,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((__pyx_v_flags & PyBUF_WRITABLE) != 0);
   if (__pyx_t_5) {
 
-    /* "sequence.pyx":608
+    /* "sequence.pyx":603
  * 
  *         if flags & PyBUF_WRITABLE:
  *             info.readonly = 0             # <<<<<<<<<<<<<<
@@ -7901,7 +7913,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->readonly = 0;
 
-    /* "sequence.pyx":607
+    /* "sequence.pyx":602
  *         info.internal = NULL
  * 
  *         if flags & PyBUF_WRITABLE:             # <<<<<<<<<<<<<<
@@ -7911,7 +7923,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
     goto __pyx_L3;
   }
 
-  /* "sequence.pyx":610
+  /* "sequence.pyx":605
  *             info.readonly = 0
  *         else:
  *             info.readonly = 1             # <<<<<<<<<<<<<<
@@ -7923,7 +7935,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   }
   __pyx_L3:;
 
-  /* "sequence.pyx":612
+  /* "sequence.pyx":607
  *             info.readonly = 1
  * 
  *         if flags & PyBUF_SIMPLE:             # <<<<<<<<<<<<<<
@@ -7933,7 +7945,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((__pyx_v_flags & PyBUF_SIMPLE) != 0);
   if (__pyx_t_5) {
 
-    /* "sequence.pyx":618
+    /* "sequence.pyx":613
  *             # The buffer exposes a read-only memory area.
  *             # Data is always contigous.
  *             info.shape = NULL             # <<<<<<<<<<<<<<
@@ -7942,7 +7954,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->shape = NULL;
 
-    /* "sequence.pyx":619
+    /* "sequence.pyx":614
  *             # Data is always contigous.
  *             info.shape = NULL
  *             info.strides = NULL             # <<<<<<<<<<<<<<
@@ -7951,7 +7963,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->strides = NULL;
 
-    /* "sequence.pyx":620
+    /* "sequence.pyx":615
  *             info.shape = NULL
  *             info.strides = NULL
  *             info.format = NULL  # mean 'B', unsigned byte             # <<<<<<<<<<<<<<
@@ -7960,7 +7972,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->format = NULL;
 
-    /* "sequence.pyx":622
+    /* "sequence.pyx":617
  *             info.format = NULL  # mean 'B', unsigned byte
  *             # The 'itemsize' field may be wrong
  *             return             # <<<<<<<<<<<<<<
@@ -7970,7 +7982,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "sequence.pyx":612
+    /* "sequence.pyx":607
  *             info.readonly = 1
  * 
  *         if flags & PyBUF_SIMPLE:             # <<<<<<<<<<<<<<
@@ -7979,7 +7991,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":624
+  /* "sequence.pyx":619
  *             return
  * 
  *         if not (flags & PyBUF_ND):             # <<<<<<<<<<<<<<
@@ -7989,7 +8001,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((!((__pyx_v_flags & PyBUF_ND) != 0)) != 0);
   if (__pyx_t_5) {
 
-    /* "sequence.pyx":625
+    /* "sequence.pyx":620
  * 
  *         if not (flags & PyBUF_ND):
  *                 info.shape = NULL             # <<<<<<<<<<<<<<
@@ -7998,7 +8010,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->shape = NULL;
 
-    /* "sequence.pyx":624
+    /* "sequence.pyx":619
  *             return
  * 
  *         if not (flags & PyBUF_ND):             # <<<<<<<<<<<<<<
@@ -8007,7 +8019,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":627
+  /* "sequence.pyx":622
  *                 info.shape = NULL
  * 
  *         if not (flags & PyBUF_STRIDES):             # <<<<<<<<<<<<<<
@@ -8017,7 +8029,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((!((__pyx_v_flags & PyBUF_STRIDES) != 0)) != 0);
   if (__pyx_t_5) {
 
-    /* "sequence.pyx":628
+    /* "sequence.pyx":623
  * 
  *         if not (flags & PyBUF_STRIDES):
  *                 info.strides = NULL             # <<<<<<<<<<<<<<
@@ -8026,7 +8038,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->strides = NULL;
 
-    /* "sequence.pyx":627
+    /* "sequence.pyx":622
  *                 info.shape = NULL
  * 
  *         if not (flags & PyBUF_STRIDES):             # <<<<<<<<<<<<<<
@@ -8035,7 +8047,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":630
+  /* "sequence.pyx":625
  *                 info.strides = NULL
  * 
  *         cdef int bufmode = -1             # <<<<<<<<<<<<<<
@@ -8044,7 +8056,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   __pyx_v_bufmode = -1;
 
-  /* "sequence.pyx":631
+  /* "sequence.pyx":626
  * 
  *         cdef int bufmode = -1
  *         if not (flags & bufmode):             # <<<<<<<<<<<<<<
@@ -8054,20 +8066,20 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((!((__pyx_v_flags & __pyx_v_bufmode) != 0)) != 0);
   if (unlikely(__pyx_t_5)) {
 
-    /* "sequence.pyx":632
+    /* "sequence.pyx":627
  *         cdef int bufmode = -1
  *         if not (flags & bufmode):
  *             raise BufferError("Can only create a buffer that is contiguous in memory.")             # <<<<<<<<<<<<<<
  * 
  *         if not (flags & PyBUF_FORMAT):
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 632, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 627, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 632, __pyx_L1_error)
+    __PYX_ERR(0, 627, __pyx_L1_error)
 
-    /* "sequence.pyx":631
+    /* "sequence.pyx":626
  * 
  *         cdef int bufmode = -1
  *         if not (flags & bufmode):             # <<<<<<<<<<<<<<
@@ -8076,7 +8088,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":634
+  /* "sequence.pyx":629
  *             raise BufferError("Can only create a buffer that is contiguous in memory.")
  * 
  *         if not (flags & PyBUF_FORMAT):             # <<<<<<<<<<<<<<
@@ -8086,7 +8098,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   __pyx_t_5 = ((!((__pyx_v_flags & PyBUF_FORMAT) != 0)) != 0);
   if (__pyx_t_5) {
 
-    /* "sequence.pyx":635
+    /* "sequence.pyx":630
  * 
  *         if not (flags & PyBUF_FORMAT):
  *             info.format = NULL             # <<<<<<<<<<<<<<
@@ -8095,7 +8107,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
     __pyx_v_info->format = NULL;
 
-    /* "sequence.pyx":634
+    /* "sequence.pyx":629
  *             raise BufferError("Can only create a buffer that is contiguous in memory.")
  * 
  *         if not (flags & PyBUF_FORMAT):             # <<<<<<<<<<<<<<
@@ -8104,7 +8116,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
  */
   }
 
-  /* "sequence.pyx":589
+  /* "sequence.pyx":584
  *         self._strides[0] =  sizeof(double)
  * 
  *     def __getbuffer__(Sequence self, Py_buffer *info, int flags):             # <<<<<<<<<<<<<<
@@ -8134,7 +8146,7 @@ static int __pyx_pf_8sequence_8Sequence_40__getbuffer__(struct __pyx_obj_8sequen
   return __pyx_r;
 }
 
-/* "sequence.pyx":643
+/* "sequence.pyx":638
  *         Same as get_data().
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -8164,7 +8176,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "sequence.pyx":645
+  /* "sequence.pyx":640
  *         def __get__(self):
  *             # Make this a property as 'self.data' may be set after instantiation
  *             flags =  PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE             # <<<<<<<<<<<<<<
@@ -8173,16 +8185,16 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
  */
   __pyx_v_flags = ((PyBUF_C_CONTIGUOUS | PyBUF_FORMAT) | PyBUF_WRITABLE);
 
-  /* "sequence.pyx":646
+  /* "sequence.pyx":641
  *             # Make this a property as 'self.data' may be set after instantiation
  *             flags =  PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE
  *             cdef memoryview mv = memoryview(self, flags, False)             # <<<<<<<<<<<<<<
  *             return mv
  * 
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 646, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 641, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 646, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 641, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
@@ -8193,13 +8205,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
   __Pyx_GIVEREF(Py_False);
   PyTuple_SET_ITEM(__pyx_t_2, 2, Py_False);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 646, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 641, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_mv = ((struct __pyx_memoryview_obj *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "sequence.pyx":647
+  /* "sequence.pyx":642
  *             flags =  PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE
  *             cdef memoryview mv = memoryview(self, flags, False)
  *             return mv             # <<<<<<<<<<<<<<
@@ -8211,7 +8223,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
   __pyx_r = ((PyObject *)__pyx_v_mv);
   goto __pyx_L0;
 
-  /* "sequence.pyx":643
+  /* "sequence.pyx":638
  *         Same as get_data().
  *         """
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -8232,7 +8244,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "sequence.pyx":649
+/* "sequence.pyx":644
  *             return mv
  * 
  *     def get_data(self):             # <<<<<<<<<<<<<<
@@ -8242,7 +8254,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_7memview___get__(struct __pyx_obj_
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_43get_data(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_42get_data[] = "Sequence.get_data(self)\nGet acces to the data buffer for this sequence.\n\n        :returns: a Python memoryview.\n        ";
+static char __pyx_doc_8sequence_8Sequence_42get_data[] = "Get acces to the data buffer for this sequence.\n\n        :returns: a Python memoryview.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_43get_data(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -8260,7 +8272,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_42get_data(struct __pyx_obj_8seque
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_data", 0);
 
-  /* "sequence.pyx":654
+  /* "sequence.pyx":649
  *         :returns: a Python memoryview.
  *         """
  *         return self.memview             # <<<<<<<<<<<<<<
@@ -8268,13 +8280,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_42get_data(struct __pyx_obj_8seque
  *     def get_float_data(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_memview); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 654, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_memview); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 649, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":649
+  /* "sequence.pyx":644
  *             return mv
  * 
  *     def get_data(self):             # <<<<<<<<<<<<<<
@@ -8293,7 +8305,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_42get_data(struct __pyx_obj_8seque
   return __pyx_r;
 }
 
-/* "sequence.pyx":656
+/* "sequence.pyx":651
  *         return self.memview
  * 
  *     def get_float_data(self):             # <<<<<<<<<<<<<<
@@ -8303,7 +8315,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_42get_data(struct __pyx_obj_8seque
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_45get_float_data(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_44get_float_data[] = "Sequence.get_float_data(self)\nGet acces to the data in a sequence as float data buffer.\n\n        The memoryview returned is not guaranteed\n        to be valid beyond the next non-const curve call;\n        If the bounds of the curve exceed the limits of the data type,\n        None is returned.\n\n        :returns: a read only Python memoryview or None\n        ";
+static char __pyx_doc_8sequence_8Sequence_44get_float_data[] = "Get acces to the data in a sequence as float data buffer.\n\n        The memoryview returned is not guaranteed\n        to be valid beyond the next non-const curve call;\n        If the bounds of the curve exceed the limits of the data type,\n        None is returned.\n\n        :returns: a read only Python memoryview or None\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_45get_float_data(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -8327,7 +8339,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("get_float_data", 0);
 
-  /* "sequence.pyx":668
+  /* "sequence.pyx":663
  *         cdef size_t count
  *         cdef float *data
  *         cdef stp_sequence_t * s = self.get_sequence()             # <<<<<<<<<<<<<<
@@ -8336,7 +8348,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
  */
   __pyx_v_s = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self);
 
-  /* "sequence.pyx":670
+  /* "sequence.pyx":665
  *         cdef stp_sequence_t * s = self.get_sequence()
  * 
  *         data = stp_sequence_get_float_data(s, &count)             # <<<<<<<<<<<<<<
@@ -8345,7 +8357,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
  */
   __pyx_v_data = stp_sequence_get_float_data(__pyx_v_s, (&__pyx_v_count));
 
-  /* "sequence.pyx":671
+  /* "sequence.pyx":666
  * 
  *         data = stp_sequence_get_float_data(s, &count)
  *         if data == NULL:             # <<<<<<<<<<<<<<
@@ -8355,7 +8367,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
   __pyx_t_1 = ((__pyx_v_data == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":672
+    /* "sequence.pyx":667
  *         data = stp_sequence_get_float_data(s, &count)
  *         if data == NULL:
  *            return None             # <<<<<<<<<<<<<<
@@ -8366,7 +8378,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "sequence.pyx":671
+    /* "sequence.pyx":666
  * 
  *         data = stp_sequence_get_float_data(s, &count)
  *         if data == NULL:             # <<<<<<<<<<<<<<
@@ -8375,7 +8387,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
  */
   }
 
-  /* "sequence.pyx":673
+  /* "sequence.pyx":668
  *         if data == NULL:
  *            return None
  *         self.fill_strides_and_shape()             # <<<<<<<<<<<<<<
@@ -8384,27 +8396,27 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
  */
   ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->fill_strides_and_shape(__pyx_v_self);
 
-  /* "sequence.pyx":674
+  /* "sequence.pyx":669
  *            return None
  *         self.fill_strides_and_shape()
  *         self.aux_buffer.set_buffer(True, <void*> data, count, b'f', \             # <<<<<<<<<<<<<<
  *                                  sizeof(float), self.ndim, self._shape)
  *         cdef memoryview mv = memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
  */
-  __pyx_t_2 = __pyx_f_8sequence_20__AuxBufferInterface_set_buffer(__pyx_v_self->aux_buffer, 1, ((void *)__pyx_v_data), __pyx_v_count, __pyx_n_b_f_3, (sizeof(float)), __pyx_v_self->ndim, __pyx_v_self->_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 674, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_8sequence_20__AuxBufferInterface_set_buffer(__pyx_v_self->aux_buffer, 1, ((void *)__pyx_v_data), __pyx_v_count, __pyx_n_b_f_3, (sizeof(float)), __pyx_v_self->ndim, __pyx_v_self->_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 669, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "sequence.pyx":676
+  /* "sequence.pyx":671
  *         self.aux_buffer.set_buffer(True, <void*> data, count, b'f', \
  *                                  sizeof(float), self.ndim, self._shape)
  *         cdef memoryview mv = memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)             # <<<<<<<<<<<<<<
  *         return mv
  * 
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int(PyBUF_CONTIG_RO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 676, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(PyBUF_CONTIG_RO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 671, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 676, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 671, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(((PyObject *)__pyx_v_self->aux_buffer));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self->aux_buffer));
@@ -8415,13 +8427,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
   __Pyx_GIVEREF(Py_False);
   PyTuple_SET_ITEM(__pyx_t_3, 2, Py_False);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 676, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 671, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_mv = ((struct __pyx_memoryview_obj *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "sequence.pyx":677
+  /* "sequence.pyx":672
  *                                  sizeof(float), self.ndim, self._shape)
  *         cdef memoryview mv = memoryview(self.aux_buffer, PyBUF_CONTIG_RO, False)
  *         return mv             # <<<<<<<<<<<<<<
@@ -8433,7 +8445,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
   __pyx_r = ((PyObject *)__pyx_v_mv);
   goto __pyx_L0;
 
-  /* "sequence.pyx":656
+  /* "sequence.pyx":651
  *         return self.memview
  * 
  *     def get_float_data(self):             # <<<<<<<<<<<<<<
@@ -8454,7 +8466,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "sequence.pyx":679
+/* "sequence.pyx":674
  *         return mv
  * 
  *     def set_data(self, data not None):             # <<<<<<<<<<<<<<
@@ -8464,13 +8476,13 @@ static PyObject *__pyx_pf_8sequence_8Sequence_44get_float_data(struct __pyx_obj_
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_47set_data(PyObject *__pyx_v_self, PyObject *__pyx_v_data); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_46set_data[] = "Sequence.set_data(self, data)\nSet the data in a sequence.\n\n        :param data: a python object implementing the buffer interface.\n        :raises: ValueError if None or with an array with a\n        not supported type.\n        ";
+static char __pyx_doc_8sequence_8Sequence_46set_data[] = "Set the data in a sequence.\n\n        :param data: a python object implementing the buffer interface.\n        :raises: ValueError if None or with an array with a\n        not supported type.\n        ";
 static PyObject *__pyx_pw_8sequence_8Sequence_47set_data(PyObject *__pyx_v_self, PyObject *__pyx_v_data) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_data (wrapper)", 0);
   if (unlikely(((PyObject *)__pyx_v_data) == Py_None)) {
-    PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "data"); __PYX_ERR(0, 679, __pyx_L1_error)
+    PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "data"); __PYX_ERR(0, 674, __pyx_L1_error)
   }
   __pyx_r = __pyx_pf_8sequence_8Sequence_46set_data(((struct __pyx_obj_8sequence_Sequence *)__pyx_v_self), ((PyObject *)__pyx_v_data));
 
@@ -8489,16 +8501,16 @@ static PyObject *__pyx_pf_8sequence_8Sequence_46set_data(struct __pyx_obj_8seque
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("set_data", 0);
 
-  /* "sequence.pyx":686
+  /* "sequence.pyx":681
  *         not supported type.
  *         """
  *         self.set_data_c(data, True)             # <<<<<<<<<<<<<<
  * 
  *     cdef int set_data_c(self, object data, bint count_from_buf)except -1:
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_data_c(__pyx_v_self, __pyx_v_data, 1); if (unlikely(__pyx_t_1 == ((int)-1))) __PYX_ERR(0, 686, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->set_data_c(__pyx_v_self, __pyx_v_data, 1); if (unlikely(__pyx_t_1 == ((int)-1))) __PYX_ERR(0, 681, __pyx_L1_error)
 
-  /* "sequence.pyx":679
+  /* "sequence.pyx":674
  *         return mv
  * 
  *     def set_data(self, data not None):             # <<<<<<<<<<<<<<
@@ -8518,7 +8530,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_46set_data(struct __pyx_obj_8seque
   return __pyx_r;
 }
 
-/* "sequence.pyx":688
+/* "sequence.pyx":683
  *         self.set_data_c(data, True)
  * 
  *     cdef int set_data_c(self, object data, bint count_from_buf)except -1:             # <<<<<<<<<<<<<<
@@ -8545,7 +8557,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("set_data_c", 0);
 
-  /* "sequence.pyx":692
+  /* "sequence.pyx":687
  *         cdef char *c_type
  *         cdef size_t sz, count
  *         cdef bint err_code = 1             # <<<<<<<<<<<<<<
@@ -8554,7 +8566,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
   __pyx_v_err_code = 1;
 
-  /* "sequence.pyx":693
+  /* "sequence.pyx":688
  *         cdef size_t sz, count
  *         cdef bint err_code = 1
  *         cdef bint release_buff = 0             # <<<<<<<<<<<<<<
@@ -8563,7 +8575,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
   __pyx_v_release_buff = 0;
 
-  /* "sequence.pyx":695
+  /* "sequence.pyx":690
  *         cdef bint release_buff = 0
  *         cdef int err
  *         cdef stp_sequence* s = self.get_sequence()             # <<<<<<<<<<<<<<
@@ -8572,7 +8584,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
   __pyx_v_s = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v_self->__pyx_vtab)->get_sequence(__pyx_v_self);
 
-  /* "sequence.pyx":697
+  /* "sequence.pyx":692
  *         cdef stp_sequence* s = self.get_sequence()
  * 
  *         if PyObject_CheckBuffer(data):             # <<<<<<<<<<<<<<
@@ -8582,17 +8594,17 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   __pyx_t_1 = (PyObject_CheckBuffer(__pyx_v_data) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":698
+    /* "sequence.pyx":693
  * 
  *         if PyObject_CheckBuffer(data):
  *             err = PyObject_GetBuffer(data, &pybuffer, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)             # <<<<<<<<<<<<<<
  *             release_buff = 1
  *             if err == -1:
  */
-    __pyx_t_2 = PyObject_GetBuffer(__pyx_v_data, (&__pyx_v_pybuffer), (PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)); if (unlikely(__pyx_t_2 == ((int)-1))) __PYX_ERR(0, 698, __pyx_L1_error)
+    __pyx_t_2 = PyObject_GetBuffer(__pyx_v_data, (&__pyx_v_pybuffer), (PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)); if (unlikely(__pyx_t_2 == ((int)-1))) __PYX_ERR(0, 693, __pyx_L1_error)
     __pyx_v_err = __pyx_t_2;
 
-    /* "sequence.pyx":699
+    /* "sequence.pyx":694
  *         if PyObject_CheckBuffer(data):
  *             err = PyObject_GetBuffer(data, &pybuffer, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)
  *             release_buff = 1             # <<<<<<<<<<<<<<
@@ -8601,7 +8613,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
     __pyx_v_release_buff = 1;
 
-    /* "sequence.pyx":700
+    /* "sequence.pyx":695
  *             err = PyObject_GetBuffer(data, &pybuffer, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)
  *             release_buff = 1
  *             if err == -1:             # <<<<<<<<<<<<<<
@@ -8611,7 +8623,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
     __pyx_t_1 = ((__pyx_v_err == -1L) != 0);
     if (unlikely(__pyx_t_1)) {
 
-      /* "sequence.pyx":701
+      /* "sequence.pyx":696
  *             release_buff = 1
  *             if err == -1:
  *                 PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
@@ -8620,20 +8632,20 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
       PyBuffer_Release((&__pyx_v_pybuffer));
 
-      /* "sequence.pyx":702
+      /* "sequence.pyx":697
  *             if err == -1:
  *                 PyBuffer_Release(&pybuffer)
  *                 raise ValueError("Data to set is not a contigous block of memory.")             # <<<<<<<<<<<<<<
  *             if pybuffer.format:
  *                 if check_buffer_format(pybuffer.format, &c_type):
  */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 702, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 697, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_Raise(__pyx_t_3, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 702, __pyx_L1_error)
+      __PYX_ERR(0, 697, __pyx_L1_error)
 
-      /* "sequence.pyx":700
+      /* "sequence.pyx":695
  *             err = PyObject_GetBuffer(data, &pybuffer, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT)
  *             release_buff = 1
  *             if err == -1:             # <<<<<<<<<<<<<<
@@ -8642,7 +8654,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
     }
 
-    /* "sequence.pyx":703
+    /* "sequence.pyx":698
  *                 PyBuffer_Release(&pybuffer)
  *                 raise ValueError("Data to set is not a contigous block of memory.")
  *             if pybuffer.format:             # <<<<<<<<<<<<<<
@@ -8652,20 +8664,20 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
     __pyx_t_1 = (__pyx_v_pybuffer.format != 0);
     if (__pyx_t_1) {
 
-      /* "sequence.pyx":704
+      /* "sequence.pyx":699
  *                 raise ValueError("Data to set is not a contigous block of memory.")
  *             if pybuffer.format:
  *                 if check_buffer_format(pybuffer.format, &c_type):             # <<<<<<<<<<<<<<
  *                     sz = pybuffer.itemsize
  *                     if count_from_buf:
  */
-      __pyx_t_3 = __Pyx_PyBytes_FromString(__pyx_v_pybuffer.format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 704, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyBytes_FromString(__pyx_v_pybuffer.format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 699, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_1 = (__pyx_f_8sequence_check_buffer_format(((PyObject*)__pyx_t_3), (&__pyx_v_c_type)) != 0);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       if (__pyx_t_1) {
 
-        /* "sequence.pyx":705
+        /* "sequence.pyx":700
  *             if pybuffer.format:
  *                 if check_buffer_format(pybuffer.format, &c_type):
  *                     sz = pybuffer.itemsize             # <<<<<<<<<<<<<<
@@ -8675,7 +8687,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_4 = __pyx_v_pybuffer.itemsize;
         __pyx_v_sz = __pyx_t_4;
 
-        /* "sequence.pyx":706
+        /* "sequence.pyx":701
  *                 if check_buffer_format(pybuffer.format, &c_type):
  *                     sz = pybuffer.itemsize
  *                     if count_from_buf:             # <<<<<<<<<<<<<<
@@ -8685,7 +8697,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_1 = (__pyx_v_count_from_buf != 0);
         if (__pyx_t_1) {
 
-          /* "sequence.pyx":707
+          /* "sequence.pyx":702
  *                     sz = pybuffer.itemsize
  *                     if count_from_buf:
  *                         count = pybuffer.len // pybuffer.itemsize             # <<<<<<<<<<<<<<
@@ -8694,15 +8706,15 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
           if (unlikely(__pyx_v_pybuffer.itemsize == 0)) {
             PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-            __PYX_ERR(0, 707, __pyx_L1_error)
+            __PYX_ERR(0, 702, __pyx_L1_error)
           }
           else if (sizeof(Py_ssize_t) == sizeof(long) && (!(((Py_ssize_t)-1) > 0)) && unlikely(__pyx_v_pybuffer.itemsize == (Py_ssize_t)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_pybuffer.len))) {
             PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-            __PYX_ERR(0, 707, __pyx_L1_error)
+            __PYX_ERR(0, 702, __pyx_L1_error)
           }
           __pyx_v_count = __Pyx_div_Py_ssize_t(__pyx_v_pybuffer.len, __pyx_v_pybuffer.itemsize);
 
-          /* "sequence.pyx":706
+          /* "sequence.pyx":701
  *                 if check_buffer_format(pybuffer.format, &c_type):
  *                     sz = pybuffer.itemsize
  *                     if count_from_buf:             # <<<<<<<<<<<<<<
@@ -8712,7 +8724,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           goto __pyx_L7;
         }
 
-        /* "sequence.pyx":709
+        /* "sequence.pyx":704
  *                         count = pybuffer.len // pybuffer.itemsize
  *                     else:
  *                         count = stp_sequence_get_size(s)             # <<<<<<<<<<<<<<
@@ -8722,7 +8734,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         /*else*/ {
           __pyx_v_count = stp_sequence_get_size(__pyx_v_s);
 
-          /* "sequence.pyx":710
+          /* "sequence.pyx":705
  *                     else:
  *                         count = stp_sequence_get_size(s)
  *                         if (pybuffer.len // pybuffer.itemsize) < count:             # <<<<<<<<<<<<<<
@@ -8731,29 +8743,29 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
           if (unlikely(__pyx_v_pybuffer.itemsize == 0)) {
             PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-            __PYX_ERR(0, 710, __pyx_L1_error)
+            __PYX_ERR(0, 705, __pyx_L1_error)
           }
           else if (sizeof(Py_ssize_t) == sizeof(long) && (!(((Py_ssize_t)-1) > 0)) && unlikely(__pyx_v_pybuffer.itemsize == (Py_ssize_t)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_pybuffer.len))) {
             PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-            __PYX_ERR(0, 710, __pyx_L1_error)
+            __PYX_ERR(0, 705, __pyx_L1_error)
           }
           __pyx_t_1 = ((__Pyx_div_Py_ssize_t(__pyx_v_pybuffer.len, __pyx_v_pybuffer.itemsize) < __pyx_v_count) != 0);
           if (unlikely(__pyx_t_1)) {
 
-            /* "sequence.pyx":711
+            /* "sequence.pyx":706
  *                         count = stp_sequence_get_size(s)
  *                         if (pybuffer.len // pybuffer.itemsize) < count:
  *                             raise ValueError("Data to set is too short.")             # <<<<<<<<<<<<<<
  *                     if c_type[0] == b'u':
  *                         if sz == sizeof(unsigned short):
  */
-            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 711, __pyx_L1_error)
+            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 706, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_Raise(__pyx_t_3, 0, 0, 0);
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __PYX_ERR(0, 711, __pyx_L1_error)
+            __PYX_ERR(0, 706, __pyx_L1_error)
 
-            /* "sequence.pyx":710
+            /* "sequence.pyx":705
  *                     else:
  *                         count = stp_sequence_get_size(s)
  *                         if (pybuffer.len // pybuffer.itemsize) < count:             # <<<<<<<<<<<<<<
@@ -8764,7 +8776,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         }
         __pyx_L7:;
 
-        /* "sequence.pyx":712
+        /* "sequence.pyx":707
  *                         if (pybuffer.len // pybuffer.itemsize) < count:
  *                             raise ValueError("Data to set is too short.")
  *                     if c_type[0] == b'u':             # <<<<<<<<<<<<<<
@@ -8774,7 +8786,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_1 = (((__pyx_v_c_type[0]) == 'u') != 0);
         if (__pyx_t_1) {
 
-          /* "sequence.pyx":713
+          /* "sequence.pyx":708
  *                             raise ValueError("Data to set is too short.")
  *                     if c_type[0] == b'u':
  *                         if sz == sizeof(unsigned short):             # <<<<<<<<<<<<<<
@@ -8784,7 +8796,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(unsigned short))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":714
+            /* "sequence.pyx":709
  *                     if c_type[0] == b'u':
  *                         if sz == sizeof(unsigned short):
  *                             err_code = stp_sequence_set_ushort_data(s, \             # <<<<<<<<<<<<<<
@@ -8793,7 +8805,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_ushort_data(__pyx_v_s, __pyx_v_count, ((unsigned short *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":713
+            /* "sequence.pyx":708
  *                             raise ValueError("Data to set is too short.")
  *                     if c_type[0] == b'u':
  *                         if sz == sizeof(unsigned short):             # <<<<<<<<<<<<<<
@@ -8803,7 +8815,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
             goto __pyx_L10;
           }
 
-          /* "sequence.pyx":716
+          /* "sequence.pyx":711
  *                             err_code = stp_sequence_set_ushort_data(s, \
  *                             count, <unsigned short*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned int):             # <<<<<<<<<<<<<<
@@ -8813,7 +8825,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(unsigned int))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":717
+            /* "sequence.pyx":712
  *                             count, <unsigned short*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned int):
  *                             err_code = stp_sequence_set_uint_data(s, \             # <<<<<<<<<<<<<<
@@ -8822,7 +8834,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_uint_data(__pyx_v_s, __pyx_v_count, ((unsigned int *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":716
+            /* "sequence.pyx":711
  *                             err_code = stp_sequence_set_ushort_data(s, \
  *                             count, <unsigned short*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned int):             # <<<<<<<<<<<<<<
@@ -8832,7 +8844,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
             goto __pyx_L10;
           }
 
-          /* "sequence.pyx":719
+          /* "sequence.pyx":714
  *                             err_code = stp_sequence_set_uint_data(s, \
  *                             count, <unsigned int*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned long):             # <<<<<<<<<<<<<<
@@ -8842,7 +8854,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(unsigned long))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":720
+            /* "sequence.pyx":715
  *                             count, <unsigned int*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned long):
  *                             err_code = stp_sequence_set_ulong_data(s, \             # <<<<<<<<<<<<<<
@@ -8851,7 +8863,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_ulong_data(__pyx_v_s, __pyx_v_count, ((unsigned long *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":719
+            /* "sequence.pyx":714
  *                             err_code = stp_sequence_set_uint_data(s, \
  *                             count, <unsigned int*> pybuffer.buf)
  *                         elif sz == sizeof(unsigned long):             # <<<<<<<<<<<<<<
@@ -8861,7 +8873,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           }
           __pyx_L10:;
 
-          /* "sequence.pyx":712
+          /* "sequence.pyx":707
  *                         if (pybuffer.len // pybuffer.itemsize) < count:
  *                             raise ValueError("Data to set is too short.")
  *                     if c_type[0] == b'u':             # <<<<<<<<<<<<<<
@@ -8871,7 +8883,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           goto __pyx_L9;
         }
 
-        /* "sequence.pyx":722
+        /* "sequence.pyx":717
  *                             err_code = stp_sequence_set_ulong_data(s, \
  *                             count, <unsigned long*> pybuffer.buf)
  *                     elif c_type[0] == b'i':             # <<<<<<<<<<<<<<
@@ -8881,7 +8893,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_1 = (((__pyx_v_c_type[0]) == 'i') != 0);
         if (__pyx_t_1) {
 
-          /* "sequence.pyx":723
+          /* "sequence.pyx":718
  *                             count, <unsigned long*> pybuffer.buf)
  *                     elif c_type[0] == b'i':
  *                         if sz == sizeof(short):             # <<<<<<<<<<<<<<
@@ -8891,7 +8903,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(short))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":724
+            /* "sequence.pyx":719
  *                     elif c_type[0] == b'i':
  *                         if sz == sizeof(short):
  *                             err_code = stp_sequence_set_short_data(s, \             # <<<<<<<<<<<<<<
@@ -8900,7 +8912,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_short_data(__pyx_v_s, __pyx_v_count, ((short *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":723
+            /* "sequence.pyx":718
  *                             count, <unsigned long*> pybuffer.buf)
  *                     elif c_type[0] == b'i':
  *                         if sz == sizeof(short):             # <<<<<<<<<<<<<<
@@ -8910,7 +8922,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
             goto __pyx_L11;
           }
 
-          /* "sequence.pyx":726
+          /* "sequence.pyx":721
  *                             err_code = stp_sequence_set_short_data(s, \
  *                             count, <short*> pybuffer.buf)
  *                         elif sz == sizeof(int):             # <<<<<<<<<<<<<<
@@ -8920,7 +8932,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(int))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":727
+            /* "sequence.pyx":722
  *                             count, <short*> pybuffer.buf)
  *                         elif sz == sizeof(int):
  *                             err_code = stp_sequence_set_int_data(s, \             # <<<<<<<<<<<<<<
@@ -8929,7 +8941,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_int_data(__pyx_v_s, __pyx_v_count, ((int *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":726
+            /* "sequence.pyx":721
  *                             err_code = stp_sequence_set_short_data(s, \
  *                             count, <short*> pybuffer.buf)
  *                         elif sz == sizeof(int):             # <<<<<<<<<<<<<<
@@ -8939,7 +8951,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
             goto __pyx_L11;
           }
 
-          /* "sequence.pyx":729
+          /* "sequence.pyx":724
  *                             err_code = stp_sequence_set_int_data(s, \
  *                             count, <int*> pybuffer.buf)
  *                         elif sz == sizeof(long):             # <<<<<<<<<<<<<<
@@ -8949,7 +8961,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(long))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":730
+            /* "sequence.pyx":725
  *                             count, <int*> pybuffer.buf)
  *                         elif sz == sizeof(long):
  *                             err_code = stp_sequence_set_long_data(s, \             # <<<<<<<<<<<<<<
@@ -8958,7 +8970,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_long_data(__pyx_v_s, __pyx_v_count, ((long *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":729
+            /* "sequence.pyx":724
  *                             err_code = stp_sequence_set_int_data(s, \
  *                             count, <int*> pybuffer.buf)
  *                         elif sz == sizeof(long):             # <<<<<<<<<<<<<<
@@ -8968,7 +8980,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           }
           __pyx_L11:;
 
-          /* "sequence.pyx":722
+          /* "sequence.pyx":717
  *                             err_code = stp_sequence_set_ulong_data(s, \
  *                             count, <unsigned long*> pybuffer.buf)
  *                     elif c_type[0] == b'i':             # <<<<<<<<<<<<<<
@@ -8978,7 +8990,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           goto __pyx_L9;
         }
 
-        /* "sequence.pyx":732
+        /* "sequence.pyx":727
  *                             err_code = stp_sequence_set_long_data(s, \
  *                             count, <long*> pybuffer.buf)
  *                     elif c_type[0] == b'f':             # <<<<<<<<<<<<<<
@@ -8988,7 +9000,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_1 = (((__pyx_v_c_type[0]) == 'f') != 0);
         if (__pyx_t_1) {
 
-          /* "sequence.pyx":733
+          /* "sequence.pyx":728
  *                             count, <long*> pybuffer.buf)
  *                     elif c_type[0] == b'f':
  *                         if sz == sizeof(float):             # <<<<<<<<<<<<<<
@@ -8998,7 +9010,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(float))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":734
+            /* "sequence.pyx":729
  *                     elif c_type[0] == b'f':
  *                         if sz == sizeof(float):
  *                             err_code = stp_sequence_set_float_data(s, \             # <<<<<<<<<<<<<<
@@ -9007,7 +9019,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_float_data(__pyx_v_s, __pyx_v_count, ((float *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":733
+            /* "sequence.pyx":728
  *                             count, <long*> pybuffer.buf)
  *                     elif c_type[0] == b'f':
  *                         if sz == sizeof(float):             # <<<<<<<<<<<<<<
@@ -9017,7 +9029,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
             goto __pyx_L12;
           }
 
-          /* "sequence.pyx":736
+          /* "sequence.pyx":731
  *                             err_code = stp_sequence_set_float_data(s, \
  *                             count, <float*> pybuffer.buf)
  *                         elif sz == sizeof(double):             # <<<<<<<<<<<<<<
@@ -9027,7 +9039,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           __pyx_t_1 = ((__pyx_v_sz == (sizeof(double))) != 0);
           if (__pyx_t_1) {
 
-            /* "sequence.pyx":737
+            /* "sequence.pyx":732
  *                             count, <float*> pybuffer.buf)
  *                         elif sz == sizeof(double):
  *                             err_code = stp_sequence_set_data(s, \             # <<<<<<<<<<<<<<
@@ -9036,7 +9048,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
             __pyx_v_err_code = stp_sequence_set_data(__pyx_v_s, __pyx_v_count, ((double *)__pyx_v_pybuffer.buf));
 
-            /* "sequence.pyx":736
+            /* "sequence.pyx":731
  *                             err_code = stp_sequence_set_float_data(s, \
  *                             count, <float*> pybuffer.buf)
  *                         elif sz == sizeof(double):             # <<<<<<<<<<<<<<
@@ -9046,7 +9058,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           }
           __pyx_L12:;
 
-          /* "sequence.pyx":732
+          /* "sequence.pyx":727
  *                             err_code = stp_sequence_set_long_data(s, \
  *                             count, <long*> pybuffer.buf)
  *                     elif c_type[0] == b'f':             # <<<<<<<<<<<<<<
@@ -9056,7 +9068,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         }
         __pyx_L9:;
 
-        /* "sequence.pyx":739
+        /* "sequence.pyx":734
  *                             err_code = stp_sequence_set_data(s, \
  *                             count, <double*> pybuffer.buf)
  *                     if err_code == 0:             # <<<<<<<<<<<<<<
@@ -9066,7 +9078,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         __pyx_t_1 = ((__pyx_v_err_code == 0) != 0);
         if (unlikely(__pyx_t_1)) {
 
-          /* "sequence.pyx":740
+          /* "sequence.pyx":735
  *                             count, <double*> pybuffer.buf)
  *                     if err_code == 0:
  *                         PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
@@ -9075,14 +9087,14 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
           PyBuffer_Release((&__pyx_v_pybuffer));
 
-          /* "sequence.pyx":741
+          /* "sequence.pyx":736
  *                     if err_code == 0:
  *                         PyBuffer_Release(&pybuffer)
  *                         raise SequenceBoundsError("Attempt to set value out of bounds ")             # <<<<<<<<<<<<<<
  *                 else:
  *                     err_code = 0
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_SequenceBoundsError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 741, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_SequenceBoundsError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 736, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __pyx_t_6 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -9096,14 +9108,14 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
           }
           __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_kp_u_Attempt_to_set_value_out_of_boun) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_kp_u_Attempt_to_set_value_out_of_boun);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 741, __pyx_L1_error)
+          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 736, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_Raise(__pyx_t_3, 0, 0, 0);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __PYX_ERR(0, 741, __pyx_L1_error)
+          __PYX_ERR(0, 736, __pyx_L1_error)
 
-          /* "sequence.pyx":739
+          /* "sequence.pyx":734
  *                             err_code = stp_sequence_set_data(s, \
  *                             count, <double*> pybuffer.buf)
  *                     if err_code == 0:             # <<<<<<<<<<<<<<
@@ -9112,7 +9124,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
         }
 
-        /* "sequence.pyx":704
+        /* "sequence.pyx":699
  *                 raise ValueError("Data to set is not a contigous block of memory.")
  *             if pybuffer.format:
  *                 if check_buffer_format(pybuffer.format, &c_type):             # <<<<<<<<<<<<<<
@@ -9122,7 +9134,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
         goto __pyx_L6;
       }
 
-      /* "sequence.pyx":743
+      /* "sequence.pyx":738
  *                         raise SequenceBoundsError("Attempt to set value out of bounds ")
  *                 else:
  *                     err_code = 0             # <<<<<<<<<<<<<<
@@ -9134,7 +9146,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
       }
       __pyx_L6:;
 
-      /* "sequence.pyx":703
+      /* "sequence.pyx":698
  *                 PyBuffer_Release(&pybuffer)
  *                 raise ValueError("Data to set is not a contigous block of memory.")
  *             if pybuffer.format:             # <<<<<<<<<<<<<<
@@ -9144,7 +9156,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
       goto __pyx_L5;
     }
 
-    /* "sequence.pyx":745
+    /* "sequence.pyx":740
  *                     err_code = 0
  *             else:
  *                 err_code = 0             # <<<<<<<<<<<<<<
@@ -9156,7 +9168,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
     }
     __pyx_L5:;
 
-    /* "sequence.pyx":697
+    /* "sequence.pyx":692
  *         cdef stp_sequence* s = self.get_sequence()
  * 
  *         if PyObject_CheckBuffer(data):             # <<<<<<<<<<<<<<
@@ -9166,7 +9178,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
     goto __pyx_L3;
   }
 
-  /* "sequence.pyx":747
+  /* "sequence.pyx":742
  *                 err_code = 0
  *         else:
  *             err_code = 0             # <<<<<<<<<<<<<<
@@ -9178,7 +9190,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   }
   __pyx_L3:;
 
-  /* "sequence.pyx":749
+  /* "sequence.pyx":744
  *             err_code = 0
  * 
  *         if release_buff:             # <<<<<<<<<<<<<<
@@ -9188,7 +9200,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   __pyx_t_1 = (__pyx_v_release_buff != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":750
+    /* "sequence.pyx":745
  * 
  *         if release_buff:
  *             PyBuffer_Release(&pybuffer)             # <<<<<<<<<<<<<<
@@ -9197,7 +9209,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
     PyBuffer_Release((&__pyx_v_pybuffer));
 
-    /* "sequence.pyx":749
+    /* "sequence.pyx":744
  *             err_code = 0
  * 
  *         if release_buff:             # <<<<<<<<<<<<<<
@@ -9206,7 +9218,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
   }
 
-  /* "sequence.pyx":751
+  /* "sequence.pyx":746
  *         if release_buff:
  *             PyBuffer_Release(&pybuffer)
  *         if not err_code:             # <<<<<<<<<<<<<<
@@ -9216,20 +9228,20 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   __pyx_t_1 = ((!(__pyx_v_err_code != 0)) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "sequence.pyx":752
+    /* "sequence.pyx":747
  *             PyBuffer_Release(&pybuffer)
  *         if not err_code:
  *             raise ValueError("Invalid buffer format.")             # <<<<<<<<<<<<<<
  * 
  *     def __richcmp__(x,  y, int comp):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 752, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 747, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 752, __pyx_L1_error)
+    __PYX_ERR(0, 747, __pyx_L1_error)
 
-    /* "sequence.pyx":751
+    /* "sequence.pyx":746
  *         if release_buff:
  *             PyBuffer_Release(&pybuffer)
  *         if not err_code:             # <<<<<<<<<<<<<<
@@ -9238,7 +9250,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
  */
   }
 
-  /* "sequence.pyx":688
+  /* "sequence.pyx":683
  *         self.set_data_c(data, True)
  * 
  *     cdef int set_data_c(self, object data, bint count_from_buf)except -1:             # <<<<<<<<<<<<<<
@@ -9260,7 +9272,7 @@ static int __pyx_f_8sequence_8Sequence_set_data_c(struct __pyx_obj_8sequence_Seq
   return __pyx_r;
 }
 
-/* "sequence.pyx":754
+/* "sequence.pyx":749
  *             raise ValueError("Invalid buffer format.")
  * 
  *     def __richcmp__(x,  y, int comp):             # <<<<<<<<<<<<<<
@@ -9302,7 +9314,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
   int __pyx_t_9;
   __Pyx_RefNannySetupContext("__richcmp__", 0);
 
-  /* "sequence.pyx":755
+  /* "sequence.pyx":750
  * 
  *     def __richcmp__(x,  y, int comp):
  *         if comp != 2: # __eq__             # <<<<<<<<<<<<<<
@@ -9312,20 +9324,20 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
   __pyx_t_1 = ((__pyx_v_comp != 2) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "sequence.pyx":756
+    /* "sequence.pyx":751
  *     def __richcmp__(x,  y, int comp):
  *         if comp != 2: # __eq__
  *             raise NotImplementedError()             # <<<<<<<<<<<<<<
  *         if not(isinstance(x, Sequence) and isinstance(y, Sequence)):
  *             return False
  */
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_builtin_NotImplementedError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 756, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_builtin_NotImplementedError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 751, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 756, __pyx_L1_error)
+    __PYX_ERR(0, 751, __pyx_L1_error)
 
-    /* "sequence.pyx":755
+    /* "sequence.pyx":750
  * 
  *     def __richcmp__(x,  y, int comp):
  *         if comp != 2: # __eq__             # <<<<<<<<<<<<<<
@@ -9334,7 +9346,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
   }
 
-  /* "sequence.pyx":757
+  /* "sequence.pyx":752
  *         if comp != 2: # __eq__
  *             raise NotImplementedError()
  *         if not(isinstance(x, Sequence) and isinstance(y, Sequence)):             # <<<<<<<<<<<<<<
@@ -9355,7 +9367,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
   __pyx_t_3 = ((!__pyx_t_1) != 0);
   if (__pyx_t_3) {
 
-    /* "sequence.pyx":758
+    /* "sequence.pyx":753
  *             raise NotImplementedError()
  *         if not(isinstance(x, Sequence) and isinstance(y, Sequence)):
  *             return False             # <<<<<<<<<<<<<<
@@ -9367,7 +9379,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "sequence.pyx":757
+    /* "sequence.pyx":752
  *         if comp != 2: # __eq__
  *             raise NotImplementedError()
  *         if not(isinstance(x, Sequence) and isinstance(y, Sequence)):             # <<<<<<<<<<<<<<
@@ -9376,7 +9388,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
   }
 
-  /* "sequence.pyx":763
+  /* "sequence.pyx":758
  *         cdef double xs_v, ys_v
  *         cdef Sequence _x, _y
  *         _x = <Sequence> x             # <<<<<<<<<<<<<<
@@ -9388,7 +9400,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
   __pyx_v__x = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "sequence.pyx":764
+  /* "sequence.pyx":759
  *         cdef Sequence _x, _y
  *         _x = <Sequence> x
  *         _y = <Sequence> y             # <<<<<<<<<<<<<<
@@ -9400,25 +9412,25 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
   __pyx_v__y = ((struct __pyx_obj_8sequence_Sequence *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "sequence.pyx":765
+  /* "sequence.pyx":760
  *         _x = <Sequence> x
  *         _y = <Sequence> y
  *         if x.shape == y.shape:             # <<<<<<<<<<<<<<
  *             xs = _x.get_sequence()
  *             ys = _y.get_sequence()
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_x), __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 765, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_x), __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 760, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_y, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 765, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_y, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 760, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyObject_RichCompare(__pyx_t_2, __pyx_t_5, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 765, __pyx_L1_error)
+  __pyx_t_6 = PyObject_RichCompare(__pyx_t_2, __pyx_t_5, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 760, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 765, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 760, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   if (__pyx_t_3) {
 
-    /* "sequence.pyx":766
+    /* "sequence.pyx":761
  *         _y = <Sequence> y
  *         if x.shape == y.shape:
  *             xs = _x.get_sequence()             # <<<<<<<<<<<<<<
@@ -9427,7 +9439,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
     __pyx_v_xs = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v__x->__pyx_vtab)->get_sequence(__pyx_v__x);
 
-    /* "sequence.pyx":767
+    /* "sequence.pyx":762
  *         if x.shape == y.shape:
  *             xs = _x.get_sequence()
  *             ys = _y.get_sequence()             # <<<<<<<<<<<<<<
@@ -9436,22 +9448,22 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
     __pyx_v_ys = ((struct __pyx_vtabstruct_8sequence_Sequence *)__pyx_v__y->__pyx_vtab)->get_sequence(__pyx_v__y);
 
-    /* "sequence.pyx":768
+    /* "sequence.pyx":763
  *             xs = _x.get_sequence()
  *             ys = _y.get_sequence()
  *             for i in xrange(x.size):             # <<<<<<<<<<<<<<
  *                 stp_sequence_get_point(xs, i, &xs_v)
  *                 stp_sequence_get_point(ys, i, &ys_v)
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_x), __pyx_n_s_size); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 768, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_x), __pyx_n_s_size); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 763, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyInt_As_long(__pyx_t_6); if (unlikely((__pyx_t_7 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 768, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_long(__pyx_t_6); if (unlikely((__pyx_t_7 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 763, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_8 = __pyx_t_7;
     for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
       __pyx_v_i = __pyx_t_9;
 
-      /* "sequence.pyx":769
+      /* "sequence.pyx":764
  *             ys = _y.get_sequence()
  *             for i in xrange(x.size):
  *                 stp_sequence_get_point(xs, i, &xs_v)             # <<<<<<<<<<<<<<
@@ -9460,7 +9472,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
       (void)(stp_sequence_get_point(__pyx_v_xs, __pyx_v_i, (&__pyx_v_xs_v)));
 
-      /* "sequence.pyx":770
+      /* "sequence.pyx":765
  *             for i in xrange(x.size):
  *                 stp_sequence_get_point(xs, i, &xs_v)
  *                 stp_sequence_get_point(ys, i, &ys_v)             # <<<<<<<<<<<<<<
@@ -9469,7 +9481,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
       (void)(stp_sequence_get_point(__pyx_v_ys, __pyx_v_i, (&__pyx_v_ys_v)));
 
-      /* "sequence.pyx":771
+      /* "sequence.pyx":766
  *                 stp_sequence_get_point(xs, i, &xs_v)
  *                 stp_sequence_get_point(ys, i, &ys_v)
  *                 if xs_v != ys_v:             # <<<<<<<<<<<<<<
@@ -9479,7 +9491,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
       __pyx_t_3 = ((__pyx_v_xs_v != __pyx_v_ys_v) != 0);
       if (__pyx_t_3) {
 
-        /* "sequence.pyx":772
+        /* "sequence.pyx":767
  *                 stp_sequence_get_point(ys, i, &ys_v)
  *                 if xs_v != ys_v:
  *                     return False             # <<<<<<<<<<<<<<
@@ -9491,7 +9503,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
         __pyx_r = Py_False;
         goto __pyx_L0;
 
-        /* "sequence.pyx":771
+        /* "sequence.pyx":766
  *                 stp_sequence_get_point(xs, i, &xs_v)
  *                 stp_sequence_get_point(ys, i, &ys_v)
  *                 if xs_v != ys_v:             # <<<<<<<<<<<<<<
@@ -9501,7 +9513,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
       }
     }
 
-    /* "sequence.pyx":773
+    /* "sequence.pyx":768
  *                 if xs_v != ys_v:
  *                     return False
  *             return True             # <<<<<<<<<<<<<<
@@ -9513,7 +9525,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
     __pyx_r = Py_True;
     goto __pyx_L0;
 
-    /* "sequence.pyx":765
+    /* "sequence.pyx":760
  *         _x = <Sequence> x
  *         _y = <Sequence> y
  *         if x.shape == y.shape:             # <<<<<<<<<<<<<<
@@ -9522,7 +9534,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
  */
   }
 
-  /* "sequence.pyx":775
+  /* "sequence.pyx":770
  *             return True
  *         else:
  *             return False             # <<<<<<<<<<<<<<
@@ -9536,7 +9548,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
     goto __pyx_L0;
   }
 
-  /* "sequence.pyx":754
+  /* "sequence.pyx":749
  *             raise ValueError("Invalid buffer format.")
  * 
  *     def __richcmp__(x,  y, int comp):             # <<<<<<<<<<<<<<
@@ -9567,7 +9579,6 @@ static PyObject *__pyx_pf_8sequence_8Sequence_48__richcmp__(struct __pyx_obj_8se
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_51__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_50__reduce_cython__[] = "Sequence.__reduce_cython__(self)";
 static PyObject *__pyx_pw_8sequence_8Sequence_51__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -9622,7 +9633,6 @@ static PyObject *__pyx_pf_8sequence_8Sequence_50__reduce_cython__(CYTHON_UNUSED 
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_8Sequence_53__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static char __pyx_doc_8sequence_8Sequence_52__setstate_cython__[] = "Sequence.__setstate_cython__(self, __pyx_state)";
 static PyObject *__pyx_pw_8sequence_8Sequence_53__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -9668,7 +9678,7 @@ static PyObject *__pyx_pf_8sequence_8Sequence_52__setstate_cython__(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "sequence.pyx":778
+/* "sequence.pyx":773
  * 
  * 
  * cdef bint check_buffer_format(bytes format, char** c_type):             # <<<<<<<<<<<<<<
@@ -9690,7 +9700,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
   int __pyx_t_4;
   __Pyx_RefNannySetupContext("check_buffer_format", 0);
 
-  /* "sequence.pyx":784
+  /* "sequence.pyx":779
  *     cdef bint digit
  * 
  *     blen = len(format)             # <<<<<<<<<<<<<<
@@ -9699,12 +9709,12 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
   if (unlikely(__pyx_v_format == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    __PYX_ERR(0, 784, __pyx_L1_error)
+    __PYX_ERR(0, 779, __pyx_L1_error)
   }
-  __pyx_t_1 = PyBytes_GET_SIZE(__pyx_v_format); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 784, __pyx_L1_error)
+  __pyx_t_1 = PyBytes_GET_SIZE(__pyx_v_format); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 779, __pyx_L1_error)
   __pyx_v_blen = __pyx_t_1;
 
-  /* "sequence.pyx":785
+  /* "sequence.pyx":780
  * 
  *     blen = len(format)
  *     fmt_c = <char *> malloc(sizeof(Py_ssize_t) * (blen + 1))             # <<<<<<<<<<<<<<
@@ -9713,7 +9723,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
   __pyx_v_fmt_c = ((char *)malloc(((sizeof(Py_ssize_t)) * (__pyx_v_blen + 1))));
 
-  /* "sequence.pyx":786
+  /* "sequence.pyx":781
  *     blen = len(format)
  *     fmt_c = <char *> malloc(sizeof(Py_ssize_t) * (blen + 1))
  *     if not fmt_c:             # <<<<<<<<<<<<<<
@@ -9723,7 +9733,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
   __pyx_t_2 = ((!(__pyx_v_fmt_c != 0)) != 0);
   if (__pyx_t_2) {
 
-    /* "sequence.pyx":787
+    /* "sequence.pyx":782
  *     fmt_c = <char *> malloc(sizeof(Py_ssize_t) * (blen + 1))
  *     if not fmt_c:
  *         free(fmt_c)             # <<<<<<<<<<<<<<
@@ -9732,7 +9742,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
     free(__pyx_v_fmt_c);
 
-    /* "sequence.pyx":788
+    /* "sequence.pyx":783
  *     if not fmt_c:
  *         free(fmt_c)
  *         return 0             # <<<<<<<<<<<<<<
@@ -9742,7 +9752,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "sequence.pyx":786
+    /* "sequence.pyx":781
  *     blen = len(format)
  *     fmt_c = <char *> malloc(sizeof(Py_ssize_t) * (blen + 1))
  *     if not fmt_c:             # <<<<<<<<<<<<<<
@@ -9751,7 +9761,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
   }
 
-  /* "sequence.pyx":789
+  /* "sequence.pyx":784
  *         free(fmt_c)
  *         return 0
  *     fmt_c = format             # <<<<<<<<<<<<<<
@@ -9760,12 +9770,12 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
   if (unlikely(__pyx_v_format == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "expected bytes, NoneType found");
-    __PYX_ERR(0, 789, __pyx_L1_error)
+    __PYX_ERR(0, 784, __pyx_L1_error)
   }
-  __pyx_t_3 = __Pyx_PyBytes_AsWritableString(__pyx_v_format); if (unlikely((!__pyx_t_3) && PyErr_Occurred())) __PYX_ERR(0, 789, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBytes_AsWritableString(__pyx_v_format); if (unlikely((!__pyx_t_3) && PyErr_Occurred())) __PYX_ERR(0, 784, __pyx_L1_error)
   __pyx_v_fmt_c = __pyx_t_3;
 
-  /* "sequence.pyx":791
+  /* "sequence.pyx":786
  *     fmt_c = format
  * 
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -9780,7 +9790,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
       #endif
       /*try:*/ {
 
-        /* "sequence.pyx":792
+        /* "sequence.pyx":787
  * 
  *     with nogil:
  *         fmt_c[blen] = 0             # <<<<<<<<<<<<<<
@@ -9789,7 +9799,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         (__pyx_v_fmt_c[__pyx_v_blen]) = 0;
 
-        /* "sequence.pyx":793
+        /* "sequence.pyx":788
  *     with nogil:
  *         fmt_c[blen] = 0
  *         i = 0             # <<<<<<<<<<<<<<
@@ -9798,7 +9808,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         __pyx_v_i = 0;
 
-        /* "sequence.pyx":794
+        /* "sequence.pyx":789
  *         fmt_c[blen] = 0
  *         i = 0
  *         if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \             # <<<<<<<<<<<<<<
@@ -9818,7 +9828,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           goto __pyx_L8_bool_binop_done;
         }
 
-        /* "sequence.pyx":795
+        /* "sequence.pyx":790
  *         i = 0
  *         if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \
  *            fmt_c[i] == b'<' or fmt_c[i] == b'>' or \             # <<<<<<<<<<<<<<
@@ -9838,7 +9848,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           goto __pyx_L8_bool_binop_done;
         }
 
-        /* "sequence.pyx":796
+        /* "sequence.pyx":791
  *         if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \
  *            fmt_c[i] == b'<' or fmt_c[i] == b'>' or \
  *            fmt_c[i] == b'!' :             # <<<<<<<<<<<<<<
@@ -9849,7 +9859,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
         __pyx_t_2 = __pyx_t_4;
         __pyx_L8_bool_binop_done:;
 
-        /* "sequence.pyx":794
+        /* "sequence.pyx":789
  *         fmt_c[blen] = 0
  *         i = 0
  *         if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \             # <<<<<<<<<<<<<<
@@ -9858,7 +9868,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         if (__pyx_t_2) {
 
-          /* "sequence.pyx":797
+          /* "sequence.pyx":792
  *            fmt_c[i] == b'<' or fmt_c[i] == b'>' or \
  *            fmt_c[i] == b'!' :
  *             i += 1             # <<<<<<<<<<<<<<
@@ -9867,7 +9877,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
           __pyx_v_i = (__pyx_v_i + 1);
 
-          /* "sequence.pyx":794
+          /* "sequence.pyx":789
  *         fmt_c[blen] = 0
  *         i = 0
  *         if fmt_c[i] == b'@' or fmt_c[i] == b'=' or \             # <<<<<<<<<<<<<<
@@ -9876,7 +9886,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         }
 
-        /* "sequence.pyx":798
+        /* "sequence.pyx":793
  *            fmt_c[i] == b'!' :
  *             i += 1
  *         fmt = 0             # <<<<<<<<<<<<<<
@@ -9885,7 +9895,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         __pyx_v_fmt = 0;
 
-        /* "sequence.pyx":799
+        /* "sequence.pyx":794
  *             i += 1
  *         fmt = 0
  *         digit = 0             # <<<<<<<<<<<<<<
@@ -9894,7 +9904,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
         __pyx_v_digit = 0;
 
-        /* "sequence.pyx":800
+        /* "sequence.pyx":795
  *         fmt = 0
  *         digit = 0
  *         while i < blen:             # <<<<<<<<<<<<<<
@@ -9905,7 +9915,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           __pyx_t_2 = ((__pyx_v_i < __pyx_v_blen) != 0);
           if (!__pyx_t_2) break;
 
-          /* "sequence.pyx":801
+          /* "sequence.pyx":796
  *         digit = 0
  *         while i < blen:
  *             if fmt_c[i] == b'1':             # <<<<<<<<<<<<<<
@@ -9915,7 +9925,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           __pyx_t_2 = (((__pyx_v_fmt_c[__pyx_v_i]) == '1') != 0);
           if (__pyx_t_2) {
 
-            /* "sequence.pyx":802
+            /* "sequence.pyx":797
  *         while i < blen:
  *             if fmt_c[i] == b'1':
  *                 if digit:             # <<<<<<<<<<<<<<
@@ -9925,7 +9935,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             __pyx_t_2 = (__pyx_v_digit != 0);
             if (__pyx_t_2) {
 
-              /* "sequence.pyx":803
+              /* "sequence.pyx":798
  *             if fmt_c[i] == b'1':
  *                 if digit:
  *                     break             # <<<<<<<<<<<<<<
@@ -9934,7 +9944,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
               goto __pyx_L14_break;
 
-              /* "sequence.pyx":802
+              /* "sequence.pyx":797
  *         while i < blen:
  *             if fmt_c[i] == b'1':
  *                 if digit:             # <<<<<<<<<<<<<<
@@ -9943,7 +9953,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             }
 
-            /* "sequence.pyx":805
+            /* "sequence.pyx":800
  *                     break
  *                 else:
  *                     i += 1             # <<<<<<<<<<<<<<
@@ -9953,7 +9963,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             /*else*/ {
               __pyx_v_i = (__pyx_v_i + 1);
 
-              /* "sequence.pyx":806
+              /* "sequence.pyx":801
  *                 else:
  *                     i += 1
  *                     digit = 1             # <<<<<<<<<<<<<<
@@ -9962,7 +9972,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
               __pyx_v_digit = 1;
 
-              /* "sequence.pyx":807
+              /* "sequence.pyx":802
  *                     i += 1
  *                     digit = 1
  *                     continue             # <<<<<<<<<<<<<<
@@ -9972,7 +9982,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
               goto __pyx_L13_continue;
             }
 
-            /* "sequence.pyx":801
+            /* "sequence.pyx":796
  *         digit = 0
  *         while i < blen:
  *             if fmt_c[i] == b'1':             # <<<<<<<<<<<<<<
@@ -9981,7 +9991,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
           }
 
-          /* "sequence.pyx":808
+          /* "sequence.pyx":803
  *                     digit = 1
  *                     continue
  *             if fmt_c[i] >= 48 and fmt_c[i] <= 39: #number 0-9             # <<<<<<<<<<<<<<
@@ -9999,7 +10009,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           __pyx_L18_bool_binop_done:;
           if (__pyx_t_2) {
 
-            /* "sequence.pyx":809
+            /* "sequence.pyx":804
  *                     continue
  *             if fmt_c[i] >= 48 and fmt_c[i] <= 39: #number 0-9
  *                 break             # <<<<<<<<<<<<<<
@@ -10008,7 +10018,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             goto __pyx_L14_break;
 
-            /* "sequence.pyx":808
+            /* "sequence.pyx":803
  *                     digit = 1
  *                     continue
  *             if fmt_c[i] >= 48 and fmt_c[i] <= 39: #number 0-9             # <<<<<<<<<<<<<<
@@ -10017,7 +10027,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
           }
 
-          /* "sequence.pyx":811
+          /* "sequence.pyx":806
  *                 break
  *             else:
  *                 fmt = fmt_c[i]             # <<<<<<<<<<<<<<
@@ -10027,7 +10037,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
           /*else*/ {
             __pyx_v_fmt = (__pyx_v_fmt_c[__pyx_v_i]);
 
-            /* "sequence.pyx":812
+            /* "sequence.pyx":807
  *             else:
  *                 fmt = fmt_c[i]
  *                 i += 1             # <<<<<<<<<<<<<<
@@ -10036,7 +10046,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             __pyx_v_i = (__pyx_v_i + 1);
 
-            /* "sequence.pyx":813
+            /* "sequence.pyx":808
  *                 fmt = fmt_c[i]
  *                 i += 1
  *                 break             # <<<<<<<<<<<<<<
@@ -10049,7 +10059,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
         }
         __pyx_L14_break:;
 
-        /* "sequence.pyx":815
+        /* "sequence.pyx":810
  *                 break
  * 
  *         if fmt != 0 and i == blen: # no complex format code             # <<<<<<<<<<<<<<
@@ -10067,7 +10077,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
         __pyx_L21_bool_binop_done:;
         if (__pyx_t_2) {
 
-          /* "sequence.pyx":816
+          /* "sequence.pyx":811
  * 
  *         if fmt != 0 and i == blen: # no complex format code
  *             if fmt == b'h' or fmt == b'i' or fmt == b'l' or fmt == b'q':             # <<<<<<<<<<<<<<
@@ -10080,7 +10090,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             case 'l':
             case 'q':
 
-            /* "sequence.pyx":817
+            /* "sequence.pyx":812
  *         if fmt != 0 and i == blen: # no complex format code
  *             if fmt == b'h' or fmt == b'i' or fmt == b'l' or fmt == b'q':
  *                 c_type[0] = 'i' # signed integer             # <<<<<<<<<<<<<<
@@ -10089,7 +10099,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             (__pyx_v_c_type[0]) = ((char *)"i");
 
-            /* "sequence.pyx":818
+            /* "sequence.pyx":813
  *             if fmt == b'h' or fmt == b'i' or fmt == b'l' or fmt == b'q':
  *                 c_type[0] = 'i' # signed integer
  *                 return 1             # <<<<<<<<<<<<<<
@@ -10099,7 +10109,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             __pyx_r = 1;
             goto __pyx_L4_return;
 
-            /* "sequence.pyx":816
+            /* "sequence.pyx":811
  * 
  *         if fmt != 0 and i == blen: # no complex format code
  *             if fmt == b'h' or fmt == b'i' or fmt == b'l' or fmt == b'q':             # <<<<<<<<<<<<<<
@@ -10110,7 +10120,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             default: break;
           }
 
-          /* "sequence.pyx":819
+          /* "sequence.pyx":814
  *                 c_type[0] = 'i' # signed integer
  *                 return 1
  *             if fmt == b'H' or fmt == b'I' or fmt == b'L' or fmt == b'Q':             # <<<<<<<<<<<<<<
@@ -10123,7 +10133,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             case 'L':
             case 'Q':
 
-            /* "sequence.pyx":820
+            /* "sequence.pyx":815
  *                 return 1
  *             if fmt == b'H' or fmt == b'I' or fmt == b'L' or fmt == b'Q':
  *                 c_type[0] = 'u' # unsigned interger             # <<<<<<<<<<<<<<
@@ -10132,7 +10142,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             (__pyx_v_c_type[0]) = ((char *)"u");
 
-            /* "sequence.pyx":821
+            /* "sequence.pyx":816
  *             if fmt == b'H' or fmt == b'I' or fmt == b'L' or fmt == b'Q':
  *                 c_type[0] = 'u' # unsigned interger
  *                 return 1             # <<<<<<<<<<<<<<
@@ -10142,7 +10152,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             __pyx_r = 1;
             goto __pyx_L4_return;
 
-            /* "sequence.pyx":819
+            /* "sequence.pyx":814
  *                 c_type[0] = 'i' # signed integer
  *                 return 1
  *             if fmt == b'H' or fmt == b'I' or fmt == b'L' or fmt == b'Q':             # <<<<<<<<<<<<<<
@@ -10153,7 +10163,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             default: break;
           }
 
-          /* "sequence.pyx":822
+          /* "sequence.pyx":817
  *                 c_type[0] = 'u' # unsigned interger
  *                 return 1
  *             if fmt  == b'f' or fmt == b'd':             # <<<<<<<<<<<<<<
@@ -10164,7 +10174,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             case 'f':
             case 'd':
 
-            /* "sequence.pyx":823
+            /* "sequence.pyx":818
  *                 return 1
  *             if fmt  == b'f' or fmt == b'd':
  *                 c_type[0] = 'f' # float             # <<<<<<<<<<<<<<
@@ -10173,7 +10183,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
  */
             (__pyx_v_c_type[0]) = ((char *)"f");
 
-            /* "sequence.pyx":824
+            /* "sequence.pyx":819
  *             if fmt  == b'f' or fmt == b'd':
  *                 c_type[0] = 'f' # float
  *                 return 1             # <<<<<<<<<<<<<<
@@ -10183,7 +10193,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             __pyx_r = 1;
             goto __pyx_L4_return;
 
-            /* "sequence.pyx":822
+            /* "sequence.pyx":817
  *                 c_type[0] = 'u' # unsigned interger
  *                 return 1
  *             if fmt  == b'f' or fmt == b'd':             # <<<<<<<<<<<<<<
@@ -10194,7 +10204,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
             default: break;
           }
 
-          /* "sequence.pyx":815
+          /* "sequence.pyx":810
  *                 break
  * 
  *         if fmt != 0 and i == blen: # no complex format code             # <<<<<<<<<<<<<<
@@ -10204,7 +10214,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
         }
       }
 
-      /* "sequence.pyx":791
+      /* "sequence.pyx":786
  *     fmt_c = format
  * 
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -10230,7 +10240,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
       }
   }
 
-  /* "sequence.pyx":825
+  /* "sequence.pyx":820
  *                 c_type[0] = 'f' # float
  *                 return 1
  *     return 0             # <<<<<<<<<<<<<<
@@ -10240,7 +10250,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "sequence.pyx":778
+  /* "sequence.pyx":773
  * 
  * 
  * cdef bint check_buffer_format(bytes format, char** c_type):             # <<<<<<<<<<<<<<
@@ -10257,7 +10267,7 @@ static int __pyx_f_8sequence_check_buffer_format(PyObject *__pyx_v_format, char 
   return __pyx_r;
 }
 
-/* "sequence.pyx":829
+/* "sequence.pyx":824
  * @cython.final
  * cdef class __AuxBufferInterface:
  *     def __init__(__AuxBufferInterface self, Sequence obj):             # <<<<<<<<<<<<<<
@@ -10291,7 +10301,7 @@ static int __pyx_pw_8sequence_20__AuxBufferInterface_1__init__(PyObject *__pyx_v
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 829, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 824, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -10302,13 +10312,13 @@ static int __pyx_pw_8sequence_20__AuxBufferInterface_1__init__(PyObject *__pyx_v
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 829, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 824, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("sequence.__AuxBufferInterface.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_obj), __pyx_ptype_8sequence_Sequence, 1, "obj", 0))) __PYX_ERR(0, 829, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_obj), __pyx_ptype_8sequence_Sequence, 1, "obj", 0))) __PYX_ERR(0, 824, __pyx_L1_error)
   __pyx_r = __pyx_pf_8sequence_20__AuxBufferInterface___init__(((struct __pyx_obj_8sequence___AuxBufferInterface *)__pyx_v_self), __pyx_v_obj);
 
   /* function exit code */
@@ -10325,7 +10335,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface___init__(struct __pyx_obj_8
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "sequence.pyx":830
+  /* "sequence.pyx":825
  * cdef class __AuxBufferInterface:
  *     def __init__(__AuxBufferInterface self, Sequence obj):
  *         self.buffer = NULL             # <<<<<<<<<<<<<<
@@ -10334,7 +10344,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface___init__(struct __pyx_obj_8
  */
   __pyx_v_self->buffer = NULL;
 
-  /* "sequence.pyx":831
+  /* "sequence.pyx":826
  *     def __init__(__AuxBufferInterface self, Sequence obj):
  *         self.buffer = NULL
  *         self.obj = obj             # <<<<<<<<<<<<<<
@@ -10347,7 +10357,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface___init__(struct __pyx_obj_8
   __Pyx_DECREF(__pyx_v_self->obj);
   __pyx_v_self->obj = ((PyObject *)__pyx_v_obj);
 
-  /* "sequence.pyx":829
+  /* "sequence.pyx":824
  * @cython.final
  * cdef class __AuxBufferInterface:
  *     def __init__(__AuxBufferInterface self, Sequence obj):             # <<<<<<<<<<<<<<
@@ -10361,7 +10371,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface___init__(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "sequence.pyx":833
+/* "sequence.pyx":828
  *         self.obj = obj
  * 
  *     cdef set_buffer(__AuxBufferInterface self, bint readonly, void* buf, \             # <<<<<<<<<<<<<<
@@ -10378,7 +10388,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
   int __pyx_t_3;
   __Pyx_RefNannySetupContext("set_buffer", 0);
 
-  /* "sequence.pyx":837
+  /* "sequence.pyx":832
  *                     Py_ssize_t *shape):
  *         cdef int i
  *         self.readonly = readonly             # <<<<<<<<<<<<<<
@@ -10387,7 +10397,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
  */
   __pyx_v_self->readonly = __pyx_v_readonly;
 
-  /* "sequence.pyx":838
+  /* "sequence.pyx":833
  *         cdef int i
  *         self.readonly = readonly
  *         self.buffer = buf             # <<<<<<<<<<<<<<
@@ -10396,7 +10406,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
  */
   __pyx_v_self->buffer = __pyx_v_buf;
 
-  /* "sequence.pyx":839
+  /* "sequence.pyx":834
  *         self.readonly = readonly
  *         self.buffer = buf
  *         self.count = count             # <<<<<<<<<<<<<<
@@ -10405,7 +10415,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
  */
   __pyx_v_self->count = __pyx_v_count;
 
-  /* "sequence.pyx":840
+  /* "sequence.pyx":835
  *         self.buffer = buf
  *         self.count = count
  *         self.dtype = dtype             # <<<<<<<<<<<<<<
@@ -10418,7 +10428,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
   __Pyx_DECREF(__pyx_v_self->dtype);
   __pyx_v_self->dtype = __pyx_v_dtype;
 
-  /* "sequence.pyx":841
+  /* "sequence.pyx":836
  *         self.count = count
  *         self.dtype = dtype
  *         self.itemsize = itemsize             # <<<<<<<<<<<<<<
@@ -10427,7 +10437,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
  */
   __pyx_v_self->itemsize = __pyx_v_itemsize;
 
-  /* "sequence.pyx":842
+  /* "sequence.pyx":837
  *         self.dtype = dtype
  *         self.itemsize = itemsize
  *         self.ndim = ndim             # <<<<<<<<<<<<<<
@@ -10436,7 +10446,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
  */
   __pyx_v_self->ndim = __pyx_v_ndim;
 
-  /* "sequence.pyx":843
+  /* "sequence.pyx":838
  *         self.itemsize = itemsize
  *         self.ndim = ndim
  *         for i in range(ndim):             # <<<<<<<<<<<<<<
@@ -10448,7 +10458,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "sequence.pyx":844
+    /* "sequence.pyx":839
  *         self.ndim = ndim
  *         for i in range(ndim):
  *             self.shape[i] = shape[i]             # <<<<<<<<<<<<<<
@@ -10458,7 +10468,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
     (__pyx_v_self->shape[__pyx_v_i]) = (__pyx_v_shape[__pyx_v_i]);
   }
 
-  /* "sequence.pyx":833
+  /* "sequence.pyx":828
  *         self.obj = obj
  * 
  *     cdef set_buffer(__AuxBufferInterface self, bint readonly, void* buf, \             # <<<<<<<<<<<<<<
@@ -10473,7 +10483,7 @@ static PyObject *__pyx_f_8sequence_20__AuxBufferInterface_set_buffer(struct __py
   return __pyx_r;
 }
 
-/* "sequence.pyx":846
+/* "sequence.pyx":841
  *             self.shape[i] = shape[i]
  * 
  *     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):             # <<<<<<<<<<<<<<
@@ -10515,7 +10525,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_v_info->obj = Py_None; __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(__pyx_v_info->obj);
 
-  /* "sequence.pyx":848
+  /* "sequence.pyx":843
  *     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):
  *         cdef int i
  *         if self.buffer == NULL:             # <<<<<<<<<<<<<<
@@ -10525,20 +10535,20 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = ((__pyx_v_self->buffer == NULL) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "sequence.pyx":849
+    /* "sequence.pyx":844
  *         cdef int i
  *         if self.buffer == NULL:
  *             raise BufferError("")             # <<<<<<<<<<<<<<
  *         info.buf = self.buffer
  *         info.len = self.count * self.itemsize
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 849, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 844, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 849, __pyx_L1_error)
+    __PYX_ERR(0, 844, __pyx_L1_error)
 
-    /* "sequence.pyx":848
+    /* "sequence.pyx":843
  *     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):
  *         cdef int i
  *         if self.buffer == NULL:             # <<<<<<<<<<<<<<
@@ -10547,7 +10557,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   }
 
-  /* "sequence.pyx":850
+  /* "sequence.pyx":845
  *         if self.buffer == NULL:
  *             raise BufferError("")
  *         info.buf = self.buffer             # <<<<<<<<<<<<<<
@@ -10557,7 +10567,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_3 = __pyx_v_self->buffer;
   __pyx_v_info->buf = __pyx_t_3;
 
-  /* "sequence.pyx":851
+  /* "sequence.pyx":846
  *             raise BufferError("")
  *         info.buf = self.buffer
  *         info.len = self.count * self.itemsize             # <<<<<<<<<<<<<<
@@ -10566,7 +10576,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   __pyx_v_info->len = (__pyx_v_self->count * __pyx_v_self->itemsize);
 
-  /* "sequence.pyx":852
+  /* "sequence.pyx":847
  *         info.buf = self.buffer
  *         info.len = self.count * self.itemsize
  *         info.readonly = self.readonly             # <<<<<<<<<<<<<<
@@ -10576,7 +10586,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = __pyx_v_self->readonly;
   __pyx_v_info->readonly = __pyx_t_1;
 
-  /* "sequence.pyx":853
+  /* "sequence.pyx":848
  *         info.len = self.count * self.itemsize
  *         info.readonly = self.readonly
  *         info.ndim = self.ndim             # <<<<<<<<<<<<<<
@@ -10586,7 +10596,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_4 = __pyx_v_self->ndim;
   __pyx_v_info->ndim = __pyx_t_4;
 
-  /* "sequence.pyx":854
+  /* "sequence.pyx":849
  *         info.readonly = self.readonly
  *         info.ndim = self.ndim
  *         info.format = self.dtype             # <<<<<<<<<<<<<<
@@ -10595,12 +10605,12 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   if (unlikely(__pyx_v_self->dtype == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "expected bytes, NoneType found");
-    __PYX_ERR(0, 854, __pyx_L1_error)
+    __PYX_ERR(0, 849, __pyx_L1_error)
   }
-  __pyx_t_5 = __Pyx_PyBytes_AsWritableString(__pyx_v_self->dtype); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 854, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyBytes_AsWritableString(__pyx_v_self->dtype); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 849, __pyx_L1_error)
   __pyx_v_info->format = __pyx_t_5;
 
-  /* "sequence.pyx":855
+  /* "sequence.pyx":850
  *         info.ndim = self.ndim
  *         info.format = self.dtype
  *         info.shape = self.shape             # <<<<<<<<<<<<<<
@@ -10610,19 +10620,19 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_6 = __pyx_v_self->shape;
   __pyx_v_info->shape = __pyx_t_6;
 
-  /* "sequence.pyx":856
+  /* "sequence.pyx":851
  *         info.format = self.dtype
  *         info.shape = self.shape
  *         stride = self.itemsize             # <<<<<<<<<<<<<<
  *         for i in range(self.ndim - 1, -1, -1):
  *             self.strides[i] = stride
  */
-  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_self->itemsize); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 856, __pyx_L1_error)
+  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_self->itemsize); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 851, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_stride = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "sequence.pyx":857
+  /* "sequence.pyx":852
  *         info.shape = self.shape
  *         stride = self.itemsize
  *         for i in range(self.ndim - 1, -1, -1):             # <<<<<<<<<<<<<<
@@ -10632,33 +10642,33 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   for (__pyx_t_4 = (__pyx_v_self->ndim - 1); __pyx_t_4 > -1; __pyx_t_4-=1) {
     __pyx_v_i = __pyx_t_4;
 
-    /* "sequence.pyx":858
+    /* "sequence.pyx":853
  *         stride = self.itemsize
  *         for i in range(self.ndim - 1, -1, -1):
  *             self.strides[i] = stride             # <<<<<<<<<<<<<<
  *             stride *= self.shape[i]
  *         info.strides = self.strides
  */
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_stride); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 858, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_stride); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 853, __pyx_L1_error)
     (__pyx_v_self->strides[__pyx_v_i]) = __pyx_t_7;
 
-    /* "sequence.pyx":859
+    /* "sequence.pyx":854
  *         for i in range(self.ndim - 1, -1, -1):
  *             self.strides[i] = stride
  *             stride *= self.shape[i]             # <<<<<<<<<<<<<<
  *         info.strides = self.strides
  *         info.suboffsets = NULL  # we are always direct memory buffer
  */
-    __pyx_t_2 = PyInt_FromSsize_t((__pyx_v_self->shape[__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 859, __pyx_L1_error)
+    __pyx_t_2 = PyInt_FromSsize_t((__pyx_v_self->shape[__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 854, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_8 = PyNumber_InPlaceMultiply(__pyx_v_stride, __pyx_t_2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 859, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_InPlaceMultiply(__pyx_v_stride, __pyx_t_2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 854, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF_SET(__pyx_v_stride, __pyx_t_8);
     __pyx_t_8 = 0;
   }
 
-  /* "sequence.pyx":860
+  /* "sequence.pyx":855
  *             self.strides[i] = stride
  *             stride *= self.shape[i]
  *         info.strides = self.strides             # <<<<<<<<<<<<<<
@@ -10668,7 +10678,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_6 = __pyx_v_self->strides;
   __pyx_v_info->strides = __pyx_t_6;
 
-  /* "sequence.pyx":861
+  /* "sequence.pyx":856
  *             stride *= self.shape[i]
  *         info.strides = self.strides
  *         info.suboffsets = NULL  # we are always direct memory buffer             # <<<<<<<<<<<<<<
@@ -10677,7 +10687,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   __pyx_v_info->suboffsets = NULL;
 
-  /* "sequence.pyx":862
+  /* "sequence.pyx":857
  *         info.strides = self.strides
  *         info.suboffsets = NULL  # we are always direct memory buffer
  *         info.itemsize = self.itemsize             # <<<<<<<<<<<<<<
@@ -10687,7 +10697,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_7 = __pyx_v_self->itemsize;
   __pyx_v_info->itemsize = __pyx_t_7;
 
-  /* "sequence.pyx":863
+  /* "sequence.pyx":858
  *         info.suboffsets = NULL  # we are always direct memory buffer
  *         info.itemsize = self.itemsize
  *         info.obj = self.obj             # <<<<<<<<<<<<<<
@@ -10702,7 +10712,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_v_info->obj = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "sequence.pyx":864
+  /* "sequence.pyx":859
  *         info.itemsize = self.itemsize
  *         info.obj = self.obj
  *         info.internal = NULL             # <<<<<<<<<<<<<<
@@ -10711,7 +10721,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   __pyx_v_info->internal = NULL;
 
-  /* "sequence.pyx":866
+  /* "sequence.pyx":861
  *         info.internal = NULL
  * 
  *         if flags & PyBUF_WRITABLE:             # <<<<<<<<<<<<<<
@@ -10721,7 +10731,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = ((__pyx_v_flags & PyBUF_WRITABLE) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":867
+    /* "sequence.pyx":862
  * 
  *         if flags & PyBUF_WRITABLE:
  *             if self.readonly:             # <<<<<<<<<<<<<<
@@ -10731,20 +10741,20 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
     __pyx_t_1 = (__pyx_v_self->readonly != 0);
     if (unlikely(__pyx_t_1)) {
 
-      /* "sequence.pyx":868
+      /* "sequence.pyx":863
  *         if flags & PyBUF_WRITABLE:
  *             if self.readonly:
  *                 raise BufferError("Can only create a buffer that is readonly.")             # <<<<<<<<<<<<<<
  * 
  *         if flags & PyBUF_SIMPLE:
  */
-      __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 868, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 863, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_Raise(__pyx_t_8, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __PYX_ERR(0, 868, __pyx_L1_error)
+      __PYX_ERR(0, 863, __pyx_L1_error)
 
-      /* "sequence.pyx":867
+      /* "sequence.pyx":862
  * 
  *         if flags & PyBUF_WRITABLE:
  *             if self.readonly:             # <<<<<<<<<<<<<<
@@ -10753,7 +10763,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
     }
 
-    /* "sequence.pyx":866
+    /* "sequence.pyx":861
  *         info.internal = NULL
  * 
  *         if flags & PyBUF_WRITABLE:             # <<<<<<<<<<<<<<
@@ -10762,7 +10772,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   }
 
-  /* "sequence.pyx":870
+  /* "sequence.pyx":865
  *                 raise BufferError("Can only create a buffer that is readonly.")
  * 
  *         if flags & PyBUF_SIMPLE:             # <<<<<<<<<<<<<<
@@ -10772,7 +10782,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = ((__pyx_v_flags & PyBUF_SIMPLE) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":876
+    /* "sequence.pyx":871
  *             # The buffer exposes a read-only memory area.
  *             # Data is always contigous.
  *             info.shape = NULL             # <<<<<<<<<<<<<<
@@ -10781,7 +10791,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
     __pyx_v_info->shape = NULL;
 
-    /* "sequence.pyx":877
+    /* "sequence.pyx":872
  *             # Data is always contigous.
  *             info.shape = NULL
  *             info.strides = NULL             # <<<<<<<<<<<<<<
@@ -10790,7 +10800,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
     __pyx_v_info->strides = NULL;
 
-    /* "sequence.pyx":878
+    /* "sequence.pyx":873
  *             info.shape = NULL
  *             info.strides = NULL
  *             info.format = NULL  # mean 'B', unsigned byte             # <<<<<<<<<<<<<<
@@ -10799,7 +10809,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
     __pyx_v_info->format = NULL;
 
-    /* "sequence.pyx":880
+    /* "sequence.pyx":875
  *             info.format = NULL  # mean 'B', unsigned byte
  *             # The 'itemsize' field may be wrong
  *             return             # <<<<<<<<<<<<<<
@@ -10809,7 +10819,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "sequence.pyx":870
+    /* "sequence.pyx":865
  *                 raise BufferError("Can only create a buffer that is readonly.")
  * 
  *         if flags & PyBUF_SIMPLE:             # <<<<<<<<<<<<<<
@@ -10818,7 +10828,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   }
 
-  /* "sequence.pyx":882
+  /* "sequence.pyx":877
  *             return
  * 
  *         if not (flags & PyBUF_ND):             # <<<<<<<<<<<<<<
@@ -10828,7 +10838,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = ((!((__pyx_v_flags & PyBUF_ND) != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "sequence.pyx":883
+    /* "sequence.pyx":878
  * 
  *         if not (flags & PyBUF_ND):
  *             info.shape = NULL             # <<<<<<<<<<<<<<
@@ -10837,7 +10847,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
     __pyx_v_info->shape = NULL;
 
-    /* "sequence.pyx":882
+    /* "sequence.pyx":877
  *             return
  * 
  *         if not (flags & PyBUF_ND):             # <<<<<<<<<<<<<<
@@ -10846,7 +10856,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   }
 
-  /* "sequence.pyx":885
+  /* "sequence.pyx":880
  *             info.shape = NULL
  * 
  *         if not (flags & PyBUF_ANY_CONTIGUOUS):             # <<<<<<<<<<<<<<
@@ -10856,20 +10866,20 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
   __pyx_t_1 = ((!((__pyx_v_flags & PyBUF_ANY_CONTIGUOUS) != 0)) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "sequence.pyx":886
+    /* "sequence.pyx":881
  * 
  *         if not (flags & PyBUF_ANY_CONTIGUOUS):
  *             raise BufferError("Can only create a buffer that is c contiguous in memory.")             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 886, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_BufferError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 881, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_Raise(__pyx_t_8, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __PYX_ERR(0, 886, __pyx_L1_error)
+    __PYX_ERR(0, 881, __pyx_L1_error)
 
-    /* "sequence.pyx":885
+    /* "sequence.pyx":880
  *             info.shape = NULL
  * 
  *         if not (flags & PyBUF_ANY_CONTIGUOUS):             # <<<<<<<<<<<<<<
@@ -10878,7 +10888,7 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
  */
   }
 
-  /* "sequence.pyx":846
+  /* "sequence.pyx":841
  *             self.shape[i] = shape[i]
  * 
  *     def __getbuffer__(__AuxBufferInterface self, Py_buffer *info, int flags):             # <<<<<<<<<<<<<<
@@ -10918,7 +10928,6 @@ static int __pyx_pf_8sequence_20__AuxBufferInterface_2__getbuffer__(struct __pyx
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_20__AuxBufferInterface_5__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_8sequence_20__AuxBufferInterface_4__reduce_cython__[] = "__AuxBufferInterface.__reduce_cython__(self)";
 static PyObject *__pyx_pw_8sequence_20__AuxBufferInterface_5__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -10973,7 +10982,6 @@ static PyObject *__pyx_pf_8sequence_20__AuxBufferInterface_4__reduce_cython__(CY
 
 /* Python wrapper */
 static PyObject *__pyx_pw_8sequence_20__AuxBufferInterface_7__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static char __pyx_doc_8sequence_20__AuxBufferInterface_6__setstate_cython__[] = "__AuxBufferInterface.__setstate_cython__(self, __pyx_state)";
 static PyObject *__pyx_pw_8sequence_20__AuxBufferInterface_7__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -11019,7 +11027,7 @@ static PyObject *__pyx_pf_8sequence_20__AuxBufferInterface_6__setstate_cython__(
   return __pyx_r;
 }
 
-/* "sequence.pyx":889
+/* "sequence.pyx":884
  * 
  * 
  * cdef int raise_bound_error(char* message, double x, double y) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11041,22 +11049,22 @@ static int __pyx_f_8sequence_raise_bound_error(char *__pyx_v_message, double __p
   #endif
   __Pyx_RefNannySetupContext("raise_bound_error", 0);
 
-  /* "sequence.pyx":890
+  /* "sequence.pyx":885
  * 
  * cdef int raise_bound_error(char* message, double x, double y) except -1 with gil:
  *     raise SequenceBoundsError(message.decode('ascii') % (x, y))             # <<<<<<<<<<<<<<
  * 
  * cdef int raise_index_error(char* message, int a) except -1 with gil:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_SequenceBoundsError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_SequenceBoundsError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_x); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_x); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_y); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_y); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4);
@@ -11064,7 +11072,7 @@ static int __pyx_f_8sequence_raise_bound_error(char *__pyx_v_message, double __p
   PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
   __pyx_t_4 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyUnicode_Format(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 890, __pyx_L1_error)
+  __pyx_t_5 = PyUnicode_Format(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -11081,14 +11089,14 @@ static int __pyx_f_8sequence_raise_bound_error(char *__pyx_v_message, double __p
   __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 890, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 885, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(0, 890, __pyx_L1_error)
+  __PYX_ERR(0, 885, __pyx_L1_error)
 
-  /* "sequence.pyx":889
+  /* "sequence.pyx":884
  * 
  * 
  * cdef int raise_bound_error(char* message, double x, double y) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11113,7 +11121,7 @@ static int __pyx_f_8sequence_raise_bound_error(char *__pyx_v_message, double __p
   return __pyx_r;
 }
 
-/* "sequence.pyx":892
+/* "sequence.pyx":887
  *     raise SequenceBoundsError(message.decode('ascii') % (x, y))
  * 
  * cdef int raise_index_error(char* message, int a) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11132,29 +11140,29 @@ static int __pyx_f_8sequence_raise_index_error(char *__pyx_v_message, int __pyx_
   #endif
   __Pyx_RefNannySetupContext("raise_index_error", 0);
 
-  /* "sequence.pyx":893
+  /* "sequence.pyx":888
  * 
  * cdef int raise_index_error(char* message, int a) except -1 with gil:
  *             raise IndexError(message.decode('ascii') %a)             # <<<<<<<<<<<<<<
  * 
  * cdef int raise_nan_error(char* message) except -1 with gil:
  */
-  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 893, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 888, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 893, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 888, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyUnicode_Format(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 893, __pyx_L1_error)
+  __pyx_t_3 = PyUnicode_Format(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 888, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 893, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_IndexError, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 888, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_Raise(__pyx_t_2, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __PYX_ERR(0, 893, __pyx_L1_error)
+  __PYX_ERR(0, 888, __pyx_L1_error)
 
-  /* "sequence.pyx":892
+  /* "sequence.pyx":887
  *     raise SequenceBoundsError(message.decode('ascii') % (x, y))
  * 
  * cdef int raise_index_error(char* message, int a) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11176,7 +11184,7 @@ static int __pyx_f_8sequence_raise_index_error(char *__pyx_v_message, int __pyx_
   return __pyx_r;
 }
 
-/* "sequence.pyx":895
+/* "sequence.pyx":890
  *             raise IndexError(message.decode('ascii') %a)
  * 
  * cdef int raise_nan_error(char* message) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11196,16 +11204,16 @@ static int __pyx_f_8sequence_raise_nan_error(char *__pyx_v_message) {
   #endif
   __Pyx_RefNannySetupContext("raise_nan_error", 0);
 
-  /* "sequence.pyx":896
+  /* "sequence.pyx":891
  * 
  * cdef int raise_nan_error(char* message) except -1 with gil:
  *             raise SequenceNaNError(message.decode('ascii'))             # <<<<<<<<<<<<<<
  * 
- * 
+ * cdef int raise_attribute_error(char* message) except -1 with gil:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_SequenceNaNError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 896, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_SequenceNaNError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 891, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 896, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 891, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -11220,14 +11228,14 @@ static int __pyx_f_8sequence_raise_nan_error(char *__pyx_v_message) {
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 896, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 891, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(0, 896, __pyx_L1_error)
+  __PYX_ERR(0, 891, __pyx_L1_error)
 
-  /* "sequence.pyx":895
+  /* "sequence.pyx":890
  *             raise IndexError(message.decode('ascii') %a)
  * 
  * cdef int raise_nan_error(char* message) except -1 with gil:             # <<<<<<<<<<<<<<
@@ -11250,15 +11258,70 @@ static int __pyx_f_8sequence_raise_nan_error(char *__pyx_v_message) {
   return __pyx_r;
 }
 
-/* "sequence.pyx":899
+/* "sequence.pyx":893
+ *             raise SequenceNaNError(message.decode('ascii'))
  * 
+ * cdef int raise_attribute_error(char* message) except -1 with gil:             # <<<<<<<<<<<<<<
+ *             raise AttributeError(message.decode('ascii'))
  * 
- * cdef object is_slice(obj):             # <<<<<<<<<<<<<<
+ */
+
+static int __pyx_f_8sequence_raise_attribute_error(char *__pyx_v_message) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  #ifdef WITH_THREAD
+  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+  #endif
+  __Pyx_RefNannySetupContext("raise_attribute_error", 0);
+
+  /* "sequence.pyx":894
+ * 
+ * cdef int raise_attribute_error(char* message) except -1 with gil:
+ *             raise AttributeError(message.decode('ascii'))             # <<<<<<<<<<<<<<
+ * 
+ * cdef object is_sequence(obj):
+ */
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_message, 0, strlen(__pyx_v_message), NULL, NULL, PyUnicode_DecodeASCII); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 894, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_AttributeError, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 894, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __PYX_ERR(0, 894, __pyx_L1_error)
+
+  /* "sequence.pyx":893
+ *             raise SequenceNaNError(message.decode('ascii'))
+ * 
+ * cdef int raise_attribute_error(char* message) except -1 with gil:             # <<<<<<<<<<<<<<
+ *             raise AttributeError(message.decode('ascii'))
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("sequence.raise_attribute_error", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __Pyx_RefNannyFinishContext();
+  #ifdef WITH_THREAD
+  __Pyx_PyGILState_Release(__pyx_gilstate_save);
+  #endif
+  return __pyx_r;
+}
+
+/* "sequence.pyx":896
+ *             raise AttributeError(message.decode('ascii'))
+ * 
+ * cdef object is_sequence(obj):             # <<<<<<<<<<<<<<
  *     cdef memoryview mv
  *     try:
  */
 
-static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
+static PyObject *__pyx_f_8sequence_is_sequence(PyObject *__pyx_v_obj) {
   struct __pyx_memoryview_obj *__pyx_v_mv = 0;
   int __pyx_v_flags;
   PyObject *__pyx_r = NULL;
@@ -11270,11 +11333,11 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   PyObject *__pyx_t_7 = NULL;
-  __Pyx_RefNannySetupContext("is_slice", 0);
+  __Pyx_RefNannySetupContext("is_sequence", 0);
   __Pyx_INCREF(__pyx_v_obj);
 
-  /* "sequence.pyx":901
- * cdef object is_slice(obj):
+  /* "sequence.pyx":898
+ * cdef object is_sequence(obj):
  *     cdef memoryview mv
  *     try:             # <<<<<<<<<<<<<<
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
@@ -11289,7 +11352,7 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "sequence.pyx":902
+      /* "sequence.pyx":899
  *     cdef memoryview mv
  *     try:
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT             # <<<<<<<<<<<<<<
@@ -11298,16 +11361,16 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
  */
       __pyx_v_flags = (PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT);
 
-      /* "sequence.pyx":903
+      /* "sequence.pyx":900
  *     try:
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
  *         mv = memoryview(obj, flags, False)             # <<<<<<<<<<<<<<
  *         obj = mv
  *     except TypeError:
  */
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_flags); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 903, __pyx_L3_error)
+      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_flags); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 900, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 903, __pyx_L3_error)
+      __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 900, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_INCREF(__pyx_v_obj);
       __Pyx_GIVEREF(__pyx_v_obj);
@@ -11318,13 +11381,13 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
       __Pyx_GIVEREF(Py_False);
       PyTuple_SET_ITEM(__pyx_t_5, 2, Py_False);
       __pyx_t_4 = 0;
-      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 903, __pyx_L3_error)
+      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_memoryview_type), __pyx_t_5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 900, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_v_mv = ((struct __pyx_memoryview_obj *)__pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "sequence.pyx":904
+      /* "sequence.pyx":901
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
  *         mv = memoryview(obj, flags, False)
  *         obj = mv             # <<<<<<<<<<<<<<
@@ -11334,8 +11397,8 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
       __Pyx_INCREF(((PyObject *)__pyx_v_mv));
       __Pyx_DECREF_SET(__pyx_v_obj, ((PyObject *)__pyx_v_mv));
 
-      /* "sequence.pyx":901
- * cdef object is_slice(obj):
+      /* "sequence.pyx":898
+ * cdef object is_sequence(obj):
  *     cdef memoryview mv
  *     try:             # <<<<<<<<<<<<<<
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
@@ -11350,7 +11413,7 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "sequence.pyx":905
+    /* "sequence.pyx":902
  *         mv = memoryview(obj, flags, False)
  *         obj = mv
  *     except TypeError:             # <<<<<<<<<<<<<<
@@ -11359,13 +11422,13 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
  */
     __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_TypeError);
     if (__pyx_t_6) {
-      __Pyx_AddTraceback("sequence.is_slice", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_5, &__pyx_t_7) < 0) __PYX_ERR(0, 905, __pyx_L5_except_error)
+      __Pyx_AddTraceback("sequence.is_sequence", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_5, &__pyx_t_7) < 0) __PYX_ERR(0, 902, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "sequence.pyx":906
+      /* "sequence.pyx":903
  *         obj = mv
  *     except TypeError:
  *         return None             # <<<<<<<<<<<<<<
@@ -11381,8 +11444,8 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
 
-    /* "sequence.pyx":901
- * cdef object is_slice(obj):
+    /* "sequence.pyx":898
+ * cdef object is_sequence(obj):
  *     cdef memoryview mv
  *     try:             # <<<<<<<<<<<<<<
  *         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
@@ -11402,7 +11465,7 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
     __pyx_L8_try_end:;
   }
 
-  /* "sequence.pyx":907
+  /* "sequence.pyx":904
  *     except TypeError:
  *         return None
  *     return obj             # <<<<<<<<<<<<<<
@@ -11412,10 +11475,10 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
   __pyx_r = __pyx_v_obj;
   goto __pyx_L0;
 
-  /* "sequence.pyx":899
+  /* "sequence.pyx":896
+ *             raise AttributeError(message.decode('ascii'))
  * 
- * 
- * cdef object is_slice(obj):             # <<<<<<<<<<<<<<
+ * cdef object is_sequence(obj):             # <<<<<<<<<<<<<<
  *     cdef memoryview mv
  *     try:
  */
@@ -11425,7 +11488,7 @@ static PyObject *__pyx_f_8sequence_is_slice(PyObject *__pyx_v_obj) {
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("sequence.is_slice", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("sequence.is_sequence", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_mv);
@@ -24249,8 +24312,8 @@ static int __pyx_tp_clear_8sequence___AuxBufferInterface(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_8sequence___AuxBufferInterface[] = {
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_20__AuxBufferInterface_5__reduce_cython__, METH_NOARGS, __pyx_doc_8sequence_20__AuxBufferInterface_4__reduce_cython__},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_20__AuxBufferInterface_7__setstate_cython__, METH_O, __pyx_doc_8sequence_20__AuxBufferInterface_6__setstate_cython__},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_20__AuxBufferInterface_5__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_20__AuxBufferInterface_7__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -24297,7 +24360,7 @@ static PyTypeObject __pyx_type_8sequence___AuxBufferInterface = {
   0, /*tp_setattro*/
   &__pyx_tp_as_buffer___AuxBufferInterface, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
-  "__AuxBufferInterface(Sequence obj)", /*tp_doc*/
+  0, /*tp_doc*/
   __pyx_tp_traverse_8sequence___AuxBufferInterface, /*tp_traverse*/
   __pyx_tp_clear_8sequence___AuxBufferInterface, /*tp_clear*/
   0, /*tp_richcompare*/
@@ -24435,8 +24498,8 @@ static PyMethodDef __pyx_methods_8sequence_Sequence[] = {
   {"get_data", (PyCFunction)__pyx_pw_8sequence_8Sequence_43get_data, METH_NOARGS, __pyx_doc_8sequence_8Sequence_42get_data},
   {"get_float_data", (PyCFunction)__pyx_pw_8sequence_8Sequence_45get_float_data, METH_NOARGS, __pyx_doc_8sequence_8Sequence_44get_float_data},
   {"set_data", (PyCFunction)__pyx_pw_8sequence_8Sequence_47set_data, METH_O, __pyx_doc_8sequence_8Sequence_46set_data},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_8Sequence_51__reduce_cython__, METH_NOARGS, __pyx_doc_8sequence_8Sequence_50__reduce_cython__},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_8Sequence_53__setstate_cython__, METH_O, __pyx_doc_8sequence_8Sequence_52__setstate_cython__},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_8Sequence_51__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_8Sequence_53__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -24510,7 +24573,7 @@ static PyTypeObject __pyx_type_8sequence_Sequence = {
   0, /*tp_setattro*/
   &__pyx_tp_as_buffer_Sequence, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
-  "Sequence(data=None, low=None, high=None, *args, **kwargs)\n\n    The Sequence is a simple vector of numbers data structure.\n\n    :param data: an optional python array like object to initialize the Sequence.    if None the return Sequence will be empty.\n    :param low: a number to set the low boundary.\n    :param high: a number to set the high boundary.\n    :returns: the newly created Sequence.\n    :raises: MemmoryError.\n    ", /*tp_doc*/
+  "\n    The Sequence is a simple vector of numbers data structure.\n\n    :param data: an optional python array like object to initialize the Sequence.    if None the return Sequence will be empty.\n    :param low: a number to set the low boundary.\n    :param high: a number to set the high boundary.\n    :returns: the newly created Sequence.\n    :raises: MemmoryError.\n    ", /*tp_doc*/
   __pyx_tp_traverse_8sequence_Sequence, /*tp_traverse*/
   __pyx_tp_clear_8sequence_Sequence, /*tp_clear*/
   __pyx_pw_8sequence_8Sequence_49__richcmp__, /*tp_richcompare*/
@@ -24602,8 +24665,8 @@ static PyObject *__pyx_specialmethod___pyx_pw_8sequence_16SequenceIterator_9__ne
 
 static PyMethodDef __pyx_methods_8sequence_SequenceIterator[] = {
   {"__next__", (PyCFunction)__pyx_specialmethod___pyx_pw_8sequence_16SequenceIterator_9__next__, METH_NOARGS|METH_COEXIST, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_16SequenceIterator_11__reduce_cython__, METH_NOARGS, __pyx_doc_8sequence_16SequenceIterator_10__reduce_cython__},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_16SequenceIterator_13__setstate_cython__, METH_O, __pyx_doc_8sequence_16SequenceIterator_12__setstate_cython__},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_8sequence_16SequenceIterator_11__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_8sequence_16SequenceIterator_13__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -24633,7 +24696,7 @@ static PyTypeObject __pyx_type_8sequence_SequenceIterator = {
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
-  "SequenceIterator(Sequence s, bool reverse=0)", /*tp_doc*/
+  0, /*tp_doc*/
   __pyx_tp_traverse_8sequence_SequenceIterator, /*tp_traverse*/
   __pyx_tp_clear_8sequence_SequenceIterator, /*tp_clear*/
   0, /*tp_richcompare*/
@@ -25385,6 +25448,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ASCII, __pyx_k_ASCII, sizeof(__pyx_k_ASCII), 0, 0, 1, 1},
   {&__pyx_kp_u_Abnormal_Stop_Iteration, __pyx_k_Abnormal_Stop_Iteration, sizeof(__pyx_k_Abnormal_Stop_Iteration), 0, 1, 0, 0},
   {&__pyx_kp_u_Attempt_to_set_value_out_of_boun, __pyx_k_Attempt_to_set_value_out_of_boun, sizeof(__pyx_k_Attempt_to_set_value_out_of_boun), 0, 1, 0, 0},
+  {&__pyx_n_s_AttributeError, __pyx_k_AttributeError, sizeof(__pyx_k_AttributeError), 0, 0, 1, 1},
   {&__pyx_n_s_AuxBufferInterface, __pyx_k_AuxBufferInterface, sizeof(__pyx_k_AuxBufferInterface), 0, 0, 1, 1},
   {&__pyx_n_s_BufferError, __pyx_k_BufferError, sizeof(__pyx_k_BufferError), 0, 0, 1, 1},
   {&__pyx_kp_s_Buffer_view_does_not_expose_stri, __pyx_k_Buffer_view_does_not_expose_stri, sizeof(__pyx_k_Buffer_view_does_not_expose_stri), 0, 0, 1, 0},
@@ -25431,6 +25495,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_SystemError, __pyx_k_SystemError, sizeof(__pyx_k_SystemError), 0, 0, 1, 1},
   {&__pyx_kp_u_The_Sequence_parameter_is_not_va, __pyx_k_The_Sequence_parameter_is_not_va, sizeof(__pyx_k_The_Sequence_parameter_is_not_va), 0, 1, 0, 0},
   {&__pyx_kp_u_The_array_provided_is_too_short, __pyx_k_The_array_provided_is_too_short, sizeof(__pyx_k_The_array_provided_is_too_short), 0, 1, 0, 0},
+  {&__pyx_kp_u_Try_multidimentional_indexing_on, __pyx_k_Try_multidimentional_indexing_on, sizeof(__pyx_k_Try_multidimentional_indexing_on), 0, 1, 0, 0},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
   {&__pyx_kp_u_Unable_to_create_a_new_sequence, __pyx_k_Unable_to_create_a_new_sequence, sizeof(__pyx_k_Unable_to_create_a_new_sequence), 0, 1, 0, 0},
@@ -25524,7 +25589,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
   {&__pyx_n_s_step, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
-  {&__pyx_kp_u_step_in_slice_is_not_implemented, __pyx_k_step_in_slice_is_not_implemented, sizeof(__pyx_k_step_in_slice_is_not_implemented), 0, 1, 0, 0},
   {&__pyx_n_s_stop, __pyx_k_stop, sizeof(__pyx_k_stop), 0, 0, 1, 1},
   {&__pyx_kp_s_strided_and_direct, __pyx_k_strided_and_direct, sizeof(__pyx_k_strided_and_direct), 0, 0, 1, 0},
   {&__pyx_kp_s_strided_and_direct_or_indirect, __pyx_k_strided_and_direct_or_indirect, sizeof(__pyx_k_strided_and_direct_or_indirect), 0, 0, 1, 0},
@@ -25546,15 +25610,16 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_SystemError = __Pyx_GetBuiltinName(__pyx_n_s_SystemError); if (!__pyx_builtin_SystemError) __PYX_ERR(0, 189, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(0, 210, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 251, __pyx_L1_error)
-  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) __PYX_ERR(0, 444, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) __PYX_ERR(0, 436, __pyx_L1_error)
   #if PY_MAJOR_VERSION >= 3
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) __PYX_ERR(0, 492, __pyx_L1_error)
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) __PYX_ERR(0, 487, __pyx_L1_error)
   #else
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) __PYX_ERR(0, 492, __pyx_L1_error)
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) __PYX_ERR(0, 487, __pyx_L1_error)
   #endif
-  __pyx_builtin_BufferError = __Pyx_GetBuiltinName(__pyx_n_s_BufferError); if (!__pyx_builtin_BufferError) __PYX_ERR(0, 632, __pyx_L1_error)
-  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) __PYX_ERR(0, 756, __pyx_L1_error)
+  __pyx_builtin_BufferError = __Pyx_GetBuiltinName(__pyx_n_s_BufferError); if (!__pyx_builtin_BufferError) __PYX_ERR(0, 627, __pyx_L1_error)
+  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) __PYX_ERR(0, 751, __pyx_L1_error)
+  __pyx_builtin_AttributeError = __Pyx_GetBuiltinName(__pyx_n_s_AttributeError); if (!__pyx_builtin_AttributeError) __PYX_ERR(0, 894, __pyx_L1_error)
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(1, 151, __pyx_L1_error)
   __pyx_builtin_Ellipsis = __Pyx_GetBuiltinName(__pyx_n_s_Ellipsis); if (!__pyx_builtin_Ellipsis) __PYX_ERR(1, 400, __pyx_L1_error)
   __pyx_builtin_id = __Pyx_GetBuiltinName(__pyx_n_s_id); if (!__pyx_builtin_id) __PYX_ERR(1, 609, __pyx_L1_error)
@@ -25619,113 +25684,113 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "sequence.pyx":273
+  /* "sequence.pyx":274
  *             stp_sequence_copy(s._sequence, self._sequence)
  *         else:
  *             raise ValueError("The Sequence parameter is not valid")             # <<<<<<<<<<<<<<
  * 
  *     cpdef copy(Sequence self):
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_u_The_Sequence_parameter_is_not_va); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_u_The_Sequence_parameter_is_not_va); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "sequence.pyx":311
+  /* "sequence.pyx":312
  *         retcode = stp_sequence_set_size(self._sequence, <size_t> size)
  *         if not retcode:
  *             raise MemoryError("Unable to resize this sequence.")             # <<<<<<<<<<<<<<
  * 
  *     #
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_Unable_to_resize_this_sequence); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 311, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_Unable_to_resize_this_sequence); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 312, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "sequence.pyx":444
+  /* "sequence.pyx":436
+ *     def __setitem__(Sequence self, object index, object value):
+ *         if isinstance(index, tuple):
+ *             raise IndexError("Try multidimentional indexing on Sequence")             # <<<<<<<<<<<<<<
+ *         elif isinstance(index, slice):
+ *             self.setslice(index.start, index.stop, value)
+ */
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_Try_multidimentional_indexing_on); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 436, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+
+  /* "sequence.pyx":443
  *                 index += self.__len__()
  *                 if index < 0:
  *                     raise IndexError("Index out of bounds.")             # <<<<<<<<<<<<<<
  *             self.set_point(index, value)
  *         else:
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_Index_out_of_bounds); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 444, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__9);
-  __Pyx_GIVEREF(__pyx_tuple__9);
-
-  /* "sequence.pyx":456
- * 
- *         if index.step != 1 and index.step is not None:
- *             raise ValueError("step in slice is not implemented")             # <<<<<<<<<<<<<<
- *         _len = self.__len__( )
- *         if index.start == None:
- */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_step_in_slice_is_not_implemented); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 456, __pyx_L1_error)
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_Index_out_of_bounds); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 443, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "sequence.pyx":490
- *             if pybuffer.ndim != 1:
- *                 PyBuffer_Release(&pybuffer)
+  /* "sequence.pyx":491
+ *         else:
+ *             if mv.ndim != 1:
  *                 raise ValueError("Multidimentionnal array is not accepted.")             # <<<<<<<<<<<<<<
- *             if pybuffer.shape[0] >= size:
+ *             if mv.shape[0] >= size:
  *                 for i in xrange(start, stop):
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_Multidimentionnal_array_is_not_a); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 490, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_Multidimentionnal_array_is_not_a); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 491, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "sequence.pyx":499
+  /* "sequence.pyx":497
+ *                     v += 1
  *             else:
- *                 PyBuffer_Release(&pybuffer)
  *                 raise ValueError("The array provided is too short.")             # <<<<<<<<<<<<<<
- *         else:
- *             d_val = <double> value
+ *         return 1
+ * 
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_The_array_provided_is_too_short); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 499, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_The_array_provided_is_too_short); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "sequence.pyx":632
+  /* "sequence.pyx":627
  *         cdef int bufmode = -1
  *         if not (flags & bufmode):
  *             raise BufferError("Can only create a buffer that is contiguous in memory.")             # <<<<<<<<<<<<<<
  * 
  *         if not (flags & PyBUF_FORMAT):
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 632, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 627, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 
-  /* "sequence.pyx":702
+  /* "sequence.pyx":697
  *             if err == -1:
  *                 PyBuffer_Release(&pybuffer)
  *                 raise ValueError("Data to set is not a contigous block of memory.")             # <<<<<<<<<<<<<<
  *             if pybuffer.format:
  *                 if check_buffer_format(pybuffer.format, &c_type):
  */
-  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_u_Data_to_set_is_not_a_contigous_b); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 702, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_u_Data_to_set_is_not_a_contigous_b); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 697, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__14);
   __Pyx_GIVEREF(__pyx_tuple__14);
 
-  /* "sequence.pyx":711
+  /* "sequence.pyx":706
  *                         count = stp_sequence_get_size(s)
  *                         if (pybuffer.len // pybuffer.itemsize) < count:
  *                             raise ValueError("Data to set is too short.")             # <<<<<<<<<<<<<<
  *                     if c_type[0] == b'u':
  *                         if sz == sizeof(unsigned short):
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_u_Data_to_set_is_too_short); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 711, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_u_Data_to_set_is_too_short); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 706, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__15);
   __Pyx_GIVEREF(__pyx_tuple__15);
 
-  /* "sequence.pyx":752
+  /* "sequence.pyx":747
  *             PyBuffer_Release(&pybuffer)
  *         if not err_code:
  *             raise ValueError("Invalid buffer format.")             # <<<<<<<<<<<<<<
  * 
  *     def __richcmp__(x,  y, int comp):
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_u_Invalid_buffer_format); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 752, __pyx_L1_error)
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_u_Invalid_buffer_format); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 747, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__16);
   __Pyx_GIVEREF(__pyx_tuple__16);
 
@@ -25748,36 +25813,36 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
 
-  /* "sequence.pyx":849
+  /* "sequence.pyx":844
  *         cdef int i
  *         if self.buffer == NULL:
  *             raise BufferError("")             # <<<<<<<<<<<<<<
  *         info.buf = self.buffer
  *         info.len = self.count * self.itemsize
  */
-  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_u__19); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 849, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_u__19); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 844, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__20);
   __Pyx_GIVEREF(__pyx_tuple__20);
 
-  /* "sequence.pyx":868
+  /* "sequence.pyx":863
  *         if flags & PyBUF_WRITABLE:
  *             if self.readonly:
  *                 raise BufferError("Can only create a buffer that is readonly.")             # <<<<<<<<<<<<<<
  * 
  *         if flags & PyBUF_SIMPLE:
  */
-  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is_2); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 868, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is_2); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 863, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
 
-  /* "sequence.pyx":886
+  /* "sequence.pyx":881
  * 
  *         if not (flags & PyBUF_ANY_CONTIGUOUS):
  *             raise BufferError("Can only create a buffer that is c contiguous in memory.")             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is_3); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 886, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_u_Can_only_create_a_buffer_that_is_3); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 881, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__22);
   __Pyx_GIVEREF(__pyx_tuple__22);
 
@@ -26107,8 +26172,15 @@ static int __Pyx_modinit_function_export_code(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_export_code", 0);
   /*--- Function export code ---*/
+  if (__Pyx_ExportFunction("raise_bound_error", (void (*)(void))__pyx_f_8sequence_raise_bound_error, "int (char *, double, double)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("raise_index_error", (void (*)(void))__pyx_f_8sequence_raise_index_error, "int (char *, int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("raise_nan_error", (void (*)(void))__pyx_f_8sequence_raise_nan_error, "int (char *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("raise_attribute_error", (void (*)(void))__pyx_f_8sequence_raise_attribute_error, "int (char *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
+  __pyx_L1_error:;
+  __Pyx_RefNannyFinishContext();
+  return -1;
 }
 
 static int __Pyx_modinit_type_init_code(void) {
@@ -26117,14 +26189,14 @@ static int __Pyx_modinit_type_init_code(void) {
   /*--- Type init code ---*/
   __pyx_vtabptr_8sequence___AuxBufferInterface = &__pyx_vtable_8sequence___AuxBufferInterface;
   __pyx_vtable_8sequence___AuxBufferInterface.set_buffer = (PyObject *(*)(struct __pyx_obj_8sequence___AuxBufferInterface *, int, void *, Py_ssize_t, PyObject *, Py_ssize_t, int, Py_ssize_t *))__pyx_f_8sequence_20__AuxBufferInterface_set_buffer;
-  if (PyType_Ready(&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 828, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 823, __pyx_L1_error)
   __pyx_type_8sequence___AuxBufferInterface.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_8sequence___AuxBufferInterface.tp_dictoffset && __pyx_type_8sequence___AuxBufferInterface.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_8sequence___AuxBufferInterface.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
-  if (__Pyx_SetVtable(__pyx_type_8sequence___AuxBufferInterface.tp_dict, __pyx_vtabptr_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 828, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_AuxBufferInterface, (PyObject *)&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 828, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 828, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8sequence___AuxBufferInterface.tp_dict, __pyx_vtabptr_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 823, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_AuxBufferInterface, (PyObject *)&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 823, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_8sequence___AuxBufferInterface) < 0) __PYX_ERR(0, 823, __pyx_L1_error)
   __pyx_ptype_8sequence___AuxBufferInterface = &__pyx_type_8sequence___AuxBufferInterface;
   __pyx_vtabptr_8sequence_Sequence = &__pyx_vtable_8sequence_Sequence;
   __pyx_vtable_8sequence_Sequence.copy_in = (PyObject *(*)(struct __pyx_obj_8sequence_Sequence *, PyObject *, int __pyx_skip_dispatch))__pyx_f_8sequence_8Sequence_copy_in;
@@ -26139,8 +26211,8 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_8sequence_Sequence.max = (double (*)(struct __pyx_obj_8sequence_Sequence *, int __pyx_skip_dispatch))__pyx_f_8sequence_8Sequence_max;
   __pyx_vtable_8sequence_Sequence.get_sequence = (struct stp_sequence *(*)(struct __pyx_obj_8sequence_Sequence *))__pyx_f_8sequence_8Sequence_get_sequence;
   __pyx_vtable_8sequence_Sequence.set_point = (int (*)(struct __pyx_obj_8sequence_Sequence *, size_t, double))__pyx_f_8sequence_8Sequence_set_point;
-  __pyx_vtable_8sequence_Sequence.set_slice = (int (*)(struct __pyx_obj_8sequence_Sequence *, PyObject *, PyObject *, int))__pyx_f_8sequence_8Sequence_set_slice;
   __pyx_vtable_8sequence_Sequence.set_data_c = (int (*)(struct __pyx_obj_8sequence_Sequence *, PyObject *, int))__pyx_f_8sequence_8Sequence_set_data_c;
+  __pyx_vtable_8sequence_Sequence.setslice = (int (*)(struct __pyx_obj_8sequence_Sequence *, PyObject *, PyObject *, PyObject *))__pyx_f_8sequence_8Sequence_setslice;
   __pyx_vtable_8sequence_Sequence.get_c_buffer = (void (*)(struct __pyx_obj_8sequence_Sequence *, size_t *, double **))__pyx_f_8sequence_8Sequence_get_c_buffer;
   __pyx_vtable_8sequence_Sequence.fill_strides_and_shape = (void (*)(struct __pyx_obj_8sequence_Sequence *))__pyx_f_8sequence_8Sequence_fill_strides_and_shape;
   if (PyType_Ready(&__pyx_type_8sequence_Sequence) < 0) __PYX_ERR(0, 194, __pyx_L1_error)
@@ -26486,7 +26558,7 @@ if (!__Pyx_RefNanny) {
   /*--- Global type/function init code ---*/
   (void)__Pyx_modinit_global_init_code();
   (void)__Pyx_modinit_variable_export_code();
-  (void)__Pyx_modinit_function_export_code();
+  if (unlikely(__Pyx_modinit_function_export_code() != 0)) goto __pyx_L1_error;
   if (unlikely(__Pyx_modinit_type_init_code() != 0)) goto __pyx_L1_error;
   (void)__Pyx_modinit_type_import_code();
   (void)__Pyx_modinit_variable_import_code();
@@ -27466,6 +27538,48 @@ done:
     return result;
 }
 
+/* WriteUnraisableException */
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
+#endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
+}
+
 /* PyIntBinop */
 #if !CYTHON_COMPILING_IN_PYPY
 static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED int inplace) {
@@ -27802,47 +27916,208 @@ bad:
 #endif
 }
 
-/* WriteUnraisableException */
-static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
-                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
-                                  int full_traceback, CYTHON_UNUSED int nogil) {
-    PyObject *old_exc, *old_val, *old_tb;
-    PyObject *ctx;
-    __Pyx_PyThreadState_declare
-#ifdef WITH_THREAD
-    PyGILState_STATE state;
-    if (nogil)
-        state = PyGILState_Ensure();
-#ifdef _MSC_VER
-    else state = (PyGILState_STATE)-1;
-#endif
-#endif
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
-    if (full_traceback) {
-        Py_XINCREF(old_exc);
-        Py_XINCREF(old_val);
-        Py_XINCREF(old_tb);
-        __Pyx_ErrRestore(old_exc, old_val, old_tb);
-        PyErr_PrintEx(1);
+/* GetTopmostException */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem *
+__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
+{
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
+           exc_info->previous_item != NULL)
+    {
+        exc_info = exc_info->previous_item;
     }
-    #if PY_MAJOR_VERSION < 3
-    ctx = PyString_FromString(name);
-    #else
-    ctx = PyUnicode_FromString(name);
-    #endif
-    __Pyx_ErrRestore(old_exc, old_val, old_tb);
-    if (!ctx) {
-        PyErr_WriteUnraisable(Py_None);
-    } else {
-        PyErr_WriteUnraisable(ctx);
-        Py_DECREF(ctx);
-    }
-#ifdef WITH_THREAD
-    if (nogil)
-        PyGILState_Release(state);
-#endif
+    return exc_info;
 }
+#endif
+
+/* SaveResetException */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
+    *type = exc_info->exc_type;
+    *value = exc_info->exc_value;
+    *tb = exc_info->exc_traceback;
+    #else
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    #endif
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = type;
+    exc_info->exc_value = value;
+    exc_info->exc_traceback = tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* PyErrExceptionMatches */
+#if CYTHON_FAST_THREAD_STATE
+static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
+    Py_ssize_t i, n;
+    n = PyTuple_GET_SIZE(tuple);
+#if PY_MAJOR_VERSION >= 3
+    for (i=0; i<n; i++) {
+        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
+    }
+#endif
+    for (i=0; i<n; i++) {
+        if (__Pyx_PyErr_GivenExceptionMatches(exc_type, PyTuple_GET_ITEM(tuple, i))) return 1;
+    }
+    return 0;
+}
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err) {
+    PyObject *exc_type = tstate->curexc_type;
+    if (exc_type == err) return 1;
+    if (unlikely(!exc_type)) return 0;
+    if (unlikely(PyTuple_Check(err)))
+        return __Pyx_PyErr_ExceptionMatchesTuple(exc_type, err);
+    return __Pyx_PyErr_GivenExceptionMatches(exc_type, err);
+}
+#endif
+
+/* PyIntBinop */
+#if !CYTHON_COMPILING_IN_PYPY
+static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED int inplace) {
+    #if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_CheckExact(op1))) {
+        const long b = intval;
+        long x;
+        long a = PyInt_AS_LONG(op1);
+            x = (long)((unsigned long)a + b);
+            if (likely((x^a) >= 0 || (x^b) >= 0))
+                return PyInt_FromLong(x);
+            return PyLong_Type.tp_as_number->nb_add(op1, op2);
+    }
+    #endif
+    #if CYTHON_USE_PYLONG_INTERNALS
+    if (likely(PyLong_CheckExact(op1))) {
+        const long b = intval;
+        long a, x;
+#ifdef HAVE_LONG_LONG
+        const PY_LONG_LONG llb = intval;
+        PY_LONG_LONG lla, llx;
+#endif
+        const digit* digits = ((PyLongObject*)op1)->ob_digit;
+        const Py_ssize_t size = Py_SIZE(op1);
+        if (likely(__Pyx_sst_abs(size) <= 1)) {
+            a = likely(size) ? digits[0] : 0;
+            if (size == -1) a = -a;
+        } else {
+            switch (size) {
+                case -2:
+                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
+                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 2:
+                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
+                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case -3:
+                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
+                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 3:
+                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
+                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case -4:
+                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
+                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 4:
+                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
+                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                default: return PyLong_Type.tp_as_number->nb_add(op1, op2);
+            }
+        }
+                x = a + b;
+            return PyLong_FromLong(x);
+#ifdef HAVE_LONG_LONG
+        long_long:
+                llx = lla + llb;
+            return PyLong_FromLongLong(llx);
+#endif
+        
+        
+    }
+    #endif
+    if (PyFloat_CheckExact(op1)) {
+        const long b = intval;
+        double a = PyFloat_AS_DOUBLE(op1);
+            double result;
+            PyFPE_START_PROTECT("add", return NULL)
+            result = ((double)a) + (double)b;
+            PyFPE_END_PROTECT(result)
+            return PyFloat_FromDouble(result);
+    }
+    return (inplace ? PyNumber_InPlaceAdd : PyNumber_Add)(op1, op2);
+}
+#endif
 
 /* PyIntCompare */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_NeObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED long inplace) {
@@ -27986,87 +28261,6 @@ static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
         return PyUnicode_Decode(cstring, length, encoding, errors);
     }
 }
-
-/* GetTopmostException */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem *
-__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
-{
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
-           exc_info->previous_item != NULL)
-    {
-        exc_info = exc_info->previous_item;
-    }
-    return exc_info;
-}
-#endif
-
-/* SaveResetException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
-    *type = exc_info->exc_type;
-    *value = exc_info->exc_value;
-    *tb = exc_info->exc_traceback;
-    #else
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    #endif
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-}
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = type;
-    exc_info->exc_value = value;
-    exc_info->exc_traceback = tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-#endif
-
-/* PyErrExceptionMatches */
-#if CYTHON_FAST_THREAD_STATE
-static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
-    Py_ssize_t i, n;
-    n = PyTuple_GET_SIZE(tuple);
-#if PY_MAJOR_VERSION >= 3
-    for (i=0; i<n; i++) {
-        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
-    }
-#endif
-    for (i=0; i<n; i++) {
-        if (__Pyx_PyErr_GivenExceptionMatches(exc_type, PyTuple_GET_ITEM(tuple, i))) return 1;
-    }
-    return 0;
-}
-static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err) {
-    PyObject *exc_type = tstate->curexc_type;
-    if (exc_type == err) return 1;
-    if (unlikely(!exc_type)) return 0;
-    if (unlikely(PyTuple_Check(err)))
-        return __Pyx_PyErr_ExceptionMatchesTuple(exc_type, err);
-    return __Pyx_PyErr_GivenExceptionMatches(exc_type, err);
-}
-#endif
 
 /* GetException */
 #if CYTHON_FAST_THREAD_STATE
@@ -28547,128 +28741,6 @@ static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObj
         return __Pyx_inner_PyErr_GivenExceptionMatches2(err, exc_type1, exc_type2);
     }
     return (PyErr_GivenExceptionMatches(err, exc_type1) || PyErr_GivenExceptionMatches(err, exc_type2));
-}
-#endif
-
-/* PyIntBinop */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED int inplace) {
-    #if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_CheckExact(op1))) {
-        const long b = intval;
-        long x;
-        long a = PyInt_AS_LONG(op1);
-            x = (long)((unsigned long)a + b);
-            if (likely((x^a) >= 0 || (x^b) >= 0))
-                return PyInt_FromLong(x);
-            return PyLong_Type.tp_as_number->nb_add(op1, op2);
-    }
-    #endif
-    #if CYTHON_USE_PYLONG_INTERNALS
-    if (likely(PyLong_CheckExact(op1))) {
-        const long b = intval;
-        long a, x;
-#ifdef HAVE_LONG_LONG
-        const PY_LONG_LONG llb = intval;
-        PY_LONG_LONG lla, llx;
-#endif
-        const digit* digits = ((PyLongObject*)op1)->ob_digit;
-        const Py_ssize_t size = Py_SIZE(op1);
-        if (likely(__Pyx_sst_abs(size) <= 1)) {
-            a = likely(size) ? digits[0] : 0;
-            if (size == -1) a = -a;
-        } else {
-            switch (size) {
-                case -2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                default: return PyLong_Type.tp_as_number->nb_add(op1, op2);
-            }
-        }
-                x = a + b;
-            return PyLong_FromLong(x);
-#ifdef HAVE_LONG_LONG
-        long_long:
-                llx = lla + llb;
-            return PyLong_FromLongLong(llx);
-#endif
-        
-        
-    }
-    #endif
-    if (PyFloat_CheckExact(op1)) {
-        const long b = intval;
-        double a = PyFloat_AS_DOUBLE(op1);
-            double result;
-            PyFPE_START_PROTECT("add", return NULL)
-            result = ((double)a) + (double)b;
-            PyFPE_END_PROTECT(result)
-            return PyFloat_FromDouble(result);
-    }
-    return (inplace ? PyNumber_InPlaceAdd : PyNumber_Add)(op1, op2);
 }
 #endif
 
@@ -30328,6 +30400,43 @@ static int __Pyx_check_binary_version(void) {
         return PyErr_WarnEx(NULL, message, 1);
     }
     return 0;
+}
+
+/* FunctionExport */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig) {
+    PyObject *d = 0;
+    PyObject *cobj = 0;
+    union {
+        void (*fp)(void);
+        void *p;
+    } tmp;
+    d = PyObject_GetAttrString(__pyx_m, (char *)"__pyx_capi__");
+    if (!d) {
+        PyErr_Clear();
+        d = PyDict_New();
+        if (!d)
+            goto bad;
+        Py_INCREF(d);
+        if (PyModule_AddObject(__pyx_m, (char *)"__pyx_capi__", d) < 0)
+            goto bad;
+    }
+    tmp.fp = f;
+#if PY_VERSION_HEX >= 0x02070000
+    cobj = PyCapsule_New(tmp.p, sig, 0);
+#else
+    cobj = PyCObject_FromVoidPtrAndDesc(tmp.p, (void *)sig, 0);
+#endif
+    if (!cobj)
+        goto bad;
+    if (PyDict_SetItemString(d, name, cobj) < 0)
+        goto bad;
+    Py_DECREF(cobj);
+    Py_DECREF(d);
+    return 0;
+bad:
+    Py_XDECREF(cobj);
+    Py_XDECREF(d);
+    return -1;
 }
 
 /* InitStrings */

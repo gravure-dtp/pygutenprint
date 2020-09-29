@@ -17,7 +17,7 @@
 # the Debian GNU/Linux distribution in file /usr/share/common-licenses/GPL;
 # if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 # Fifth Floor, Boston, MA 02110-1301, USA.
- 
+
 cdef extern from "gutenprint/sequence.h":
     # The sequence opaque data type.
     struct stp_sequence:
@@ -56,7 +56,12 @@ cdef class Sequence:
     cpdef double max(Sequence)
     cdef stp_sequence* get_sequence(Sequence self)nogil
     cdef bint set_point(Sequence, size_t, double)nogil except 0
-    cdef int set_slice(Sequence, object, object, bint)except -1
     cdef int set_data_c(self, object data, bint count_from_buf)except -1
+    cdef int setslice(Sequence self, start, stop, object value)except -1
     cdef void get_c_buffer(Sequence, size_t*, double**)nogil
     cdef void fill_strides_and_shape(Sequence)nogil
+
+cdef int raise_bound_error(char*, double, double) except -1 with gil
+cdef int raise_index_error(char*, int) except -1 with gil
+cdef int raise_nan_error(char*) except -1 with gil
+cdef int raise_attribute_error(char*) except -1 with gil

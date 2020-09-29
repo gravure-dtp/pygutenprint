@@ -171,6 +171,7 @@ setup(
     platforms         = ['any'],
     
     packages = ['gravure.pygutenprint'],
+    ext_package = 'gravure.pygutenprint',
     ext_modules = extensions,
     #package_data = {'pygutenprint': ['*.pxd']},
     zip_safe = False,

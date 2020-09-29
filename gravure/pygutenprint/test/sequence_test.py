@@ -147,7 +147,7 @@ def test_reverse():
 
 
 #-----------------------------------------------------------------------------
-# __contains__()                                                             #  
+# __contains__()                                                             #
 #                                                                            #
 def contains_test():
     stp_seq = stp.Sequence()
@@ -448,7 +448,6 @@ from nose.plugins.testid import TestId
 from nose.config import Config
 
 if __name__ == '__main__':
-
     nose.runmodule(name='__main__')
 
 #-----------------------------------------------------------------------------

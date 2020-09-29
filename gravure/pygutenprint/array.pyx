@@ -18,8 +18,6 @@
 # if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 # Fifth Floor, Boston, MA 02110-1301, USA.
 
-#cython: embedsignature=True
-
 """Module gravure.pygutenprint.array.
 
 """
@@ -27,6 +25,7 @@
 import cython
 cimport cython
 from gravure.pygutenprint.sequence import Sequence
+from gravure.pygutenprint cimport sequence
 
 __all__= ['Array']
 
@@ -39,15 +38,15 @@ cdef extern from "gutenprint/array.h":
     void stp_array_get_size(const stp_array_t *array, int *x_size, int *y_size)nogil
     void stp_array_set_data(stp_array_t *array, const double *data)nogil
     void stp_array_get_data(const stp_array_t *array, size_t *size, const double **data)nogil
-    #extern int stp_array_set_point(stp_array_t *array, int x, int y, double data);
-    #extern int stp_array_get_point(const stp_array_t *array, int x, int y, double *data);
+    int stp_array_set_point(stp_array_t *array, int x, int y, double data)nogil
+    int stp_array_get_point(const stp_array_t *array, int x, int y, double *data)nogil
     stp_sequence_t *stp_array_get_sequence(stp_array_t *array)nogil
 
 
 cdef class Array(Sequence):
     """The array is a simple "two-dimensional array of numbers".
 
-    Array "inherits" from Sequence object.
+    Array "inherits" from the Sequence object.
 
     :param data: an optional python array like object to initialize the array.\
     if None the size of the Array will be set with the size paramater.
@@ -69,6 +68,7 @@ cdef class Array(Sequence):
         if not self._array:
             raise MemoryError("Unable to create a new array.")
         self.ndim = 2
+        self._sequence = stp_array_get_sequence(self._array)
 
     def __init__(Array self, data=None, low=None, high=None, *args, **kwargs):
         Sequence.__init__(self, None, low, high, args, kwargs)
@@ -194,7 +194,7 @@ cdef class Array(Sequence):
     cdef void get_c_buffer(Array self, size_t* size_ptr, double** data_ptr)nogil:
         stp_array_get_data(<const stp_array_t*> self._array, size_ptr, <const double**> data_ptr)
 
-    cdef void fill_strides_and_shape(Sequence.self)nogil:
+    cdef void fill_strides_and_shape(Array self)nogil:
         cdef int x, y
         stp_array_get_size(self._array, &x, &y)
         self._shape[0] = x
@@ -202,9 +202,73 @@ cdef class Array(Sequence):
         self._strides[1] =  sizeof(double)
         self._strides[0] = x * self._strides[1]
 
-    def __setitem__(Sequence self, object index, object value):
-        pass
+    #
+    # SEQUENCE INTERFACE : __getitem__(), __setitem__()
+    #
+    def __setitem__(Array self, object index, object value):
+        if isinstance(index, tuple):
+            if len(index) > 2:
+                raise IndexError("Can’t index Array on more than two dimensions")
+            elif len(index) == 1:
+                index = tuple([index[0], slice(0, self.shape[1])])
+            lst = []
+            for i in index:
+                if not isinstance(i, slice):
+                    if PyIndex_Check(i):
+                        lst.append(slice(i, i + 1))
+                    else:
+                        raise TypeError("Cannot index with type '%s'" % type(i))
+                else:
+                    lst.append(i)
+            index = tuple(lst)
+        elif isinstance(index, slice):
+            index = tuple([index, slice(0, self.shape[1])])
+        elif PyIndex_Check(index):
+            index = tuple([index, slice(0, self.shape[1])])
+        else:
+            raise TypeError("Cannot index with type '%s'" % type(index))
 
+        if self.check_index(index) is not None:
+            self.setslice(index, value)
+        else:
+            return
+
+    cdef int setslice(Array self, tuple index, object value)except -1:
+        cdef Py_ssize_t size, i, v, _len
+        cdef memoryview mv = None
+        cdef Py_buffer pybuffer
+        cdef double d_val
+
+        try:
+            mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+        except TypeError:
+            d_val = <double> value
+            for i in xrange(index[0].start, index[0].stop + 1):
+                for v in xrange(index[1].start, index[1].stop + 1):
+                    self.set_point(i, v, d_val)
+        else:
+            pass
+
+    cdef bint set_point(Array self, size_t x, size_t y, double value)nogil except 0:
+        """Set the data at a single point in a Sequence.
+
+        :param index: position in Sequence (from zero).
+        :param value: the datum to set.
+        :raises: IndexError, SequenceBoundsError, SequenceNaNError.
+        """
+        cdef bint retcode
+        cdef double low, high
+
+        retcode = stp_array_set_point(self._array, x, y, value)
+
+        if not retcode:
+            last_index = stp_sequence_get_size(self._sequence) - 1
+            low, high = self.get_bounds()
+            if (value < low or value > high):
+                raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
+            else:
+                raise_attribute_error("Invalid argument(s)")
+        return 1
 
 
 

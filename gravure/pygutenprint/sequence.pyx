@@ -218,8 +218,9 @@ cdef class Sequence:
             self.set_data(data)
 
     def __dealloc__(Sequence self):
-        if self._sequence is not NULL:
-            stp_sequence_destroy(self._sequence)
+        if self.__class__ == Sequence:
+            if self._sequence is not NULL:
+                stp_sequence_destroy(self._sequence)
 
     cdef stp_sequence_t* get_sequence(Sequence self)nogil:
         return self._sequence
@@ -431,12 +432,10 @@ cdef class Sequence:
     # SEQUENCE INTERFACE : __getitem__(), __setitem__()
     #
     def __setitem__(Sequence self, object index, object value):
-        if isinstance(index, slice):
-            obj = is_slice(value)
-            if obj:
-                self.set_slice(index, obj, True)
-            else:
-                self.set_slice(index, value, False)
+        if isinstance(index, tuple):
+            raise IndexError("Try multidimentional indexing on Sequence")
+        elif isinstance(index, slice):
+            self.setslice(index.start, index.stop, value)
         elif PyIndex_Check(index):
             if index < 0:
                 index += self.__len__()
@@ -446,61 +445,111 @@ cdef class Sequence:
         else:
             raise TypeError("Cannot index with type '%s'" % type(index))
 
-    cdef int set_slice(Sequence self, object index, object value, bint val_is_slice)except -1:
-        cdef Py_ssize_t start, stop, size, i, v, _len
-        cdef memoryview mv
+    cdef int setslice(Sequence self, start, stop, object value)except -1:
+        cdef Py_ssize_t size, i, v, _len
+        cdef memoryview mv = None
         cdef Py_buffer pybuffer
         cdef double d_val
 
-        if index.step != 1 and index.step is not None:
-            raise ValueError("step in slice is not implemented")
-        _len = self.__len__( )
-        if index.start == None:
+        _len = self.__len__()
+        if start is None:
             start = 0
-        elif index.start < 0:
-            start = index.start + _len
+        elif start < 0:
+            start += _len
             if start < 0:
                 start = 0
-        elif index.start > _len:
+        elif start > _len:
             start = _len
-        else:
-            start = index.start
 
-        if index.stop == None:
+        if stop is None:
             stop = _len - 1
-        elif index.stop < 0:
-            stop = index.stop + _len
+        elif stop < 0:
+            stop += _len
             if stop < 0:
                 stop = 0
-        elif index.stop > _len:
+        elif stop > _len:
             stop = _len
-        else:
-            stop = index.stop
 
         if stop <= start:
             return 1
+            #raise IndexError("Index out of bounds.")
+
         size = stop - start
         v = 0
 
-        if val_is_slice:
-            mv = <memoryview> value
-            PyObject_GetBuffer(mv, &pybuffer, PyBUF_ND)
-            if pybuffer.ndim != 1:
-                PyBuffer_Release(&pybuffer)
-                raise ValueError("Multidimentionnal array is not accepted.")
-            if pybuffer.shape[0] >= size:
-                for i in xrange(start, stop):
-                    if not self.set_point(i, <double> mv[v]):
-                        PyBuffer_Release(&pybuffer)
-                    v += 1
-                PyBuffer_Release(&pybuffer)
-            else:
-                PyBuffer_Release(&pybuffer)
-                raise ValueError("The array provided is too short.")
-        else:
+        try:
+            mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+        except TypeError:
+            pass
+
+        if mv == None:
             d_val = <double> value
             for i in xrange(start, stop + 1):
                 self.set_point(i, d_val)
+        else:
+            if mv.ndim != 1:
+                raise ValueError("Multidimentionnal array is not accepted.")
+            if mv.shape[0] >= size:
+                for i in xrange(start, stop):
+                    self.set_point(i, <double> mv[v])
+                    v += 1
+            else:
+                raise ValueError("The array provided is too short.")
+        return 1
+
+    cdef int setslice(Array self, tuple index, object value)except -1:
+        cdef Py_ssize_t size, i, v, _len
+        cdef memoryview mv = None
+        cdef Py_buffer pybuffer
+        cdef double d_val
+
+        try:
+            mv = memoryview(value, PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT, False)
+        except TypeError:
+            d_val = <double> value
+            for i in xrange(index[0].start, index[0].stop + 1):
+                for v in xrange(index[1].start, index[1].stop + 1):
+                    self.set_point(i, v, d_val)
+        else:
+            pass
+
+    cdef bint check_index(Array self, tuple index):
+        cdef int j = 0t
+        cdef int _len
+        cdef Py_ssize_t start, stop
+        result = []
+
+        for i in index:
+            _len = self.shape[j]
+            if i.start is None:
+                start = 0
+            elif i.start < 0:
+                start = i.start + _len
+                if start < 0:
+                    start = 0
+            elif i.start > _len:
+                start = _len
+            else:
+                start = i.start
+
+            if i.stop is None:
+                stop = _len - 1
+            elif i.stop < 0:
+                stop = i.stop + _len
+                if stop < 0:
+                    stop = 0
+            elif i.stop > _len:
+                stop = _len
+            else :
+                stop = i.stop
+
+            if stop <= start:
+                return None
+            else:
+                result.append(slice(start, stop, None))
+            j += 1
+
+        return tuple(result)
 
     cdef bint set_point(Sequence self, size_t index, double value)nogil except 0:
         """Set the data at a single point in a Sequence.
@@ -518,11 +567,11 @@ cdef class Sequence:
             last_index = stp_sequence_get_size(self._sequence) - 1
             stp_sequence_get_bounds(self._sequence, &low, &high)
             if (value < low or value > high):
-                raise_bound_error("Attempt to set value out of bounds (%f, %f)", low, high)
+                raise_bound_error("Attempt to set a value out of bounds (%f, %f)", low, high)
             elif (index>last_index or last_index<0):
                 raise_index_error("[%d], Sequence index out of range", index)
             else:
-                raise_nan_error("Sequence value is not a finite number")
+                raise_nan_error("Value is not a finite number")
         return 1
 
     def __getitem__(self, index):
@@ -895,8 +944,10 @@ cdef int raise_index_error(char* message, int a) except -1 with gil:
 cdef int raise_nan_error(char* message) except -1 with gil:
             raise SequenceNaNError(message.decode('ascii'))
 
+cdef int raise_attribute_error(char* message) except -1 with gil:
+            raise AttributeError(message.decode('ascii'))
 
-cdef object is_slice(obj):
+cdef object is_sequence(obj):
     cdef memoryview mv
     try:
         flags = PyBUF_ANY_CONTIGUOUS|PyBUF_FORMAT
